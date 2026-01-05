@@ -122,6 +122,12 @@ def extract_words_with_features(api: Any, config: dict) -> "pd.DataFrame":
         record["clause_id"] = clauses[0] if clauses else None
         record["phrase_id"] = phrases[0] if phrases else None
 
+        # Extract role from containing phrase (phrase-level feature)
+        if phrases and hasattr(api.F, "role"):
+            record["role"] = api.F.role.v(phrases[0])
+        else:
+            record["role"] = None
+
         records.append(record)
 
     df = pd.DataFrame(records)

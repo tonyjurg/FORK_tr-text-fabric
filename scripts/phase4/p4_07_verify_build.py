@@ -38,6 +38,7 @@ def verify_file_structure(tf_dir: Path) -> bool:
     optional_files = [
         "sp.tf",
         "function.tf",
+        "role.tf",      # N1904-compatible syntactic role (s/o/io/v/adv)
         "case.tf",
         "gender.tf",    # N1904-compatible name (was gn)
         "number.tf",    # N1904-compatible name (was nu)

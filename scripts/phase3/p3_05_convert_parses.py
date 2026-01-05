@@ -38,6 +38,67 @@ def convert_deprel(ud_deprel: str, label_map: Dict) -> str:
     return deprel_map.get(ud_deprel, ud_deprel)  # Fallback to original
 
 
+def convert_deprel_to_role(ud_deprel: str) -> str:
+    """
+    Convert UD dependency relation to N1904-style syntactic role.
+
+    N1904 roles are phrase-level syntactic functions like:
+    - s (subject)
+    - o (object)
+    - io (indirect object)
+    - v (predicate/verb)
+    - adv (adverbial)
+    - apposition
+    """
+    role_map = {
+        # Subject relations
+        "nsubj": "s",
+        "nsubj:pass": "s",
+        "csubj": "s",
+        "csubj:pass": "s",
+        # Object relations
+        "obj": "o",
+        "ccomp": "o",
+        "xcomp": "o",
+        # Indirect object
+        "iobj": "io",
+        # Predicate/root
+        "root": "v",
+        "cop": "v",
+        # Adverbial
+        "obl": "adv",
+        "obl:agent": "adv",
+        "advmod": "adv",
+        "advcl": "adv",
+        # Modifiers -> apposition
+        "amod": "apposition",
+        "nmod": "apposition",
+        "nummod": "apposition",
+        "acl": "apposition",
+        "acl:relcl": "apposition",
+        # Other
+        "det": "apposition",
+        "case": "apposition",
+        "mark": "apposition",
+        "cc": "apposition",
+        "conj": None,  # Inherits from head
+        "punct": None,
+        "discourse": None,
+        "vocative": "adv",
+        "expl": None,
+        "aux": None,
+        "aux:pass": None,
+        "flat": "apposition",
+        "flat:name": "apposition",
+        "compound": "apposition",
+        "fixed": "apposition",
+        "parataxis": "adv",
+        "orphan": None,
+        "dep": None,
+    }
+    return role_map.get(ud_deprel)  # Returns None for unmapped
+
+
 def convert_pos(ud_pos: str, label_map: Dict) -> str:
     """Convert UD POS tag to N1904 part of speech."""
     pos_map = label_map.get("pos", {})
@@ -153,11 +214,15 @@ def align_parses_to_gaps(parses_df, spans_df, gaps_df, label_map: Dict) -> "pd.D
                 else:
                     parent_word_id = None  # Root or external
 
+                # Get role from deprel
+                role = convert_deprel_to_role(parse["deprel"])
+
                 syntax_records.append({
                     "word_id": word_id,
                     "lemma": parse["lemma"],
                     "sp": sp,
                     "function": function,
+                    "role": role,
                     "parent": parent_word_id,
                     "stanza_deprel": parse["deprel"],
                     "stanza_upos": parse["upos"],
@@ -170,6 +235,7 @@ def align_parses_to_gaps(parses_df, spans_df, gaps_df, label_map: Dict) -> "pd.D
                     "lemma": None,
                     "sp": None,
                     "function": "Unknown",
+                    "role": None,
                     "parent": None,
                 })
 

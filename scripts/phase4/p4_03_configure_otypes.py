@@ -69,7 +69,7 @@ def configure_otypes(complete_df, containers_df, config: dict) -> dict:
         },
         "features": {
             # N1904-compatible feature names
-            "w": ["unicode", "lemma", "sp", "function", "case", "gender", "number", "person",
+            "w": ["unicode", "lemma", "sp", "function", "role", "case", "gender", "number", "person",
                   "tense", "voice", "mood", "gloss", "source", "strong", "morph"],
             "verse": ["verse"],
             "chapter": ["chapter"],

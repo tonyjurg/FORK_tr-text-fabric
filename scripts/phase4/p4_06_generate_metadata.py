@@ -35,17 +35,18 @@ def write_otext(output_path: Path, config: dict):
     logger = get_logger(__name__)
 
     with open(output_path, "w", encoding="utf-8") as f:
+        # All @-prefixed metadata must come before the blank line
+        # Section configuration must be included with other metadata
         f.write("@config\n")
         f.write(f"@name={config['tf_output']['dataset_name']}\n")
         f.write(f"@version={config['tf_output']['version']}\n")
         f.write(f"@language={config['tf_output']['language']}\n")
         f.write("@description=Textus Receptus with syntax transplanted from N1904\n")
         f.write("@source=TR via graft-and-patch from N1904\n")
-        f.write("\n")
-        # N1904-compatible configuration
         f.write("@fmt:text-orig-full={unicode} \n")
         f.write("@sectionTypes=book,chapter,verse\n")
         f.write("@sectionFeatures=book,chapter,verse\n")
+        f.write("\n")
 
     logger.info(f"Wrote otext.tf to {output_path}")
 

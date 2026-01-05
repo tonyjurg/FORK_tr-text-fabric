@@ -54,6 +54,7 @@ def build_tf_data(complete_df, containers_df, config: dict) -> tuple:
         ("morph", "morph"),
         ("sp", "sp"),
         ("function", "function"),
+        ("role", "role"),         # N1904-compatible syntactic role (s/o/io/v/adv)
         ("case", "case"),
         ("gender", "gn"),         # N1904 uses 'gender' not 'gn'
         ("number", "nu"),         # N1904 uses 'number' not 'nu'
@@ -98,14 +99,33 @@ def build_tf_data(complete_df, containers_df, config: dict) -> tuple:
             last_slot = slot_map.get(container["last_slot"], container["last_slot"])
             oslots[new_id] = set(range(first_slot, last_slot + 1))
 
-    # Add container features to match N1904 structure:
-    # - book: on book nodes only
-    # - chapter: on chapter nodes only
-    # - verse: on verse nodes only
+    # Book name mapping: abbreviated -> full name (matching N1904)
+    book_name_map = {
+        "MAT": "Matthew", "MAR": "Mark", "LUK": "Luke", "JHN": "John",
+        "ACT": "Acts", "ROM": "Romans", "1CO": "I_Corinthians", "2CO": "II_Corinthians",
+        "GAL": "Galatians", "EPH": "Ephesians", "PHP": "Philippians", "COL": "Colossians",
+        "1TH": "I_Thessalonians", "2TH": "II_Thessalonians", "1TI": "I_Timothy",
+        "2TI": "II_Timothy", "TIT": "Titus", "PHM": "Philemon", "HEB": "Hebrews",
+        "JAS": "James", "1PE": "I_Peter", "2PE": "II_Peter", "1JN": "I_John",
+        "2JN": "II_John", "3JN": "III_John", "JUD": "Jude", "REV": "Revelation",
+    }
+
+    # Add section features for BOTH word nodes AND container nodes
+    # This is required for TF's section navigation (T.nodeFromSection) to work
     node_features["book"] = {}
     node_features["chapter"] = {}
     node_features["verse"] = {}
 
+    # Add section features to word nodes
+    for _, row in complete_df.iterrows():
+        slot = slot_map[row["word_id"]]
+        book_abbrev = str(row["book"])
+        book_full = book_name_map.get(book_abbrev, book_abbrev)
+        node_features["book"][slot] = book_full
+        node_features["chapter"][slot] = int(row["chapter"])
+        node_features["verse"][slot] = int(row["verse"])
+
+    # Add section features to container nodes
     for _, container in containers_df.iterrows():
         new_id = container_node_map[container["node_id"]]
         otype = container["otype"]
@@ -115,7 +135,9 @@ def build_tf_data(complete_df, containers_df, config: dict) -> tuple:
         elif otype == "chapter":
             node_features["chapter"][new_id] = int(container["chapter"])
         elif otype == "book":
-            node_features["book"][new_id] = str(container["name"])
+            book_abbrev = str(container["name"])
+            book_full = book_name_map.get(book_abbrev, book_abbrev)
+            node_features["book"][new_id] = book_full
 
     logger.info(f"Built oslots for {len(oslots)} containers")
 
@@ -151,11 +173,11 @@ def write_tf_dataset(node_features, oslots, otext, max_slot, output_dir: Path, c
     }
 
     # Add feature metadata with valueType
-    # Section features (on container nodes)
+    # Section features (on all nodes for navigation)
     section_features = {
-        "book": ("str", "book name for book nodes"),
-        "chapter": ("int", "chapter number for chapter nodes"),
-        "verse": ("int", "verse number for verse nodes"),
+        "book": ("str", "book name (full)"),
+        "chapter": ("int", "chapter number"),
+        "verse": ("int", "verse number"),
     }
 
     for feat in node_features:
