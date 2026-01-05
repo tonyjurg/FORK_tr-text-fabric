@@ -152,16 +152,16 @@ def count_nodes(tf_dir: Path) -> dict:
 
 
 def sample_data(tf_dir: Path, n: int = 5) -> bool:
-    """Sample some data from word.tf."""
+    """Sample some data from unicode.tf (word text feature)."""
     logger = get_logger(__name__)
 
-    word_path = tf_dir / "word.tf"
-    if not word_path.exists():
-        logger.error("Cannot sample: word.tf not found")
+    unicode_path = tf_dir / "unicode.tf"
+    if not unicode_path.exists():
+        logger.error("Cannot sample: unicode.tf not found")
         return False
 
     logger.info(f"Sample of first {n} words:")
-    with open(word_path, "r", encoding="utf-8") as f:
+    with open(unicode_path, "r", encoding="utf-8") as f:
         count = 0
         for line in f:
             line = line.strip()

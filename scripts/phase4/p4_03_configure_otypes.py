@@ -42,8 +42,8 @@ def configure_otypes(complete_df, containers_df, config: dict) -> dict:
     logger = get_logger(__name__)
 
     # Otypes in order from largest to smallest
-    # Word is the slot type (terminal node)
-    otypes_order = ["book", "chapter", "verse", "word"]
+    # 'w' is the slot type (terminal node) - matching N1904 convention
+    otypes_order = ["book", "chapter", "verse", "w"]
 
     # Count nodes per type
     word_count = len(complete_df)
@@ -53,26 +53,27 @@ def configure_otypes(complete_df, containers_df, config: dict) -> dict:
 
     tf_config = {
         "otypes": otypes_order,
-        "slot_type": "word",
+        "slot_type": "w",  # N1904-compatible
         "counts": {
-            "word": word_count,
+            "w": word_count,
             "verse": verse_count,
             "chapter": chapter_count,
             "book": book_count,
         },
         "node_ranges": {
-            "word": (1, word_count),
+            "w": (1, word_count),
             "verse": (word_count + 1, word_count + verse_count),
             "chapter": (word_count + verse_count + 1, word_count + verse_count + chapter_count),
             "book": (word_count + verse_count + chapter_count + 1,
                     word_count + verse_count + chapter_count + book_count),
         },
         "features": {
-            "word": ["word", "lemma", "sp", "function", "case", "gn", "nu", "ps",
-                    "tense", "voice", "mood", "gloss", "source"],
-            "verse": ["book", "chapter", "verse"],
-            "chapter": ["book", "chapter"],
-            "book": ["name"],
+            # N1904-compatible feature names
+            "w": ["unicode", "lemma", "sp", "function", "case", "gender", "number", "person",
+                  "tense", "voice", "mood", "gloss", "source", "strong", "morph"],
+            "verse": ["verse"],
+            "chapter": ["chapter"],
+            "book": ["book"],
         },
         "metadata": {
             "name": config["tf_output"]["dataset_name"],

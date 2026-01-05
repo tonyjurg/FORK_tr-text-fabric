@@ -55,7 +55,7 @@ def write_otype(output_path: Path, complete_df, containers_df):
     Write otype.tf feature file.
 
     The otype feature assigns a node type to each node:
-    - Slots 1..max_word are type 'word'
+    - Slots 1..max_word are type 'w' (matching N1904)
     - Container nodes are 'verse', 'chapter', or 'book'
     """
     logger = get_logger(__name__)
@@ -84,9 +84,9 @@ def write_otype(output_path: Path, complete_df, containers_df):
         f.write("@valueType=str\n")
         f.write("\n")
 
-        # Write slot otypes (all words)
+        # Write slot otypes (all words) - using 'w' to match N1904
         for slot in range(1, max_slot + 1):
-            f.write(f"{slot}\tword\n")
+            f.write(f"{slot}\tw\n")
 
         # Write container otypes
         for otype in ["verse", "chapter", "book"]:

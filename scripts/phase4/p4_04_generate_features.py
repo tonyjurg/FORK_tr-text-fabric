@@ -181,7 +181,7 @@ def write_tf_dataset(node_features, oslots, otext, max_slot, output_dir: Path, c
     # Add otype feature
     otype_data = {}
     for slot in range(1, max_slot + 1):
-        otype_data[slot] = "word"
+        otype_data[slot] = "w"  # N1904-compatible
     for node, slots in oslots.items():
         # Determine otype based on slot count and position
         if node <= max_slot + len([n for n in oslots if len(oslots[n]) < 100]):
