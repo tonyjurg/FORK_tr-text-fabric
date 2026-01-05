@@ -1,0 +1,83 @@
+2026-01-04 20:04:01 | INFO     | root | Logging to: /home/michael/bible/tr/logs/pipeline_20260104_200401.log
+2026-01-04 20:04:01 | INFO     | __main__ | Running 2 scripts...
+2026-01-04 20:04:01 | INFO     | __main__ | 
+============================================================
+2026-01-04 20:04:01 | INFO     | __main__ | Running: [p1_04] Acquire TR Data
+2026-01-04 20:04:01 | INFO     | __main__ | Description: Download and prepare TR source text
+2026-01-04 20:04:01 | INFO     | __main__ | ============================================================
+2026-01-04 20:04:02 | INFO     | scripts.phase1.p1_04_acquire_tr | Downloading from: https://github.com/byztxt/byzantine-majority-text/archive/refs/heads/master.zip
+2026-01-04 20:04:03 | INFO     | scripts.phase1.p1_04_acquire_tr | Downloaded 4,491,272 bytes
+2026-01-04 20:04:03 | INFO     | scripts.phase1.p1_04_acquire_tr | Looking for pattern: csv-unicode/ccat
+2026-01-04 20:04:03 | INFO     | scripts.phase1.p1_04_acquire_tr | Found 58 CSV files
+2026-01-04 20:04:03 | INFO     | scripts.phase1.p1_04_acquire_tr |   Loaded byzantine-majority-text-master/csv-unicode/ccat/no-variants/1CO.csv: 437 rows
+2026-01-04 20:04:03 | INFO     | scripts.phase1.p1_04_acquire_tr |   Loaded byzantine-majority-text-master/csv-unicode/ccat/no-variants/1JO.csv: 105 rows
+2026-01-04 20:04:03 | INFO     | scripts.phase1.p1_04_acquire_tr |   Loaded byzantine-majority-text-master/csv-unicode/ccat/no-variants/1PE.csv: 105 rows
+2026-01-04 20:04:03 | INFO     | scripts.phase1.p1_04_acquire_tr |   Loaded byzantine-majority-text-master/csv-unicode/ccat/no-variants/1TH.csv: 89 rows
+2026-01-04 20:04:03 | INFO     | scripts.phase1.p1_04_acquire_tr |   Loaded byzantine-majority-text-master/csv-unicode/ccat/no-variants/1TI.csv: 113 rows
+2026-01-04 20:04:03 | INFO     | scripts.phase1.p1_04_acquire_tr |   Loaded byzantine-majority-text-master/csv-unicode/ccat/no-variants/2CO.csv: 257 rows
+2026-01-04 20:04:03 | INFO     | scripts.phase1.p1_04_acquire_tr |   Loaded byzantine-majority-text-master/csv-unicode/ccat/no-variants/2JO.csv: 13 rows
+2026-01-04 20:04:03 | INFO     | scripts.phase1.p1_04_acquire_tr |   Loaded byzantine-majority-text-master/csv-unicode/ccat/no-variants/2PE.csv: 61 rows
+2026-01-04 20:04:03 | INFO     | scripts.phase1.p1_04_acquire_tr |   Loaded byzantine-majority-text-master/csv-unicode/ccat/no-variants/2TH.csv: 47 rows
+2026-01-04 20:04:03 | INFO     | scripts.phase1.p1_04_acquire_tr |   Loaded byzantine-majority-text-master/csv-unicode/ccat/no-variants/2TI.csv: 83 rows
+2026-01-04 20:04:03 | INFO     | scripts.phase1.p1_04_acquire_tr |   Loaded byzantine-majority-text-master/csv-unicode/ccat/no-variants/3JO.csv: 14 rows
+2026-01-04 20:04:03 | INFO     | scripts.phase1.p1_04_acquire_tr |   Loaded byzantine-majority-text-master/csv-unicode/ccat/no-variants/ACT.csv: 1004 rows
+2026-01-04 20:04:03 | INFO     | scripts.phase1.p1_04_acquire_tr |   Loaded byzantine-majority-text-master/csv-unicode/ccat/no-variants/ACT24.csv: 3 rows
+2026-01-04 20:04:03 | INFO     | scripts.phase1.p1_04_acquire_tr |   Loaded byzantine-majority-text-master/csv-unicode/ccat/no-variants/COL.csv: 95 rows
+2026-01-04 20:04:03 | INFO     | scripts.phase1.p1_04_acquire_tr |   Loaded byzantine-majority-text-master/csv-unicode/ccat/no-variants/EPH.csv: 155 rows
+2026-01-04 20:04:03 | INFO     | scripts.phase1.p1_04_acquire_tr |   Loaded byzantine-majority-text-master/csv-unicode/ccat/no-variants/GAL.csv: 149 rows
+2026-01-04 20:04:03 | INFO     | scripts.phase1.p1_04_acquire_tr |   Loaded byzantine-majority-text-master/csv-unicode/ccat/no-variants/HEB.csv: 303 rows
+2026-01-04 20:04:03 | INFO     | scripts.phase1.p1_04_acquire_tr |   Loaded byzantine-majority-text-master/csv-unicode/ccat/no-variants/JAM.csv: 108 rows
+2026-01-04 20:04:03 | INFO     | scripts.phase1.p1_04_acquire_tr |   Loaded byzantine-majority-text-master/csv-unicode/ccat/no-variants/JOH.csv: 879 rows
+2026-01-04 20:04:03 | INFO     | scripts.phase1.p1_04_acquire_tr |   Loaded byzantine-majority-text-master/csv-unicode/ccat/no-variants/JUD.csv: 25 rows
+2026-01-04 20:04:03 | INFO     | scripts.phase1.p1_04_acquire_tr |   Loaded byzantine-majority-text-master/csv-unicode/ccat/no-variants/LUK.csv: 1150 rows
+2026-01-04 20:04:03 | INFO     | scripts.phase1.p1_04_acquire_tr |   Loaded byzantine-majority-text-master/csv-unicode/ccat/no-variants/MAR.csv: 678 rows
+2026-01-04 20:04:03 | INFO     | scripts.phase1.p1_04_acquire_tr |   Loaded byzantine-majority-text-master/csv-unicode/ccat/no-variants/MAT.csv: 1071 rows
+2026-01-04 20:04:03 | INFO     | scripts.phase1.p1_04_acquire_tr |   Loaded byzantine-majority-text-master/csv-unicode/ccat/no-variants/PA.csv: 12 rows
+2026-01-04 20:04:03 | INFO     | scripts.phase1.p1_04_acquire_tr |   Loaded byzantine-majority-text-master/csv-unicode/ccat/no-variants/PHM.csv: 25 rows
+2026-01-04 20:04:03 | INFO     | scripts.phase1.p1_04_acquire_tr |   Loaded byzantine-majority-text-master/csv-unicode/ccat/no-variants/PHP.csv: 104 rows
+2026-01-04 20:04:03 | INFO     | scripts.phase1.p1_04_acquire_tr |   Loaded byzantine-majority-text-master/csv-unicode/ccat/no-variants/REV.csv: 404 rows
+2026-01-04 20:04:03 | INFO     | scripts.phase1.p1_04_acquire_tr |   Loaded byzantine-majority-text-master/csv-unicode/ccat/no-variants/ROM.csv: 433 rows
+2026-01-04 20:04:03 | INFO     | scripts.phase1.p1_04_acquire_tr |   Loaded byzantine-majority-text-master/csv-unicode/ccat/no-variants/TIT.csv: 46 rows
+2026-01-04 20:04:03 | INFO     | scripts.phase1.p1_04_acquire_tr |   Loaded byzantine-majority-text-master/csv-unicode/ccat/with-variants/1CO.csv: 437 rows
+2026-01-04 20:04:03 | INFO     | scripts.phase1.p1_04_acquire_tr |   Loaded byzantine-majority-text-master/csv-unicode/ccat/with-variants/1JO.csv: 105 rows
+2026-01-04 20:04:03 | INFO     | scripts.phase1.p1_04_acquire_tr |   Loaded byzantine-majority-text-master/csv-unicode/ccat/with-variants/1PE.csv: 105 rows
+2026-01-04 20:04:03 | INFO     | scripts.phase1.p1_04_acquire_tr |   Loaded byzantine-majority-text-master/csv-unicode/ccat/with-variants/1TH.csv: 89 rows
+2026-01-04 20:04:03 | INFO     | scripts.phase1.p1_04_acquire_tr |   Loaded byzantine-majority-text-master/csv-unicode/ccat/with-variants/1TI.csv: 113 rows
+2026-01-04 20:04:03 | INFO     | scripts.phase1.p1_04_acquire_tr |   Loaded byzantine-majority-text-master/csv-unicode/ccat/with-variants/2CO.csv: 257 rows
+2026-01-04 20:04:03 | INFO     | scripts.phase1.p1_04_acquire_tr |   Loaded byzantine-majority-text-master/csv-unicode/ccat/with-variants/2JO.csv: 13 rows
+2026-01-04 20:04:03 | INFO     | scripts.phase1.p1_04_acquire_tr |   Loaded byzantine-majority-text-master/csv-unicode/ccat/with-variants/2PE.csv: 61 rows
+2026-01-04 20:04:03 | INFO     | scripts.phase1.p1_04_acquire_tr |   Loaded byzantine-majority-text-master/csv-unicode/ccat/with-variants/2TH.csv: 47 rows
+2026-01-04 20:04:03 | INFO     | scripts.phase1.p1_04_acquire_tr |   Loaded byzantine-majority-text-master/csv-unicode/ccat/with-variants/2TI.csv: 83 rows
+2026-01-04 20:04:03 | INFO     | scripts.phase1.p1_04_acquire_tr |   Loaded byzantine-majority-text-master/csv-unicode/ccat/with-variants/3JO.csv: 14 rows
+2026-01-04 20:04:03 | INFO     | scripts.phase1.p1_04_acquire_tr |   Loaded byzantine-majority-text-master/csv-unicode/ccat/with-variants/ACT.csv: 1004 rows
+2026-01-04 20:04:03 | INFO     | scripts.phase1.p1_04_acquire_tr |   Loaded byzantine-majority-text-master/csv-unicode/ccat/with-variants/ACT24.csv: 3 rows
+2026-01-04 20:04:03 | INFO     | scripts.phase1.p1_04_acquire_tr |   Loaded byzantine-majority-text-master/csv-unicode/ccat/with-variants/COL.csv: 95 rows
+2026-01-04 20:04:03 | INFO     | scripts.phase1.p1_04_acquire_tr |   Loaded byzantine-majority-text-master/csv-unicode/ccat/with-variants/EPH.csv: 155 rows
+2026-01-04 20:04:03 | INFO     | scripts.phase1.p1_04_acquire_tr |   Loaded byzantine-majority-text-master/csv-unicode/ccat/with-variants/GAL.csv: 149 rows
+2026-01-04 20:04:03 | INFO     | scripts.phase1.p1_04_acquire_tr |   Loaded byzantine-majority-text-master/csv-unicode/ccat/with-variants/HEB.csv: 303 rows
+2026-01-04 20:04:03 | INFO     | scripts.phase1.p1_04_acquire_tr |   Loaded byzantine-majority-text-master/csv-unicode/ccat/with-variants/JAM.csv: 108 rows
+2026-01-04 20:04:03 | INFO     | scripts.phase1.p1_04_acquire_tr |   Loaded byzantine-majority-text-master/csv-unicode/ccat/with-variants/JOH.csv: 879 rows
+2026-01-04 20:04:03 | INFO     | scripts.phase1.p1_04_acquire_tr |   Loaded byzantine-majority-text-master/csv-unicode/ccat/with-variants/JUD.csv: 25 rows
+2026-01-04 20:04:03 | INFO     | scripts.phase1.p1_04_acquire_tr |   Loaded byzantine-majority-text-master/csv-unicode/ccat/with-variants/LUK.csv: 1150 rows
+2026-01-04 20:04:03 | INFO     | scripts.phase1.p1_04_acquire_tr |   Loaded byzantine-majority-text-master/csv-unicode/ccat/with-variants/MAR.csv: 678 rows
+2026-01-04 20:04:03 | INFO     | scripts.phase1.p1_04_acquire_tr |   Loaded byzantine-majority-text-master/csv-unicode/ccat/with-variants/MAT.csv: 1071 rows
+2026-01-04 20:04:03 | INFO     | scripts.phase1.p1_04_acquire_tr |   Loaded byzantine-majority-text-master/csv-unicode/ccat/with-variants/PA.csv: 12 rows
+2026-01-04 20:04:03 | INFO     | scripts.phase1.p1_04_acquire_tr |   Loaded byzantine-majority-text-master/csv-unicode/ccat/with-variants/PHM.csv: 25 rows
+2026-01-04 20:04:03 | INFO     | scripts.phase1.p1_04_acquire_tr |   Loaded byzantine-majority-text-master/csv-unicode/ccat/with-variants/PHP.csv: 104 rows
+2026-01-04 20:04:03 | INFO     | scripts.phase1.p1_04_acquire_tr |   Loaded byzantine-majority-text-master/csv-unicode/ccat/with-variants/REV.csv: 404 rows
+2026-01-04 20:04:03 | INFO     | scripts.phase1.p1_04_acquire_tr |   Loaded byzantine-majority-text-master/csv-unicode/ccat/with-variants/ROM.csv: 433 rows
+2026-01-04 20:04:03 | INFO     | scripts.phase1.p1_04_acquire_tr |   Loaded byzantine-majority-text-master/csv-unicode/ccat/with-variants/TIT.csv: 46 rows
+2026-01-04 20:04:03 | INFO     | scripts.phase1.p1_04_acquire_tr | Combined: 15,936 total rows
+2026-01-04 20:04:03 | INFO     | scripts.phase1.p1_04_acquire_tr | Saved to: /home/michael/bible/tr/data/source/tr_raw.csv
+2026-01-04 20:04:03 | INFO     | __main__ | 
+============================================================
+2026-01-04 20:04:03 | INFO     | __main__ | Running: [p1_05] Build TR DataFrame
+2026-01-04 20:04:03 | INFO     | __main__ | Description: Create standardized TR word DataFrame
+2026-01-04 20:04:03 | INFO     | __main__ | ============================================================
+2026-01-04 20:04:03 | INFO     | scripts.phase1.p1_05_build_tr_dataframe | Loading: /home/michael/bible/tr/data/source/tr_raw.csv
+2026-01-04 20:04:03 | INFO     | scripts.phase1.p1_05_build_tr_dataframe | Columns found: ['chapter', 'verse', 'text', 'book']
+2026-01-04 20:04:03 | INFO     | scripts.phase1.p1_05_build_tr_dataframe | Loaded 15,936 rows
+2026-01-04 20:04:03 | INFO     | scripts.phase1.p1_05_build_tr_dataframe | Total words: 15,936
+2026-01-04 20:04:03 | INFO     | scripts.phase1.p1_05_build_tr_dataframe | Books: 29
+2026-01-04 20:04:03 | INFO     | scripts.phase1.p1_05_build_tr_dataframe | Columns: ['word_id', 'book', 'chapter', 'verse', 'word_rank', 'word']
+2026-01-04 20:04:03 | INFO     | scripts.phase1.p1_05_build_tr_dataframe | Saved to: /home/michael/bible/tr/data/intermediate/tr_words.parquet

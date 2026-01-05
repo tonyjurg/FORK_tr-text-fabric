@@ -1,0 +1,34 @@
+2026-01-04 20:09:37 | INFO     | root | Logging to: /home/michael/bible/tr/logs/pipeline_20260104_200937.log
+2026-01-04 20:09:37 | INFO     | __main__ | Running 6 scripts...
+2026-01-04 20:09:37 | INFO     | __main__ | 
+============================================================
+2026-01-04 20:09:37 | INFO     | __main__ | Running: [p2_01] Extract N1904
+2026-01-04 20:09:37 | INFO     | __main__ | Description: Extract N1904 words with syntax features
+2026-01-04 20:09:37 | INFO     | __main__ | ============================================================
+2026-01-04 20:09:38 | INFO     | scripts.phase2.p2_01_extract_n1904 | Loading N1904...
+2026-01-04 20:09:38 | INFO     | scripts.utils.tf_helpers | Loading N1904 from TF repository: CenterBLC/N1904
+2026-01-04 20:09:45 | INFO     | scripts.phase2.p2_01_extract_n1904 | Extracting features: ['word', 'lemma', 'sp', 'gn', 'nu', 'ps', 'case', 'tense', 'voice', 'mood', 'gloss', 'function', 'role', 'type']
+2026-01-04 20:09:45 | INFO     | scripts.phase2.p2_01_extract_n1904 | Processing 137,779 words...
+2026-01-04 20:09:49 | INFO     | scripts.phase2.p2_01_extract_n1904 | Extracted 137,779 words
+2026-01-04 20:09:49 | INFO     | scripts.phase2.p2_01_extract_n1904 | Columns: ['node_id', 'book', 'chapter', 'verse', 'word_rank', 'lemma', 'sp', 'case', 'tense', 'voice', 'mood', 'gloss', 'function', 'role', 'parent', 'clause_id', 'phrase_id']
+2026-01-04 20:09:49 | INFO     | scripts.phase2.p2_01_extract_n1904 | Saved to: /home/michael/bible/tr/data/intermediate/n1904_words.parquet
+2026-01-04 20:09:49 | INFO     | __main__ | 
+============================================================
+2026-01-04 20:09:49 | INFO     | __main__ | Running: [p2_02] Align Verses
+2026-01-04 20:09:49 | INFO     | __main__ | Description: Create verse alignment framework
+2026-01-04 20:09:49 | INFO     | __main__ | ============================================================
+2026-01-04 20:09:49 | INFO     | scripts.phase2.p2_02_align_verses | Alignment module verified
+2026-01-04 20:09:49 | INFO     | scripts.phase2.p2_02_align_verses | Functions available:
+2026-01-04 20:09:49 | INFO     | scripts.phase2.p2_02_align_verses |   - create_word_key(row, match_criteria)
+2026-01-04 20:09:49 | INFO     | scripts.phase2.p2_02_align_verses |   - align_verse_words(tr_words, n1904_words, match_criteria)
+2026-01-04 20:09:49 | INFO     | __main__ | 
+============================================================
+2026-01-04 20:09:49 | INFO     | __main__ | Running: [p2_03] PoC Single Book
+2026-01-04 20:09:49 | INFO     | __main__ | Description: Proof of concept on 3 John
+2026-01-04 20:09:49 | INFO     | __main__ | ============================================================
+2026-01-04 20:09:49 | INFO     | scripts.phase2.p2_03_poc_single_book | Loading data...
+2026-01-04 20:09:49 | INFO     | scripts.phase2.p2_03_poc_single_book | Running PoC alignment on: 3John
+2026-01-04 20:09:49 | WARNING  | scripts.phase2.p2_03_poc_single_book | No N1904 data found for book: 3John
+2026-01-04 20:09:49 | INFO     | scripts.phase2.p2_03_poc_single_book | Available books in N1904: ['Acts', 'Colossians', 'Ephesians', 'Galatians', 'Hebrews', 'III_John', 'II_Corinthians', 'II_John', 'II_Peter', 'II_Thessalonians', 'II_Timothy', 'I_Corinthians', 'I_John', 'I_Peter', 'I_Thessalonians', 'I_Timothy', 'James', 'John', 'Jude', 'Luke', 'Mark', 'Matthew', 'Philemon', 'Philippians', 'Revelation', 'Romans', 'Titus']
+2026-01-04 20:09:49 | ERROR    | scripts.phase2.p2_03_poc_single_book | PoC alignment failed - book not found
+2026-01-04 20:09:49 | ERROR    | __main__ | Stopping due to failure (--fail-fast)

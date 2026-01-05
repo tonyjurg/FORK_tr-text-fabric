@@ -1,0 +1,69 @@
+{
+  "clause_types": {},
+  "nesting_patterns": [],
+  "parent_child_examples": [
+    {
+      "clause_id": 138067,
+      "parent_count": 5,
+      "child_count": 1
+    },
+    {
+      "clause_id": 138068,
+      "parent_count": 5,
+      "child_count": 1
+    },
+    {
+      "clause_id": 138069,
+      "parent_count": 5,
+      "child_count": 1
+    },
+    {
+      "clause_id": 138070,
+      "parent_count": 6,
+      "child_count": 1
+    },
+    {
+      "clause_id": 138071,
+      "parent_count": 5,
+      "child_count": 1
+    },
+    {
+      "clause_id": 138072,
+      "parent_count": 5,
+      "child_count": 1
+    },
+    {
+      "clause_id": 138073,
+      "parent_count": 5,
+      "child_count": 1
+    },
+    {
+      "clause_id": 138074,
+      "parent_count": 5,
+      "child_count": 1
+    },
+    {
+      "clause_id": 138075,
+      "parent_count": 5,
+      "child_count": 1
+    },
+    {
+      "clause_id": 138076,
+      "parent_count": 6,
+      "child_count": 1
+    }
+  ],
+  "max_nesting_depth": 0,
+  "features_on_clauses": [
+    "book",
+    "bookshort",
+    "chapter",
+    "cls",
+    "function",
+    "junction",
+    "num",
+    "otype",
+    "rule",
+    "verse"
+  ]
+}

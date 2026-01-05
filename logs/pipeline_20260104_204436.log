@@ -1,0 +1,45 @@
+2026-01-04 20:44:36 | INFO     | root | Logging to: /home/michael/bible/tr/logs/pipeline_20260104_204436.log
+2026-01-04 20:44:36 | INFO     | __main__ | Running 7 scripts...
+2026-01-04 20:44:36 | INFO     | __main__ | [DRY RUN MODE]
+2026-01-04 20:44:36 | INFO     | __main__ | 
+============================================================
+2026-01-04 20:44:36 | INFO     | __main__ | Running: [p4_01] Merge Data
+2026-01-04 20:44:36 | INFO     | __main__ | Description: Combine transplanted and patched data
+2026-01-04 20:44:36 | INFO     | __main__ | ============================================================
+2026-01-04 20:44:36 | INFO     | __main__ | [DRY RUN] Would run: scripts.phase4.p4_01_merge_data
+2026-01-04 20:44:36 | INFO     | __main__ | 
+============================================================
+2026-01-04 20:44:36 | INFO     | __main__ | Running: [p4_02] Generate Containers
+2026-01-04 20:44:36 | INFO     | __main__ | Description: Create clause/phrase/sentence nodes
+2026-01-04 20:44:36 | INFO     | __main__ | ============================================================
+2026-01-04 20:44:36 | INFO     | __main__ | [DRY RUN] Would run: scripts.phase4.p4_02_generate_containers
+2026-01-04 20:44:36 | INFO     | __main__ | 
+============================================================
+2026-01-04 20:44:36 | INFO     | __main__ | Running: [p4_03] Configure OTypes
+2026-01-04 20:44:36 | INFO     | __main__ | Description: Set up node type hierarchy
+2026-01-04 20:44:36 | INFO     | __main__ | ============================================================
+2026-01-04 20:44:36 | INFO     | __main__ | [DRY RUN] Would run: scripts.phase4.p4_03_configure_otypes
+2026-01-04 20:44:36 | INFO     | __main__ | 
+============================================================
+2026-01-04 20:44:36 | INFO     | __main__ | Running: [p4_04] Generate Features
+2026-01-04 20:44:36 | INFO     | __main__ | Description: Write node feature .tf files
+2026-01-04 20:44:36 | INFO     | __main__ | ============================================================
+2026-01-04 20:44:36 | INFO     | __main__ | [DRY RUN] Would run: scripts.phase4.p4_04_generate_features
+2026-01-04 20:44:36 | INFO     | __main__ | 
+============================================================
+2026-01-04 20:44:36 | INFO     | __main__ | Running: [p4_05] Generate Edges
+2026-01-04 20:44:36 | INFO     | __main__ | Description: Write edge feature .tf files
+2026-01-04 20:44:36 | INFO     | __main__ | ============================================================
+2026-01-04 20:44:36 | INFO     | __main__ | [DRY RUN] Would run: scripts.phase4.p4_05_generate_edges
+2026-01-04 20:44:36 | INFO     | __main__ | 
+============================================================
+2026-01-04 20:44:36 | INFO     | __main__ | Running: [p4_06] Generate Metadata
+2026-01-04 20:44:36 | INFO     | __main__ | Description: Write TF metadata files
+2026-01-04 20:44:36 | INFO     | __main__ | ============================================================
+2026-01-04 20:44:36 | INFO     | __main__ | [DRY RUN] Would run: scripts.phase4.p4_06_generate_metadata
+2026-01-04 20:44:36 | INFO     | __main__ | 
+============================================================
+2026-01-04 20:44:36 | INFO     | __main__ | Running: [p4_07] Verify Build
+2026-01-04 20:44:36 | INFO     | __main__ | Description: Test that TF dataset loads correctly
+2026-01-04 20:44:36 | INFO     | __main__ | ============================================================
+2026-01-04 20:44:36 | INFO     | __main__ | [DRY RUN] Would run: scripts.phase4.p4_07_verify_build

@@ -1,0 +1,96 @@
+{
+  "language": "grc",
+  "processors": [
+    "tokenize",
+    "pos",
+    "lemma",
+    "depparse"
+  ],
+  "sample_parse": [
+    {
+      "id": 1,
+      "text": "καὶ",
+      "lemma": "καί",
+      "upos": "ADV",
+      "xpos": "d--------",
+      "feats": null,
+      "head": 3,
+      "deprel": "advmod"
+    },
+    {
+      "id": 2,
+      "text": "ὁ",
+      "lemma": "ὁ",
+      "upos": "DET",
+      "xpos": "l-s---mn-",
+      "feats": "Case=Nom|Gender=Masc|Number=Sing",
+      "head": 3,
+      "deprel": "det"
+    },
+    {
+      "id": 3,
+      "text": "λόγος",
+      "lemma": "λόγος",
+      "upos": "NOUN",
+      "xpos": "n-s---mn-",
+      "feats": "Case=Nom|Gender=Masc|Number=Sing",
+      "head": 7,
+      "deprel": "nsubj"
+    },
+    {
+      "id": 4,
+      "text": "ἦν",
+      "lemma": "εἰμί",
+      "upos": "AUX",
+      "xpos": "v3siia---",
+      "feats": "Aspect=Imp|Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin|Voice=Act",
+      "head": 7,
+      "deprel": "cop"
+    },
+    {
+      "id": 5,
+      "text": "πρὸς",
+      "lemma": "πρός",
+      "upos": "ADP",
+      "xpos": "r--------",
+      "feats": null,
+      "head": 7,
+      "deprel": "case"
+    },
+    {
+      "id": 6,
+      "text": "τὸν",
+      "lemma": "ὁ",
+      "upos": "DET",
+      "xpos": "l-s---ma-",
+      "feats": "Case=Acc|Gender=Masc|Number=Sing",
+      "head": 7,
+      "deprel": "det"
+    },
+    {
+      "id": 7,
+      "text": "θεόν",
+      "lemma": "θεός",
+      "upos": "NOUN",
+      "xpos": "n-s---ma-",
+      "feats": "Case=Acc|Gender=Masc|Number=Sing",
+      "head": 0,
+      "deprel": "root"
+    }
+  ],
+  "pos_tags": [
+    "ADP",
+    "ADV",
+    "AUX",
+    "DET",
+    "NOUN"
+  ],
+  "deprels": [
+    "advmod",
+    "case",
+    "cop",
+    "det",
+    "nsubj",
+    "root"
+  ]
+}

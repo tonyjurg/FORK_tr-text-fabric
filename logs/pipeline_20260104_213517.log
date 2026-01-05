@@ -1,0 +1,145 @@
+2026-01-04 21:35:17 | INFO     | root | Logging to: /home/michael/bible/tr/logs/pipeline_20260104_213517.log
+2026-01-04 21:35:17 | INFO     | __main__ | Running 6 scripts...
+2026-01-04 21:35:17 | INFO     | __main__ | 
+============================================================
+2026-01-04 21:35:17 | INFO     | __main__ | Running: [p3_01] Analyze Gaps
+2026-01-04 21:35:17 | INFO     | __main__ | Description: Categorize and group gap spans
+2026-01-04 21:35:17 | INFO     | __main__ | ============================================================
+2026-01-04 21:35:17 | INFO     | scripts.phase3.p3_01_analyze_gaps | Loading data...
+2026-01-04 21:35:17 | INFO     | scripts.phase3.p3_01_analyze_gaps | Gap words: 15,765
+2026-01-04 21:35:17 | INFO     | scripts.phase3.p3_01_analyze_gaps | Grouping gaps into contiguous spans...
+2026-01-04 21:35:18 | INFO     | scripts.phase3.p3_01_analyze_gaps | Created 12,116 spans
+2026-01-04 21:35:18 | INFO     | scripts.phase3.p3_01_analyze_gaps |   single_word: 10,008
+2026-01-04 21:35:18 | INFO     | scripts.phase3.p3_01_analyze_gaps |   short_phrase: 1,991
+2026-01-04 21:35:18 | INFO     | scripts.phase3.p3_01_analyze_gaps |   long_phrase: 100
+2026-01-04 21:35:18 | INFO     | scripts.phase3.p3_01_analyze_gaps |   full_verse: 17
+2026-01-04 21:35:18 | INFO     | scripts.phase3.p3_01_analyze_gaps | Saved spans to: /home/michael/bible/tr/data/intermediate/gap_spans.parquet
+2026-01-04 21:35:18 | INFO     | scripts.phase3.p3_01_analyze_gaps | Report written to: /home/michael/bible/tr/reports/gap_analysis_report.md
+2026-01-04 21:35:18 | INFO     | __main__ | 
+============================================================
+2026-01-04 21:35:18 | INFO     | __main__ | Running: [p3_02] Setup Stanza
+2026-01-04 21:35:18 | INFO     | __main__ | Description: Configure Stanza NLP for Ancient Greek
+2026-01-04 21:35:18 | INFO     | __main__ | ============================================================
+2026-01-04 21:35:20 | INFO     | scripts.phase3.p3_02_setup_stanza | Downloading Stanza Ancient Greek model...
+2026-01-04 21:35:21 | INFO     | stanza | Downloaded file to /home/michael/stanza_resources/resources.json
+2026-01-04 21:35:21 | INFO     | stanza | Downloading default packages for language: grc (Ancient_Greek) ...
+2026-01-04 21:35:22 | INFO     | stanza | File exists: /home/michael/stanza_resources/grc/default.zip
+2026-01-04 21:35:23 | INFO     | stanza | Finished downloading models and saved to /home/michael/stanza_resources
+2026-01-04 21:35:23 | INFO     | scripts.phase3.p3_02_setup_stanza | Model downloaded successfully
+2026-01-04 21:35:23 | INFO     | scripts.phase3.p3_02_setup_stanza | Testing Stanza pipeline...
+2026-01-04 21:35:26 | INFO     | scripts.phase3.p3_02_setup_stanza | Test input: ἐν ἀρχῇ ἦν ὁ λόγος
+2026-01-04 21:35:26 | INFO     | scripts.phase3.p3_02_setup_stanza | Parse results:
+2026-01-04 21:35:26 | INFO     | scripts.phase3.p3_02_setup_stanza | ------------------------------------------------------------
+2026-01-04 21:35:26 | INFO     | scripts.phase3.p3_02_setup_stanza | Word            Lemma           POS      DepRel       Head
+2026-01-04 21:35:26 | INFO     | scripts.phase3.p3_02_setup_stanza | ------------------------------------------------------------
+2026-01-04 21:35:26 | INFO     | scripts.phase3.p3_02_setup_stanza | ἐν              ἐν              ADP      case         ἀρχῇ
+2026-01-04 21:35:26 | INFO     | scripts.phase3.p3_02_setup_stanza | ἀρχῇ            ἀρχή            NOUN     root         ROOT
+2026-01-04 21:35:26 | INFO     | scripts.phase3.p3_02_setup_stanza | ἦν              εἰμί            AUX      cop          ἀρχῇ
+2026-01-04 21:35:26 | INFO     | scripts.phase3.p3_02_setup_stanza | ὁ               ὁ               DET      det          λόγος
+2026-01-04 21:35:26 | INFO     | scripts.phase3.p3_02_setup_stanza | λόγος           λόγος           NOUN     nsubj        ἀρχῇ
+2026-01-04 21:35:26 | INFO     | scripts.phase3.p3_02_setup_stanza | ------------------------------------------------------------
+2026-01-04 21:35:26 | INFO     | scripts.phase3.p3_02_setup_stanza | Stanza pipeline test PASSED
+2026-01-04 21:35:26 | INFO     | scripts.phase3.p3_02_setup_stanza | 
+Stanza UD dependency relations used in Ancient Greek:
+2026-01-04 21:35:26 | INFO     | scripts.phase3.p3_02_setup_stanza |   - case
+2026-01-04 21:35:26 | INFO     | scripts.phase3.p3_02_setup_stanza |   - cop
+2026-01-04 21:35:26 | INFO     | scripts.phase3.p3_02_setup_stanza |   - det
+2026-01-04 21:35:26 | INFO     | scripts.phase3.p3_02_setup_stanza |   - nsubj
+2026-01-04 21:35:26 | INFO     | scripts.phase3.p3_02_setup_stanza |   - root
+2026-01-04 21:35:27 | INFO     | scripts.phase3.p3_02_setup_stanza | Stanza info documented: /home/michael/bible/tr/data/intermediate/stanza_info.json
+2026-01-04 21:35:27 | INFO     | scripts.phase3.p3_02_setup_stanza | 
+Stanza setup complete!
+2026-01-04 21:35:27 | INFO     | scripts.phase3.p3_02_setup_stanza | Ready for Phase 3 gap parsing
+2026-01-04 21:35:27 | INFO     | __main__ | 
+============================================================
+2026-01-04 21:35:27 | INFO     | __main__ | Running: [p3_03] Build Label Map
+2026-01-04 21:35:27 | INFO     | __main__ | Description: Create UD to N1904 label mapping
+2026-01-04 21:35:27 | INFO     | __main__ | ============================================================
+2026-01-04 21:35:27 | INFO     | scripts.phase3.p3_03_build_label_map | Deprel mappings: 45
+2026-01-04 21:35:27 | INFO     | scripts.phase3.p3_03_build_label_map | POS mappings: 17
+2026-01-04 21:35:27 | INFO     | scripts.phase3.p3_03_build_label_map | Label mapping validation passed
+2026-01-04 21:35:27 | INFO     | scripts.phase3.p3_03_build_label_map | Saved label map to: /home/michael/bible/tr/data/intermediate/label_map.json
+2026-01-04 21:35:27 | INFO     | scripts.phase3.p3_03_build_label_map | 
+Label Mapping Summary:
+2026-01-04 21:35:27 | INFO     | scripts.phase3.p3_03_build_label_map | ----------------------------------------
+2026-01-04 21:35:27 | INFO     | scripts.phase3.p3_03_build_label_map | Sample deprel mappings:
+2026-01-04 21:35:27 | INFO     | scripts.phase3.p3_03_build_label_map |   nsubj           -> Subject
+2026-01-04 21:35:27 | INFO     | scripts.phase3.p3_03_build_label_map |   nsubj:pass      -> Subject
+2026-01-04 21:35:27 | INFO     | scripts.phase3.p3_03_build_label_map |   nsubj:outer     -> Subject
+2026-01-04 21:35:27 | INFO     | scripts.phase3.p3_03_build_label_map |   obj             -> Object
+2026-01-04 21:35:27 | INFO     | scripts.phase3.p3_03_build_label_map |   iobj            -> IndirectObject
+2026-01-04 21:35:27 | INFO     | scripts.phase3.p3_03_build_label_map |   csubj           -> Subject
+2026-01-04 21:35:27 | INFO     | scripts.phase3.p3_03_build_label_map |   csubj:pass      -> Subject
+2026-01-04 21:35:27 | INFO     | scripts.phase3.p3_03_build_label_map |   ccomp           -> Complement
+2026-01-04 21:35:27 | INFO     | scripts.phase3.p3_03_build_label_map |   xcomp           -> Complement
+2026-01-04 21:35:27 | INFO     | scripts.phase3.p3_03_build_label_map |   obl             -> Adjunct
+2026-01-04 21:35:27 | INFO     | scripts.phase3.p3_03_build_label_map | ...
+2026-01-04 21:35:27 | INFO     | __main__ | 
+============================================================
+2026-01-04 21:35:27 | INFO     | __main__ | Running: [p3_04] Parse Gaps
+2026-01-04 21:35:27 | INFO     | __main__ | Description: Run Stanza on all gap spans
+2026-01-04 21:35:27 | INFO     | __main__ | ============================================================
+2026-01-04 21:35:27 | INFO     | scripts.phase3.p3_04_parse_gaps | Loading gap spans...
+2026-01-04 21:35:27 | INFO     | scripts.phase3.p3_04_parse_gaps | Loaded 12116 spans
+2026-01-04 21:35:27 | INFO     | scripts.phase3.p3_04_parse_gaps | Initializing Stanza pipeline...
+2026-01-04 21:35:29 | INFO     | scripts.phase3.p3_04_parse_gaps | Parsing 12116 spans...
+2026-01-04 21:42:37 | INFO     | scripts.phase3.p3_04_parse_gaps | Parsed 15912 words from 12116 spans
+2026-01-04 21:42:37 | INFO     | scripts.phase3.p3_04_parse_gaps | Saved parses to: /home/michael/bible/tr/data/intermediate/gap_parses.parquet
+2026-01-04 21:42:37 | INFO     | scripts.phase3.p3_04_parse_gaps | 
+Parsing Summary:
+2026-01-04 21:42:37 | INFO     | scripts.phase3.p3_04_parse_gaps | ----------------------------------------
+2026-01-04 21:42:37 | INFO     | scripts.phase3.p3_04_parse_gaps | Total spans: 12116
+2026-01-04 21:42:37 | INFO     | scripts.phase3.p3_04_parse_gaps | Total parsed words: 15912
+2026-01-04 21:42:37 | INFO     | scripts.phase3.p3_04_parse_gaps | 
+Dependency relation distribution:
+2026-01-04 21:42:37 | INFO     | scripts.phase3.p3_04_parse_gaps |   root: 12176
+2026-01-04 21:42:37 | INFO     | scripts.phase3.p3_04_parse_gaps |   det: 639
+2026-01-04 21:42:37 | INFO     | scripts.phase3.p3_04_parse_gaps |   nmod: 584
+2026-01-04 21:42:37 | INFO     | scripts.phase3.p3_04_parse_gaps |   advmod: 566
+2026-01-04 21:42:37 | INFO     | scripts.phase3.p3_04_parse_gaps |   obj: 479
+2026-01-04 21:42:37 | INFO     | scripts.phase3.p3_04_parse_gaps |   case: 333
+2026-01-04 21:42:37 | INFO     | scripts.phase3.p3_04_parse_gaps |   nsubj: 231
+2026-01-04 21:42:37 | INFO     | scripts.phase3.p3_04_parse_gaps |   punct: 216
+2026-01-04 21:42:37 | INFO     | scripts.phase3.p3_04_parse_gaps |   cc: 157
+2026-01-04 21:42:37 | INFO     | scripts.phase3.p3_04_parse_gaps |   obl: 137
+2026-01-04 21:42:37 | INFO     | __main__ | 
+============================================================
+2026-01-04 21:42:37 | INFO     | __main__ | Running: [p3_05] Convert Parses
+2026-01-04 21:42:37 | INFO     | __main__ | Description: Convert Stanza output to N1904 format
+2026-01-04 21:42:37 | INFO     | __main__ | ============================================================
+2026-01-04 21:42:37 | INFO     | scripts.phase3.p3_05_convert_parses | Loading data...
+2026-01-04 21:42:37 | INFO     | scripts.phase3.p3_05_convert_parses | Parses: 15912
+2026-01-04 21:42:37 | INFO     | scripts.phase3.p3_05_convert_parses | Spans: 12116
+2026-01-04 21:42:37 | INFO     | scripts.phase3.p3_05_convert_parses | Gap words: 15765
+2026-01-04 21:42:37 | INFO     | scripts.phase3.p3_05_convert_parses | Aligning parses to gap words...
+2026-01-04 21:42:46 | INFO     | scripts.phase3.p3_05_convert_parses | Generated syntax for 15765 words
+2026-01-04 21:42:46 | INFO     | scripts.phase3.p3_05_convert_parses | Saved to: /home/michael/bible/tr/data/intermediate/gap_syntax.parquet
+2026-01-04 21:42:46 | INFO     | scripts.phase3.p3_05_convert_parses | 
+Conversion Summary:
+2026-01-04 21:42:46 | INFO     | scripts.phase3.p3_05_convert_parses | ----------------------------------------
+2026-01-04 21:42:46 | INFO     | scripts.phase3.p3_05_convert_parses | Words with syntax: 15765
+2026-01-04 21:42:46 | INFO     | scripts.phase3.p3_05_convert_parses | 
+Function distribution:
+2026-01-04 21:42:46 | INFO     | scripts.phase3.p3_05_convert_parses |   Predicate: 12142
+2026-01-04 21:42:46 | INFO     | scripts.phase3.p3_05_convert_parses |   Determiner: 639
+2026-01-04 21:42:46 | INFO     | scripts.phase3.p3_05_convert_parses |   Modifier: 585
+2026-01-04 21:42:46 | INFO     | scripts.phase3.p3_05_convert_parses |   Adverb: 566
+2026-01-04 21:42:46 | INFO     | scripts.phase3.p3_05_convert_parses |   Object: 478
+2026-01-04 21:42:46 | INFO     | scripts.phase3.p3_05_convert_parses |   CaseMarker: 333
+2026-01-04 21:42:46 | INFO     | scripts.phase3.p3_05_convert_parses |   Adjunct: 238
+2026-01-04 21:42:46 | INFO     | scripts.phase3.p3_05_convert_parses |   Subject: 235
+2026-01-04 21:42:46 | INFO     | scripts.phase3.p3_05_convert_parses |   Conjunction: 157
+2026-01-04 21:42:46 | INFO     | scripts.phase3.p3_05_convert_parses |   Punctuation: 108
+2026-01-04 21:42:46 | INFO     | __main__ | 
+============================================================
+2026-01-04 21:42:46 | INFO     | __main__ | Running: [p3_06] Review Variants
+2026-01-04 21:42:46 | INFO     | __main__ | Description: LLM review of high-profile variants
+2026-01-04 21:42:46 | INFO     | __main__ | ============================================================
+2026-01-04 21:42:46 | INFO     | scripts.phase3.p3_06_review_variants | Loading data...
+2026-01-04 21:42:46 | INFO     | scripts.phase3.p3_06_review_variants | Priority variants: 7
+2026-01-04 21:42:46 | INFO     | scripts.phase3.p3_06_review_variants | Found 17 variant spans
+2026-01-04 21:42:46 | INFO     | scripts.phase3.p3_06_review_variants | Generated review: /home/michael/bible/tr/reviews/longer_ending_of_mark.md
+2026-01-04 21:42:46 | INFO     | scripts.phase3.p3_06_review_variants | Generated review: /home/michael/bible/tr/reviews/book_tree_of_life.md
+2026-01-04 21:42:46 | INFO     | scripts.phase3.p3_06_review_variants | 
+Review files generated in: /home/michael/bible/tr/reviews
+2026-01-04 21:42:46 | INFO     | scripts.phase3.p3_06_review_variants | Please review and update the generated documentation

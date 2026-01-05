@@ -1,0 +1,124 @@
+2026-01-04 21:32:11 | INFO     | root | Logging to: /home/michael/bible/tr/logs/pipeline_20260104_213211.log
+2026-01-04 21:32:11 | INFO     | __main__ | Running 5 scripts...
+2026-01-04 21:32:11 | INFO     | __main__ | 
+============================================================
+2026-01-04 21:32:11 | INFO     | __main__ | Running: [p1_01] Setup Environment
+2026-01-04 21:32:11 | INFO     | __main__ | Description: Verify all dependencies are installed
+2026-01-04 21:32:11 | INFO     | __main__ | ============================================================
+2026-01-04 21:32:11 | INFO     | scripts.phase1.p1_01_setup_env | Checking required dependencies...
+2026-01-04 21:32:11 | INFO     | scripts.phase1.p1_01_setup_env | 
+Core Libraries:
+2026-01-04 21:32:12 | INFO     | scripts.phase1.p1_01_setup_env |   [OK] pandas
+2026-01-04 21:32:12 | INFO     | scripts.phase1.p1_01_setup_env |   [OK] pyarrow
+2026-01-04 21:32:12 | INFO     | scripts.phase1.p1_01_setup_env |   [OK] pyyaml
+2026-01-04 21:32:12 | INFO     | scripts.phase1.p1_01_setup_env | 
+Text-Fabric:
+2026-01-04 21:32:12 | INFO     | scripts.phase1.p1_01_setup_env |   [OK] text-fabric
+2026-01-04 21:32:12 | INFO     | scripts.phase1.p1_01_setup_env |   [OK] Text-Fabric API available
+2026-01-04 21:32:12 | INFO     | scripts.phase1.p1_01_setup_env | 
+NLP Libraries:
+2026-01-04 21:32:17 | INFO     | scripts.phase1.p1_01_setup_env |   [OK] stanza
+2026-01-04 21:32:17 | INFO     | scripts.phase1.p1_01_setup_env |   [OK] Stanza available (grc model may need download)
+2026-01-04 21:32:17 | INFO     | scripts.phase1.p1_01_setup_env | 
+Optional Libraries:
+2026-01-04 21:32:17 | INFO     | scripts.phase1.p1_01_setup_env |   [OK] tqdm
+2026-01-04 21:32:17 | INFO     | scripts.phase1.p1_01_setup_env |   [OK] requests
+2026-01-04 21:32:17 | INFO     | scripts.phase1.p1_01_setup_env | 
+Directory Structure:
+2026-01-04 21:32:17 | INFO     | scripts.phase1.p1_01_setup_env |   [OK] data/source/
+2026-01-04 21:32:17 | INFO     | scripts.phase1.p1_01_setup_env |   [OK] data/intermediate/
+2026-01-04 21:32:17 | INFO     | scripts.phase1.p1_01_setup_env |   [OK] data/output/
+2026-01-04 21:32:17 | INFO     | scripts.phase1.p1_01_setup_env |   [OK] logs/
+2026-01-04 21:32:17 | INFO     | scripts.phase1.p1_01_setup_env |   [OK] reports/
+2026-01-04 21:32:17 | INFO     | scripts.phase1.p1_01_setup_env | 
+2026-01-04 21:32:17 | INFO     | scripts.phase1.p1_01_setup_env | All required dependencies are installed!
+2026-01-04 21:32:17 | INFO     | __main__ | 
+============================================================
+2026-01-04 21:32:17 | INFO     | __main__ | Running: [p1_02] Schema Scout
+2026-01-04 21:32:17 | INFO     | __main__ | Description: Extract N1904 schema definition
+2026-01-04 21:32:17 | INFO     | __main__ | ============================================================
+2026-01-04 21:32:17 | INFO     | scripts.phase1.p1_02_schema_scout | Loading N1904 dataset...
+2026-01-04 21:32:17 | INFO     | scripts.utils.tf_helpers | Loading N1904 from TF repository: CenterBLC/N1904
+2026-01-04 21:32:24 | INFO     | scripts.phase1.p1_02_schema_scout | Extracting schema...
+2026-01-04 21:32:24 | INFO     | scripts.phase1.p1_02_schema_scout | Extracting otypes...
+2026-01-04 21:32:24 | INFO     | scripts.phase1.p1_02_schema_scout |   book: 27 nodes
+2026-01-04 21:32:24 | INFO     | scripts.phase1.p1_02_schema_scout |   chapter: 260 nodes
+2026-01-04 21:32:24 | INFO     | scripts.phase1.p1_02_schema_scout |   verse: 7,944 nodes
+2026-01-04 21:32:24 | INFO     | scripts.phase1.p1_02_schema_scout |   sentence: 8,011 nodes
+2026-01-04 21:32:24 | INFO     | scripts.phase1.p1_02_schema_scout |   group: 8,945 nodes
+2026-01-04 21:32:24 | INFO     | scripts.phase1.p1_02_schema_scout |   clause: 42,506 nodes
+2026-01-04 21:32:24 | INFO     | scripts.phase1.p1_02_schema_scout |   wg: 106,868 nodes
+2026-01-04 21:32:24 | INFO     | scripts.phase1.p1_02_schema_scout |   phrase: 69,007 nodes
+2026-01-04 21:32:24 | INFO     | scripts.phase1.p1_02_schema_scout |   subphrase: 116,178 nodes
+2026-01-04 21:32:24 | INFO     | scripts.phase1.p1_02_schema_scout |   word: 137,779 nodes
+2026-01-04 21:32:24 | INFO     | scripts.phase1.p1_02_schema_scout | 
+Extracting features by otype...
+2026-01-04 21:32:24 | INFO     | scripts.phase1.p1_02_schema_scout |   Processing book...
+2026-01-04 21:32:24 | INFO     | scripts.phase1.p1_02_schema_scout |     Found 5 features
+2026-01-04 21:32:24 | INFO     | scripts.phase1.p1_02_schema_scout |   Processing chapter...
+2026-01-04 21:32:24 | INFO     | scripts.phase1.p1_02_schema_scout |     Found 3 features
+2026-01-04 21:32:24 | INFO     | scripts.phase1.p1_02_schema_scout |   Processing verse...
+2026-01-04 21:32:24 | INFO     | scripts.phase1.p1_02_schema_scout |     Found 4 features
+2026-01-04 21:32:24 | INFO     | scripts.phase1.p1_02_schema_scout |   Processing sentence...
+2026-01-04 21:32:25 | INFO     | scripts.phase1.p1_02_schema_scout |     Found 10 features
+2026-01-04 21:32:25 | INFO     | scripts.phase1.p1_02_schema_scout |   Processing group...
+2026-01-04 21:32:25 | INFO     | scripts.phase1.p1_02_schema_scout |     Found 8 features
+2026-01-04 21:32:25 | INFO     | scripts.phase1.p1_02_schema_scout |   Processing clause...
+2026-01-04 21:32:26 | INFO     | scripts.phase1.p1_02_schema_scout |     Found 10 features
+2026-01-04 21:32:26 | INFO     | scripts.phase1.p1_02_schema_scout |   Processing wg...
+2026-01-04 21:32:26 | INFO     | scripts.phase1.p1_02_schema_scout |     Found 16 features
+2026-01-04 21:32:26 | INFO     | scripts.phase1.p1_02_schema_scout |   Processing phrase...
+2026-01-04 21:32:28 | INFO     | scripts.phase1.p1_02_schema_scout |     Found 38 features
+2026-01-04 21:32:28 | INFO     | scripts.phase1.p1_02_schema_scout |   Processing subphrase...
+2026-01-04 21:32:29 | INFO     | scripts.phase1.p1_02_schema_scout |     Found 33 features
+2026-01-04 21:32:29 | INFO     | scripts.phase1.p1_02_schema_scout |   Processing word...
+2026-01-04 21:32:30 | INFO     | scripts.phase1.p1_02_schema_scout |     Found 37 features
+2026-01-04 21:32:30 | INFO     | scripts.phase1.p1_02_schema_scout | 
+Extracting edge features...
+2026-01-04 21:32:30 | INFO     | scripts.phase1.p1_02_schema_scout |   frame
+2026-01-04 21:32:30 | INFO     | scripts.phase1.p1_02_schema_scout |   oslots
+2026-01-04 21:32:30 | INFO     | scripts.phase1.p1_02_schema_scout |   parent
+2026-01-04 21:32:30 | INFO     | scripts.phase1.p1_02_schema_scout |   sibling
+2026-01-04 21:32:30 | INFO     | scripts.phase1.p1_02_schema_scout |   subjref
+2026-01-04 21:32:30 | INFO     | scripts.phase1.p1_02_schema_scout | Writing schema to /home/michael/bible/tr/data/intermediate/schema_map.json
+2026-01-04 21:32:30 | INFO     | scripts.phase1.p1_02_schema_scout | 
+Schema extraction complete!
+2026-01-04 21:32:30 | INFO     | scripts.phase1.p1_02_schema_scout |   OTypes: 10
+2026-01-04 21:32:30 | INFO     | scripts.phase1.p1_02_schema_scout |   Features: 45
+2026-01-04 21:32:30 | INFO     | scripts.phase1.p1_02_schema_scout |   Edge features: 5
+2026-01-04 21:32:30 | INFO     | scripts.phase1.p1_02_schema_scout |   Output: /home/michael/bible/tr/data/intermediate/schema_map.json
+2026-01-04 21:32:30 | INFO     | __main__ | 
+============================================================
+2026-01-04 21:32:30 | INFO     | __main__ | Running: [p1_03] Analyze Clauses
+2026-01-04 21:32:30 | INFO     | __main__ | Description: Document embedded clause handling
+2026-01-04 21:32:30 | INFO     | __main__ | ============================================================
+2026-01-04 21:32:30 | INFO     | scripts.phase1.p1_03_analyze_clauses | Loading N1904 dataset...
+2026-01-04 21:32:30 | INFO     | scripts.utils.tf_helpers | Loading N1904 from TF repository: CenterBLC/N1904
+2026-01-04 21:32:37 | INFO     | scripts.phase1.p1_03_analyze_clauses | Analyzing clause structure...
+2026-01-04 21:32:37 | INFO     | scripts.phase1.p1_03_analyze_clauses | Analyzing clause types...
+2026-01-04 21:32:37 | INFO     | scripts.phase1.p1_03_analyze_clauses | Analyzing clause nesting...
+2026-01-04 21:32:37 | INFO     | scripts.phase1.p1_03_analyze_clauses | Identifying clause features...
+2026-01-04 21:32:37 | INFO     | scripts.phase1.p1_03_analyze_clauses | Analysis written to: /home/michael/bible/tr/data/intermediate/clause_analysis.json
+2026-01-04 21:32:37 | INFO     | scripts.phase1.p1_03_analyze_clauses |   Clause types found: 0
+2026-01-04 21:32:37 | INFO     | scripts.phase1.p1_03_analyze_clauses |   Features on clauses: 10
+2026-01-04 21:32:37 | INFO     | __main__ | 
+============================================================
+2026-01-04 21:32:37 | INFO     | __main__ | Running: [p1_04] Acquire TR Data
+2026-01-04 21:32:37 | INFO     | __main__ | Description: Download and prepare TR source text
+2026-01-04 21:32:37 | INFO     | __main__ | ============================================================
+2026-01-04 21:32:37 | INFO     | scripts.phase1.p1_04_acquire_tr | TR data already exists: /home/michael/bible/tr/data/source/tr_raw.csv
+2026-01-04 21:32:37 | INFO     | scripts.phase1.p1_04_acquire_tr | Delete the file to re-download
+2026-01-04 21:32:37 | INFO     | __main__ | 
+============================================================
+2026-01-04 21:32:37 | INFO     | __main__ | Running: [p1_05] Build TR DataFrame
+2026-01-04 21:32:37 | INFO     | __main__ | Description: Create standardized TR word DataFrame
+2026-01-04 21:32:37 | INFO     | __main__ | ============================================================
+2026-01-04 21:32:37 | INFO     | scripts.phase1.p1_05_build_tr_dataframe | Loading: /home/michael/bible/tr/data/source/tr_raw.csv
+2026-01-04 21:32:37 | INFO     | scripts.phase1.p1_05_build_tr_dataframe | Columns found: ['chapter', 'verse', 'text', 'book']
+2026-01-04 21:32:37 | INFO     | scripts.phase1.p1_05_build_tr_dataframe | Loaded 7,957 rows (verses)
+2026-01-04 21:32:37 | INFO     | scripts.phase1.p1_05_build_tr_dataframe | Data is verse-level, tokenizing into words...
+2026-01-04 21:32:37 | INFO     | scripts.phase1.p1_05_build_tr_dataframe | Tokenized into 140,726 words
+2026-01-04 21:32:37 | INFO     | scripts.phase1.p1_05_build_tr_dataframe | Total words: 140,726
+2026-01-04 21:32:37 | INFO     | scripts.phase1.p1_05_build_tr_dataframe | Books: 27
+2026-01-04 21:32:37 | INFO     | scripts.phase1.p1_05_build_tr_dataframe | Columns: ['word_id', 'book', 'chapter', 'verse', 'word_rank', 'word']
+2026-01-04 21:32:37 | INFO     | scripts.phase1.p1_05_build_tr_dataframe | Saved to: /home/michael/bible/tr/data/intermediate/tr_words.parquet

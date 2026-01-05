@@ -1,0 +1,105 @@
+2026-01-04 20:13:39 | INFO     | root | Logging to: /home/michael/bible/tr/logs/pipeline_20260104_201339.log
+2026-01-04 20:13:39 | INFO     | __main__ | Running 6 scripts...
+2026-01-04 20:13:39 | INFO     | __main__ | 
+============================================================
+2026-01-04 20:13:39 | INFO     | __main__ | Running: [p2_01] Extract N1904
+2026-01-04 20:13:39 | INFO     | __main__ | Description: Extract N1904 words with syntax features
+2026-01-04 20:13:39 | INFO     | __main__ | ============================================================
+2026-01-04 20:13:40 | INFO     | scripts.phase2.p2_01_extract_n1904 | Loading N1904...
+2026-01-04 20:13:40 | INFO     | scripts.utils.tf_helpers | Loading N1904 from TF repository: CenterBLC/N1904
+2026-01-04 20:13:47 | INFO     | scripts.phase2.p2_01_extract_n1904 | Extracting features: ['word', 'lemma', 'sp', 'gn', 'nu', 'ps', 'case', 'tense', 'voice', 'mood', 'gloss', 'function', 'role', 'type']
+2026-01-04 20:13:47 | INFO     | scripts.phase2.p2_01_extract_n1904 | Processing 137,779 words...
+2026-01-04 20:13:52 | INFO     | scripts.phase2.p2_01_extract_n1904 | Extracted 137,779 words
+2026-01-04 20:13:52 | INFO     | scripts.phase2.p2_01_extract_n1904 | Columns: ['node_id', 'book', 'chapter', 'verse', 'word', 'word_raw', 'word_rank', 'lemma', 'sp', 'case', 'tense', 'voice', 'mood', 'gloss', 'function', 'role', 'parent', 'clause_id', 'phrase_id']
+2026-01-04 20:13:52 | INFO     | scripts.phase2.p2_01_extract_n1904 | Saved to: /home/michael/bible/tr/data/intermediate/n1904_words.parquet
+2026-01-04 20:13:52 | INFO     | __main__ | 
+============================================================
+2026-01-04 20:13:52 | INFO     | __main__ | Running: [p2_02] Align Verses
+2026-01-04 20:13:52 | INFO     | __main__ | Description: Create verse alignment framework
+2026-01-04 20:13:52 | INFO     | __main__ | ============================================================
+2026-01-04 20:13:52 | INFO     | scripts.phase2.p2_02_align_verses | Alignment module verified
+2026-01-04 20:13:52 | INFO     | scripts.phase2.p2_02_align_verses | Functions available:
+2026-01-04 20:13:52 | INFO     | scripts.phase2.p2_02_align_verses |   - create_word_key(row, match_criteria)
+2026-01-04 20:13:52 | INFO     | scripts.phase2.p2_02_align_verses |   - align_verse_words(tr_words, n1904_words, match_criteria)
+2026-01-04 20:13:52 | INFO     | __main__ | 
+============================================================
+2026-01-04 20:13:52 | INFO     | __main__ | Running: [p2_03] PoC Single Book
+2026-01-04 20:13:52 | INFO     | __main__ | Description: Proof of concept on 3 John
+2026-01-04 20:13:52 | INFO     | __main__ | ============================================================
+2026-01-04 20:13:52 | INFO     | scripts.phase2.p2_03_poc_single_book | Loading data...
+2026-01-04 20:13:52 | INFO     | scripts.phase2.p2_03_poc_single_book | Running PoC alignment on: 3John
+2026-01-04 20:13:52 | INFO     | scripts.phase2.p2_03_poc_single_book | Book: 3John
+2026-01-04 20:13:52 | INFO     | scripts.phase2.p2_03_poc_single_book |   TR words: 217
+2026-01-04 20:13:52 | INFO     | scripts.phase2.p2_03_poc_single_book |   N1904 words: 219
+2026-01-04 20:13:52 | INFO     | scripts.phase2.p2_03_poc_single_book |   Common verses: 14
+2026-01-04 20:13:52 | INFO     | scripts.phase2.p2_03_poc_single_book |   TR-only verses: 0
+2026-01-04 20:13:52 | INFO     | scripts.phase2.p2_03_poc_single_book |   N1904-only verses: 1
+2026-01-04 20:13:52 | INFO     | scripts.phase2.p2_03_poc_single_book | 
+==================================================
+2026-01-04 20:13:52 | INFO     | scripts.phase2.p2_03_poc_single_book | PoC Results for 3John
+2026-01-04 20:13:52 | INFO     | scripts.phase2.p2_03_poc_single_book | ==================================================
+2026-01-04 20:13:52 | INFO     | scripts.phase2.p2_03_poc_single_book | Alignment Rate: 54.8%
+2026-01-04 20:13:52 | INFO     | scripts.phase2.p2_03_poc_single_book | Aligned: 119 / 217 words
+2026-01-04 20:13:52 | INFO     | scripts.phase2.p2_03_poc_single_book | TR Gaps: 98
+2026-01-04 20:13:52 | INFO     | scripts.phase2.p2_03_poc_single_book | N1904 Gaps: 89
+2026-01-04 20:13:52 | INFO     | scripts.phase2.p2_03_poc_single_book | Report written to: /home/michael/bible/tr/reports/poc_3john_report.md
+2026-01-04 20:13:52 | WARNING  | scripts.phase2.p2_03_poc_single_book | Alignment rate 54.8% < 95.0%
+2026-01-04 20:13:52 | WARNING  | scripts.phase2.p2_03_poc_single_book | This may indicate data format issues
+2026-01-04 20:13:52 | INFO     | __main__ | 
+============================================================
+2026-01-04 20:13:52 | INFO     | __main__ | Running: [p2_04] Full Alignment
+2026-01-04 20:13:52 | INFO     | __main__ | Description: Run alignment on entire NT
+2026-01-04 20:13:52 | INFO     | __main__ | ============================================================
+2026-01-04 20:13:52 | INFO     | scripts.phase2.p2_04_full_alignment | Loading data...
+2026-01-04 20:13:52 | INFO     | scripts.phase2.p2_04_full_alignment | TR words: 140,366
+2026-01-04 20:13:52 | INFO     | scripts.phase2.p2_04_full_alignment | N1904 words: 137,779
+2026-01-04 20:13:52 | INFO     | scripts.phase2.p2_04_full_alignment | Processing 29 books...
+2026-01-04 20:14:06 | INFO     | scripts.phase2.p2_04_full_alignment | Saving results...
+2026-01-04 20:14:06 | INFO     | scripts.phase2.p2_04_full_alignment | Alignment map: 84,150 records -> /home/michael/bible/tr/data/intermediate/alignment_map.parquet
+2026-01-04 20:14:06 | INFO     | scripts.phase2.p2_04_full_alignment | Gaps: 56,216 records -> /home/michael/bible/tr/data/intermediate/gaps.csv
+2026-01-04 20:14:06 | INFO     | scripts.phase2.p2_04_full_alignment | Report: /home/michael/bible/tr/reports/alignment_report.md
+2026-01-04 20:14:06 | INFO     | scripts.phase2.p2_04_full_alignment | 
+==================================================
+2026-01-04 20:14:06 | INFO     | scripts.phase2.p2_04_full_alignment | ALIGNMENT COMPLETE
+2026-01-04 20:14:06 | INFO     | scripts.phase2.p2_04_full_alignment | ==================================================
+2026-01-04 20:14:06 | INFO     | scripts.phase2.p2_04_full_alignment | Alignment Rate: 60.0%
+2026-01-04 20:14:06 | INFO     | scripts.phase2.p2_04_full_alignment | Aligned: 84,150 words
+2026-01-04 20:14:06 | INFO     | scripts.phase2.p2_04_full_alignment | Gaps: 56,216 words
+2026-01-04 20:14:06 | INFO     | __main__ | 
+============================================================
+2026-01-04 20:14:06 | INFO     | __main__ | Running: [p2_05] Build ID Map
+2026-01-04 20:14:06 | INFO     | __main__ | Description: Create node ID translation table
+2026-01-04 20:14:06 | INFO     | __main__ | ============================================================
+2026-01-04 20:14:06 | INFO     | scripts.phase2.p2_05_build_id_map | Loading alignment map...
+2026-01-04 20:14:06 | INFO     | scripts.phase2.p2_05_build_id_map | Alignments: 84,150
+2026-01-04 20:14:06 | INFO     | scripts.phase2.p2_05_build_id_map | Loading N1904 data...
+2026-01-04 20:14:06 | INFO     | scripts.phase2.p2_05_build_id_map | Building ID translation table...
+2026-01-04 20:14:06 | INFO     | scripts.phase2.p2_05_build_id_map | Word mappings: 84,150
+2026-01-04 20:14:06 | INFO     | scripts.phase2.p2_05_build_id_map | Clause mappings: 33,202
+2026-01-04 20:14:06 | INFO     | scripts.phase2.p2_05_build_id_map | Phrase mappings: 43,030
+2026-01-04 20:14:06 | INFO     | scripts.phase2.p2_05_build_id_map | Saved 160,382 mappings to /home/michael/bible/tr/data/intermediate/id_translation.parquet
+2026-01-04 20:14:06 | INFO     | scripts.phase2.p2_05_build_id_map |   word: 84,150
+2026-01-04 20:14:06 | INFO     | scripts.phase2.p2_05_build_id_map |   phrase: 43,030
+2026-01-04 20:14:06 | INFO     | scripts.phase2.p2_05_build_id_map |   clause: 33,202
+2026-01-04 20:14:06 | INFO     | __main__ | 
+============================================================
+2026-01-04 20:14:06 | INFO     | __main__ | Running: [p2_06] Transplant Syntax
+2026-01-04 20:14:06 | INFO     | __main__ | Description: Copy syntax features to aligned TR words
+2026-01-04 20:14:06 | INFO     | __main__ | ============================================================
+2026-01-04 20:14:06 | INFO     | scripts.phase2.p2_06_transplant_syntax | Loading data...
+2026-01-04 20:14:06 | INFO     | scripts.phase2.p2_06_transplant_syntax | TR words: 140,366
+2026-01-04 20:14:06 | INFO     | scripts.phase2.p2_06_transplant_syntax | N1904 words: 137,779
+2026-01-04 20:14:06 | INFO     | scripts.phase2.p2_06_transplant_syntax | Alignments: 84,150
+2026-01-04 20:14:06 | INFO     | scripts.phase2.p2_06_transplant_syntax | ID translations: 160,382
+2026-01-04 20:14:07 | INFO     | scripts.phase2.p2_06_transplant_syntax | Transplanting syntax features...
+2026-01-04 20:14:24 | INFO     | scripts.phase2.p2_06_transplant_syntax | Transplanted features for 84,150 words
+2026-01-04 20:14:24 | INFO     | scripts.phase2.p2_06_transplant_syntax | Unaligned words: 56,216
+2026-01-04 20:14:24 | INFO     | scripts.phase2.p2_06_transplant_syntax | No broken parent references detected
+2026-01-04 20:14:24 | INFO     | scripts.phase2.p2_06_transplant_syntax | Saved to: /home/michael/bible/tr/data/intermediate/tr_transplanted.parquet
+2026-01-04 20:14:24 | INFO     | scripts.phase2.p2_06_transplant_syntax | 
+==================================================
+2026-01-04 20:14:24 | INFO     | scripts.phase2.p2_06_transplant_syntax | TRANSPLANT COMPLETE
+2026-01-04 20:14:24 | INFO     | scripts.phase2.p2_06_transplant_syntax | ==================================================
+2026-01-04 20:14:24 | INFO     | scripts.phase2.p2_06_transplant_syntax | Total words: 140,366
+2026-01-04 20:14:24 | INFO     | scripts.phase2.p2_06_transplant_syntax | With syntax: 84,150 (60.0%)
+2026-01-04 20:14:24 | INFO     | scripts.phase2.p2_06_transplant_syntax | Gaps (need Phase 3): 56,216

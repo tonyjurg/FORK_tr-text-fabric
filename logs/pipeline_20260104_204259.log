@@ -1,0 +1,52 @@
+2026-01-04 20:42:59 | INFO     | root | Logging to: /home/michael/bible/tr/logs/pipeline_20260104_204259.log
+2026-01-04 20:42:59 | INFO     | __main__ | Running 2 scripts...
+2026-01-04 20:42:59 | INFO     | __main__ | 
+============================================================
+2026-01-04 20:42:59 | INFO     | __main__ | Running: [p3_05] Convert Parses
+2026-01-04 20:42:59 | INFO     | __main__ | Description: Convert Stanza output to N1904 format
+2026-01-04 20:42:59 | INFO     | __main__ | ============================================================
+2026-01-04 20:43:00 | INFO     | scripts.phase3.p3_05_convert_parses | Loading data...
+2026-01-04 20:43:00 | INFO     | scripts.phase3.p3_05_convert_parses | Parses: 20120
+2026-01-04 20:43:00 | INFO     | scripts.phase3.p3_05_convert_parses | Spans: 16084
+2026-01-04 20:43:00 | INFO     | scripts.phase3.p3_05_convert_parses | Gap words: 20092
+2026-01-04 20:43:00 | INFO     | scripts.phase3.p3_05_convert_parses | Aligning parses to gap words...
+2026-01-04 20:43:11 | INFO     | scripts.phase3.p3_05_convert_parses | Generated syntax for 20092 words
+2026-01-04 20:43:11 | INFO     | scripts.phase3.p3_05_convert_parses | Saved to: /home/michael/bible/tr/data/intermediate/gap_syntax.parquet
+2026-01-04 20:43:11 | INFO     | scripts.phase3.p3_05_convert_parses | 
+Conversion Summary:
+2026-01-04 20:43:11 | INFO     | scripts.phase3.p3_05_convert_parses | ----------------------------------------
+2026-01-04 20:43:11 | INFO     | scripts.phase3.p3_05_convert_parses | Words with syntax: 20092
+2026-01-04 20:43:11 | INFO     | scripts.phase3.p3_05_convert_parses | 
+Function distribution:
+2026-01-04 20:43:11 | INFO     | scripts.phase3.p3_05_convert_parses |   Predicate: 16126
+2026-01-04 20:43:11 | INFO     | scripts.phase3.p3_05_convert_parses |   Adverb: 809
+2026-01-04 20:43:11 | INFO     | scripts.phase3.p3_05_convert_parses |   Determiner: 685
+2026-01-04 20:43:11 | INFO     | scripts.phase3.p3_05_convert_parses |   Modifier: 635
+2026-01-04 20:43:11 | INFO     | scripts.phase3.p3_05_convert_parses |   Object: 421
+2026-01-04 20:43:11 | INFO     | scripts.phase3.p3_05_convert_parses |   CaseMarker: 327
+2026-01-04 20:43:11 | INFO     | scripts.phase3.p3_05_convert_parses |   Subject: 247
+2026-01-04 20:43:11 | INFO     | scripts.phase3.p3_05_convert_parses |   Conjunction: 211
+2026-01-04 20:43:11 | INFO     | scripts.phase3.p3_05_convert_parses |   Adjunct: 200
+2026-01-04 20:43:11 | INFO     | scripts.phase3.p3_05_convert_parses |   Copula: 149
+2026-01-04 20:43:11 | INFO     | __main__ | 
+============================================================
+2026-01-04 20:43:11 | INFO     | __main__ | Running: [p3_06] Review Variants
+2026-01-04 20:43:11 | INFO     | __main__ | Description: LLM review of high-profile variants
+2026-01-04 20:43:11 | INFO     | __main__ | ============================================================
+2026-01-04 20:43:11 | INFO     | scripts.phase3.p3_06_review_variants | Loading data...
+2026-01-04 20:43:11 | INFO     | scripts.phase3.p3_06_review_variants | Priority variants: 7
+2026-01-04 20:43:11 | INFO     | scripts.phase3.p3_06_review_variants | Found 47 variant spans
+2026-01-04 20:43:11 | INFO     | scripts.phase3.p3_06_review_variants | Generated review: /home/michael/bible/tr/reviews/longer_ending_of_mark.md
+2026-01-04 20:43:11 | ERROR    | __main__ | Script failed: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
+2026-01-04 20:43:11 | ERROR    | __main__ | Traceback (most recent call last):
+  File "/home/michael/bible/tr/run_pipeline.py", line 369, in run_script
+    success = module.main(config)
+              ^^^^^^^^^^^^^^^^^^^
+  File "/home/michael/bible/tr/scripts/phase3/p3_06_review_variants.py", line 258, in main
+    generate_variant_review(variant_spans, syntax_df, spans_df, reviews_dir)
+  File "/home/michael/bible/tr/scripts/phase3/p3_06_review_variants.py", line 155, in generate_variant_review
+    if word_ids:
+       ^^^^^^^^
+ValueError: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
+
+2026-01-04 20:43:11 | ERROR    | __main__ | Stopping due to failure (--fail-fast)

@@ -1,0 +1,239 @@
+2026-01-04 21:01:28 | INFO     | root | Logging to: /home/michael/bible/tr/logs/pipeline_20260104_210128.log
+2026-01-04 21:01:28 | INFO     | __main__ | Running 8 scripts...
+2026-01-04 21:01:28 | INFO     | __main__ | 
+============================================================
+2026-01-04 21:01:28 | INFO     | __main__ | Running: [p5_01] Check Cycles
+2026-01-04 21:01:28 | INFO     | __main__ | Description: Detect circular dependencies in syntax trees
+2026-01-04 21:01:28 | INFO     | __main__ | ============================================================
+2026-01-04 21:01:28 | INFO     | scripts.phase5.p5_01_check_cycles | Loading parent edges...
+2026-01-04 21:01:28 | INFO     | scripts.phase5.p5_01_check_cycles | Loaded 3962 parent relationships
+2026-01-04 21:01:28 | INFO     | scripts.phase5.p5_01_check_cycles | Checking for cycles...
+2026-01-04 21:01:28 | INFO     | scripts.phase5.p5_01_check_cycles | PASSED: No cycles detected
+2026-01-04 21:01:28 | INFO     | __main__ | 
+============================================================
+2026-01-04 21:01:28 | INFO     | __main__ | Running: [p5_02] Check Orphans
+2026-01-04 21:01:28 | INFO     | __main__ | Description: Detect orphan and dangling nodes
+2026-01-04 21:01:28 | INFO     | __main__ | ============================================================
+2026-01-04 21:01:28 | INFO     | scripts.phase5.p5_02_check_orphans | Loading node types...
+2026-01-04 21:01:28 | INFO     | scripts.phase5.p5_02_check_orphans | Loading slot containment...
+2026-01-04 21:01:28 | INFO     | scripts.phase5.p5_02_check_orphans | Total word slots: 140366
+2026-01-04 21:01:28 | INFO     | scripts.phase5.p5_02_check_orphans | All word slots are contained in at least one container
+2026-01-04 21:01:28 | INFO     | scripts.phase5.p5_02_check_orphans | No empty containers found
+2026-01-04 21:01:28 | INFO     | scripts.phase5.p5_02_check_orphans | 
+Orphan Check Summary:
+2026-01-04 21:01:28 | INFO     | scripts.phase5.p5_02_check_orphans | ----------------------------------------
+2026-01-04 21:01:28 | INFO     | scripts.phase5.p5_02_check_orphans | Orphan slots: 0
+2026-01-04 21:01:28 | INFO     | scripts.phase5.p5_02_check_orphans | Empty containers: 0
+2026-01-04 21:01:28 | INFO     | scripts.phase5.p5_02_check_orphans | PASSED: No orphans or empty containers
+2026-01-04 21:01:28 | INFO     | __main__ | 
+============================================================
+2026-01-04 21:01:28 | INFO     | __main__ | Running: [p5_03] Check Features
+2026-01-04 21:01:28 | INFO     | __main__ | Description: Verify all required features present
+2026-01-04 21:01:28 | INFO     | __main__ | ============================================================
+2026-01-04 21:01:28 | INFO     | scripts.phase5.p5_03_check_features | Node counts by type:
+2026-01-04 21:01:28 | INFO     | scripts.phase5.p5_03_check_features |   book: 27
+2026-01-04 21:01:28 | INFO     | scripts.phase5.p5_03_check_features |   chapter: 260
+2026-01-04 21:01:28 | INFO     | scripts.phase5.p5_03_check_features |   verse: 7,954
+2026-01-04 21:01:28 | INFO     | scripts.phase5.p5_03_check_features |   word: 140,366
+2026-01-04 21:01:28 | INFO     | scripts.phase5.p5_03_check_features | 
+Checking required features...
+2026-01-04 21:01:28 | INFO     | scripts.phase5.p5_03_check_features | 
+word (expected: 140,366):
+2026-01-04 21:01:28 | INFO     | scripts.phase5.p5_03_check_features |   word: 140,366 [OK]
+2026-01-04 21:01:28 | INFO     | scripts.phase5.p5_03_check_features |   lemma: 140,366 [OK]
+2026-01-04 21:01:28 | INFO     | scripts.phase5.p5_03_check_features |   sp: 140,366 [OK]
+2026-01-04 21:01:28 | INFO     | scripts.phase5.p5_03_check_features | 
+Checking optional features...
+2026-01-04 21:01:28 | INFO     | scripts.phase5.p5_03_check_features | 
+word optional features:
+2026-01-04 21:01:28 | INFO     | scripts.phase5.p5_03_check_features |   function: 59,704 (42.5%)
+2026-01-04 21:01:28 | INFO     | scripts.phase5.p5_03_check_features |   case: 81,426 (58.0%)
+2026-01-04 21:01:28 | INFO     | scripts.phase5.p5_03_check_features |   gn: 11,868 (8.5%)
+2026-01-04 21:01:28 | INFO     | scripts.phase5.p5_03_check_features |   nu: 15,013 (10.7%)
+2026-01-04 21:01:28 | INFO     | scripts.phase5.p5_03_check_features |   ps: 3,145 (2.2%)
+2026-01-04 21:01:28 | INFO     | scripts.phase5.p5_03_check_features |   tense: 28,529 (20.3%)
+2026-01-04 21:01:28 | INFO     | scripts.phase5.p5_03_check_features |   voice: 28,529 (20.3%)
+2026-01-04 21:01:28 | INFO     | scripts.phase5.p5_03_check_features |   mood: 27,540 (19.6%)
+2026-01-04 21:01:28 | INFO     | scripts.phase5.p5_03_check_features |   gloss: 120,274 (85.7%)
+2026-01-04 21:01:28 | INFO     | scripts.phase5.p5_03_check_features |   source: 140,366 (100.0%)
+2026-01-04 21:01:28 | INFO     | scripts.phase5.p5_03_check_features | 
+PASSED: All required features present
+2026-01-04 21:01:28 | INFO     | __main__ | 
+============================================================
+2026-01-04 21:01:28 | INFO     | __main__ | Running: [p5_04] Compare Stats
+2026-01-04 21:01:28 | INFO     | __main__ | Description: Statistical comparison with N1904
+2026-01-04 21:01:28 | INFO     | __main__ | ============================================================
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_04_compare_stats | TR Dataset Statistics:
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_04_compare_stats | ==================================================
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_04_compare_stats | 
+Total words: 140,366
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_04_compare_stats | Unique lemmas: 7,738
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_04_compare_stats | Books: 27
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_04_compare_stats | Chapters: 260
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_04_compare_stats | Verses: 7954
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_04_compare_stats | 
+Syntax Source:
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_04_compare_stats |   n1904: 120,274 (85.7%)
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_04_compare_stats |   nlp: 20,092 (14.3%)
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_04_compare_stats | 
+Part of Speech Distribution:
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_04_compare_stats |   verb: 28,529 (20.3%)
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_04_compare_stats |   subs: 23,026 (16.4%)
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_04_compare_stats |   art: 18,538 (13.2%)
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_04_compare_stats |   conj: 17,782 (12.7%)
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_04_compare_stats |   pron: 16,242 (11.6%)
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_04_compare_stats |   prep: 10,962 (7.8%)
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_04_compare_stats |   adjv: 7,472 (5.3%)
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_04_compare_stats |   noun: 6,229 (4.4%)
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_04_compare_stats |   advb: 5,362 (3.8%)
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_04_compare_stats |   adj: 2,027 (1.4%)
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_04_compare_stats | 
+Syntactic Function Distribution:
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_04_compare_stats |   Pred: 21,347 (35.8%)
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_04_compare_stats |   Predicate: 16,126 (27.0%)
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_04_compare_stats |   Adv: 4,800 (8.0%)
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_04_compare_stats |   Objc: 4,252 (7.1%)
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_04_compare_stats |   PreC: 3,910 (6.5%)
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_04_compare_stats |   Subj: 3,454 (5.8%)
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_04_compare_stats |   Cmpl: 1,849 (3.1%)
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_04_compare_stats |   Adverb: 809 (1.4%)
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_04_compare_stats |   Determiner: 685 (1.1%)
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_04_compare_stats |   Modifier: 635 (1.1%)
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_04_compare_stats | 
+Case Distribution:
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_04_compare_stats |   accusative: 20,673 (25.4%)
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_04_compare_stats |   nominative: 20,301 (24.9%)
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_04_compare_stats |   genitive: 17,037 (20.9%)
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_04_compare_stats |   dative: 11,018 (13.5%)
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_04_compare_stats |   nom: 3,948 (4.8%)
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_04_compare_stats |   acc: 3,019 (3.7%)
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_04_compare_stats |   gen: 2,919 (3.6%)
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_04_compare_stats |   dat: 1,495 (1.8%)
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_04_compare_stats |   vocative: 530 (0.7%)
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_04_compare_stats |   voc: 486 (0.6%)
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_04_compare_stats | 
+==================================================
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_04_compare_stats | Comparison Notes:
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_04_compare_stats | ----------------------------------------
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_04_compare_stats | N1904 has ~137,000 words
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_04_compare_stats | TR has 140,366 words (+3,366 difference)
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_04_compare_stats | Difference due to TR-specific readings (Comma Johanneum, etc.)
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_04_compare_stats | 
+PASSED: Statistics generated successfully
+2026-01-04 21:01:29 | INFO     | __main__ | 
+============================================================
+2026-01-04 21:01:29 | INFO     | __main__ | Running: [p5_05] Spot Check Variants
+2026-01-04 21:01:29 | INFO     | __main__ | Description: Manual verification of high-profile variants
+2026-01-04 21:01:29 | INFO     | __main__ | ============================================================
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_05_spot_check_variants | Spot Checking High-Profile Variants
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_05_spot_check_variants | ==================================================
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_05_spot_check_variants | 
+Comma Johanneum (1 John 5:7-8)
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_05_spot_check_variants | ----------------------------------------
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_05_spot_check_variants |   Words found: 20
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_05_spot_check_variants |   Verses: [np.int64(7), np.int64(8)]
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_05_spot_check_variants |   Sample: Ὅτι τρεῖς εἰσὶν οἱ μαρτυροῦντες...
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_05_spot_check_variants |   From N1904: 17, From NLP: 3
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_05_spot_check_variants | 
+Eunuch's Confession (Acts 8:37)
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_05_spot_check_variants | ----------------------------------------
+2026-01-04 21:01:29 | WARNING  | scripts.phase5.p5_05_spot_check_variants |   NOT FOUND!
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_05_spot_check_variants | 
+Pericope Adulterae (John 7:53-8:11)
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_05_spot_check_variants | ----------------------------------------
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_05_spot_check_variants |   Words found: 342
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_05_spot_check_variants |   Verses: [np.int64(1), np.int64(2), np.int64(3), np.int64(4), np.int64(5), np.int64(6), np.int64(7), np.int64(8), np.int64(9), np.int64(10), np.int64(11)]
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_05_spot_check_variants |   Sample: Ἰησοῦς δὲ ἐπορεύθη εἰς τὸ...
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_05_spot_check_variants |   From N1904: 268, From NLP: 74
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_05_spot_check_variants | 
+Longer Ending of Mark (Mark 16:9-20)
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_05_spot_check_variants | ----------------------------------------
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_05_spot_check_variants |   Words found: 166
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_05_spot_check_variants |   Verses: [np.int64(9), np.int64(10), np.int64(11), np.int64(12), np.int64(13), np.int64(14), np.int64(15), np.int64(16), np.int64(17), np.int64(18), np.int64(19), np.int64(20)]
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_05_spot_check_variants |   Sample: Ἀναστὰς δὲ πρωῒ πρώτῃ σαββάτου...
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_05_spot_check_variants |   From N1904: 150, From NLP: 16
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_05_spot_check_variants | 
+Lord's Prayer Doxology (Matthew 6:13)
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_05_spot_check_variants | ----------------------------------------
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_05_spot_check_variants |   Words found: 27
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_05_spot_check_variants |   Verses: [np.int64(13)]
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_05_spot_check_variants |   Sample: Καὶ μὴ εἰσενέγκῃς ἡμᾶς εἰς...
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_05_spot_check_variants |   From N1904: 11, From NLP: 16
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_05_spot_check_variants | 
+==================================================
+2026-01-04 21:01:29 | WARNING  | scripts.phase5.p5_05_spot_check_variants | WARNING: Some variants not found
+2026-01-04 21:01:29 | INFO     | __main__ | 
+============================================================
+2026-01-04 21:01:29 | INFO     | __main__ | Running: [p5_06] Test Queries
+2026-01-04 21:01:29 | INFO     | __main__ | Description: Verify TF queries work correctly
+2026-01-04 21:01:29 | INFO     | __main__ | ============================================================
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_06_test_queries | Testing Query Functionality
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_06_test_queries | ==================================================
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_06_test_queries | 
+Test 1: Find all verbs
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_06_test_queries |   Found 28,529 verbs
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_06_test_queries | 
+Test 2: Find all nouns
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_06_test_queries |   Found 6,229 nouns
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_06_test_queries | 
+Test 3: Find nominative case words
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_06_test_queries |   Found 20,301 nominative words
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_06_test_queries | 
+Test 4: Find John 3:16
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_06_test_queries |   Found 26 words: Οὕτως γὰρ ἠγάπησεν ὁ θεὸς τὸν κόσμον ὥστε τὸν υἱὸν αὐτοῦ τὸν...
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_06_test_queries | 
+Test 5: Find words with English gloss
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_06_test_queries |   Found 120,274 words with gloss (85.7%)
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_06_test_queries | 
+==================================================
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_06_test_queries | Tests passed: 5
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_06_test_queries | Tests failed: 0
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_06_test_queries | PASSED: All query tests passed
+2026-01-04 21:01:29 | INFO     | __main__ | 
+============================================================
+2026-01-04 21:01:29 | INFO     | __main__ | Running: [p5_07] Test Edge Cases
+2026-01-04 21:01:29 | INFO     | __main__ | Description: Test unusual grammatical constructions
+2026-01-04 21:01:29 | INFO     | __main__ | ============================================================
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_07_test_edge_cases | Testing Edge Cases
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_07_test_edge_cases | ==================================================
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_07_test_edge_cases | 
+1. Longest verses (by word count):
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_07_test_edge_cases |    REV 20:4 - 59 words
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_07_test_edge_cases |    REV 3:12 - 52 words
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_07_test_edge_cases |    REV 5:13 - 52 words
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_07_test_edge_cases |    REV 9:20 - 50 words
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_07_test_edge_cases |    JOH 8:9 - 48 words
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_07_test_edge_cases | 
+2. Shortest verses:
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_07_test_edge_cases |    1TH 5:16 - 2 words: Πάντοτε χαίρετε
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_07_test_edge_cases |    1TH 5:17 - 2 words: ἀδιαλείπτως προσεύχεσθε
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_07_test_edge_cases |    1TH 5:20 - 3 words: προφητείας μὴ ἐξουθενεῖτε
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_07_test_edge_cases |    ACT 14:7 - 3 words: κἀκεῖ ἦσαν εὐαγγελιζόμενοι
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_07_test_edge_cases |    HEB 13:1 - 3 words: Ἡ φιλαδελφία μενέτω
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_07_test_edge_cases | 
+3. Rare parts of speech:
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_07_test_edge_cases |    punct: 7
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_07_test_edge_cases | 
+4. Hapax legomena (sample):
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_07_test_edge_cases |    Total hapax: 11167
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_07_test_edge_cases |    λουτροῦ (TIT 3:5)
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_07_test_edge_cases |    φιλοῦντας (TIT 3:15)
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_07_test_edge_cases |    ἀνωφελεῖς (TIT 3:9)
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_07_test_edge_cases |    νομικὰς (TIT 3:9)
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_07_test_edge_cases |    γενεαλογίας (TIT 3:9)
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_07_test_edge_cases | 
+5. Optative mood verbs (rare):
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_07_test_edge_cases |    Found 63 optative verbs
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_07_test_edge_cases |    γένοιτο - 1CO 6:15
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_07_test_edge_cases |    τύχοι - 1CO 14:10
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_07_test_edge_cases |    τύχοι - 1CO 15:37
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_07_test_edge_cases | 
+==================================================
+2026-01-04 21:01:29 | INFO     | scripts.phase5.p5_07_test_edge_cases | PASSED: Edge case analysis complete
+2026-01-04 21:01:29 | INFO     | __main__ | 
+============================================================
+2026-01-04 21:01:29 | INFO     | __main__ | Running: [p5_08] Generate Report
+2026-01-04 21:01:29 | INFO     | __main__ | Description: Create final QA report
+2026-01-04 21:01:29 | INFO     | __main__ | ============================================================
+2026-01-04 21:01:30 | INFO     | scripts.phase5.p5_08_generate_report | Generated QA report: /home/michael/bible/tr/data/output/reports/QA_FINAL_REPORT.md
+2026-01-04 21:01:30 | INFO     | scripts.phase5.p5_08_generate_report | PASSED: Final report generated

@@ -1,0 +1,57 @@
+2026-01-04 19:59:35 | INFO     | root | Logging to: /home/michael/bible/tr/logs/pipeline_20260104_195935.log
+2026-01-04 19:59:35 | INFO     | __main__ | Running 5 scripts...
+2026-01-04 19:59:35 | INFO     | __main__ | 
+============================================================
+2026-01-04 19:59:35 | INFO     | __main__ | Running: [p1_01] Setup Environment
+2026-01-04 19:59:35 | INFO     | __main__ | Description: Verify all dependencies are installed
+2026-01-04 19:59:35 | INFO     | __main__ | ============================================================
+2026-01-04 19:59:35 | INFO     | scripts.phase1.p1_01_setup_env | Checking required dependencies...
+2026-01-04 19:59:35 | INFO     | scripts.phase1.p1_01_setup_env | 
+Core Libraries:
+2026-01-04 19:59:35 | INFO     | scripts.phase1.p1_01_setup_env |   [OK] pandas
+2026-01-04 19:59:35 | INFO     | scripts.phase1.p1_01_setup_env |   [OK] pyarrow
+2026-01-04 19:59:35 | INFO     | scripts.phase1.p1_01_setup_env |   [OK] pyyaml
+2026-01-04 19:59:35 | INFO     | scripts.phase1.p1_01_setup_env | 
+Text-Fabric:
+2026-01-04 19:59:35 | INFO     | scripts.phase1.p1_01_setup_env |   [OK] text-fabric
+2026-01-04 19:59:36 | INFO     | scripts.phase1.p1_01_setup_env |   [OK] Text-Fabric API available
+2026-01-04 19:59:36 | INFO     | scripts.phase1.p1_01_setup_env | 
+NLP Libraries:
+2026-01-04 19:59:40 | INFO     | scripts.phase1.p1_01_setup_env |   [OK] stanza
+2026-01-04 19:59:40 | INFO     | scripts.phase1.p1_01_setup_env |   [OK] Stanza available (grc model may need download)
+2026-01-04 19:59:40 | INFO     | scripts.phase1.p1_01_setup_env | 
+Optional Libraries:
+2026-01-04 19:59:40 | INFO     | scripts.phase1.p1_01_setup_env |   [OK] tqdm
+2026-01-04 19:59:40 | INFO     | scripts.phase1.p1_01_setup_env |   [OK] requests
+2026-01-04 19:59:40 | INFO     | scripts.phase1.p1_01_setup_env | 
+Directory Structure:
+2026-01-04 19:59:40 | INFO     | scripts.phase1.p1_01_setup_env |   [OK] data/source/
+2026-01-04 19:59:40 | INFO     | scripts.phase1.p1_01_setup_env |   [OK] data/intermediate/
+2026-01-04 19:59:40 | INFO     | scripts.phase1.p1_01_setup_env |   [OK] data/output/
+2026-01-04 19:59:40 | INFO     | scripts.phase1.p1_01_setup_env |   [OK] logs/
+2026-01-04 19:59:40 | INFO     | scripts.phase1.p1_01_setup_env |   [OK] reports/
+2026-01-04 19:59:40 | INFO     | scripts.phase1.p1_01_setup_env | 
+2026-01-04 19:59:40 | INFO     | scripts.phase1.p1_01_setup_env | All required dependencies are installed!
+2026-01-04 19:59:40 | INFO     | __main__ | 
+============================================================
+2026-01-04 19:59:40 | INFO     | __main__ | Running: [p1_02] Schema Scout
+2026-01-04 19:59:40 | INFO     | __main__ | Description: Extract N1904 schema definition
+2026-01-04 19:59:40 | INFO     | __main__ | ============================================================
+2026-01-04 19:59:40 | INFO     | scripts.phase1.p1_02_schema_scout | Loading N1904 dataset...
+2026-01-04 19:59:40 | INFO     | scripts.utils.tf_helpers | Loading N1904 from TF repository: ETCBC/N1904
+2026-01-04 19:59:41 | INFO     | scripts.phase1.p1_02_schema_scout | Extracting schema...
+2026-01-04 19:59:41 | INFO     | scripts.phase1.p1_02_schema_scout | Extracting otypes...
+2026-01-04 19:59:41 | ERROR    | __main__ | Script failed: 'NoneType' object has no attribute 'F'
+2026-01-04 19:59:41 | ERROR    | __main__ | Traceback (most recent call last):
+  File "/home/michael/bible/tr/run_pipeline.py", line 369, in run_script
+    success = module.main(config)
+              ^^^^^^^^^^^^^^^^^^^
+  File "/home/michael/bible/tr/scripts/phase1/p1_02_schema_scout.py", line 209, in main
+    schema = extract_full_schema(api)
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/michael/bible/tr/scripts/phase1/p1_02_schema_scout.py", line 131, in extract_full_schema
+    for otype, count in api.F.otype.freqList():
+                        ^^^^^
+AttributeError: 'NoneType' object has no attribute 'F'
+
+2026-01-04 19:59:41 | ERROR    | __main__ | Stopping due to failure (--fail-fast)

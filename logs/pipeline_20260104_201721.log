@@ -1,0 +1,39 @@
+2026-01-04 20:17:21 | INFO     | root | Logging to: /home/michael/bible/tr/logs/pipeline_20260104_201721.log
+2026-01-04 20:17:21 | INFO     | __main__ | Running 6 scripts...
+2026-01-04 20:17:21 | INFO     | __main__ | [DRY RUN MODE]
+2026-01-04 20:17:21 | INFO     | __main__ | 
+============================================================
+2026-01-04 20:17:21 | INFO     | __main__ | Running: [p3_01] Analyze Gaps
+2026-01-04 20:17:21 | INFO     | __main__ | Description: Categorize and group gap spans
+2026-01-04 20:17:21 | INFO     | __main__ | ============================================================
+2026-01-04 20:17:21 | INFO     | __main__ | [DRY RUN] Would run: scripts.phase3.p3_01_analyze_gaps
+2026-01-04 20:17:21 | INFO     | __main__ | 
+============================================================
+2026-01-04 20:17:21 | INFO     | __main__ | Running: [p3_02] Setup Stanza
+2026-01-04 20:17:21 | INFO     | __main__ | Description: Configure Stanza NLP for Ancient Greek
+2026-01-04 20:17:21 | INFO     | __main__ | ============================================================
+2026-01-04 20:17:21 | INFO     | __main__ | [DRY RUN] Would run: scripts.phase3.p3_02_setup_stanza
+2026-01-04 20:17:21 | INFO     | __main__ | 
+============================================================
+2026-01-04 20:17:21 | INFO     | __main__ | Running: [p3_03] Build Label Map
+2026-01-04 20:17:21 | INFO     | __main__ | Description: Create UD to N1904 label mapping
+2026-01-04 20:17:21 | INFO     | __main__ | ============================================================
+2026-01-04 20:17:21 | INFO     | __main__ | [DRY RUN] Would run: scripts.phase3.p3_03_build_label_map
+2026-01-04 20:17:21 | INFO     | __main__ | 
+============================================================
+2026-01-04 20:17:21 | INFO     | __main__ | Running: [p3_04] Parse Gaps
+2026-01-04 20:17:21 | INFO     | __main__ | Description: Run Stanza on all gap spans
+2026-01-04 20:17:21 | INFO     | __main__ | ============================================================
+2026-01-04 20:17:21 | INFO     | __main__ | [DRY RUN] Would run: scripts.phase3.p3_04_parse_gaps
+2026-01-04 20:17:21 | INFO     | __main__ | 
+============================================================
+2026-01-04 20:17:21 | INFO     | __main__ | Running: [p3_05] Convert Parses
+2026-01-04 20:17:21 | INFO     | __main__ | Description: Convert Stanza output to N1904 format
+2026-01-04 20:17:21 | INFO     | __main__ | ============================================================
+2026-01-04 20:17:21 | INFO     | __main__ | [DRY RUN] Would run: scripts.phase3.p3_05_convert_parses
+2026-01-04 20:17:21 | INFO     | __main__ | 
+============================================================
+2026-01-04 20:17:21 | INFO     | __main__ | Running: [p3_06] Review Variants
+2026-01-04 20:17:21 | INFO     | __main__ | Description: LLM review of high-profile variants
+2026-01-04 20:17:21 | INFO     | __main__ | ============================================================
+2026-01-04 20:17:21 | INFO     | __main__ | [DRY RUN] Would run: scripts.phase3.p3_06_review_variants

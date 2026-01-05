@@ -1,0 +1,67 @@
+{
+  "otypes": [
+    "book",
+    "chapter",
+    "verse",
+    "word"
+  ],
+  "slot_type": "word",
+  "counts": {
+    "word": 140726,
+    "verse": 7957,
+    "chapter": 260,
+    "book": 27
+  },
+  "node_ranges": {
+    "word": [
+      1,
+      140726
+    ],
+    "verse": [
+      140727,
+      148683
+    ],
+    "chapter": [
+      148684,
+      148943
+    ],
+    "book": [
+      148944,
+      148970
+    ]
+  },
+  "features": {
+    "word": [
+      "word",
+      "lemma",
+      "sp",
+      "function",
+      "case",
+      "gn",
+      "nu",
+      "ps",
+      "tense",
+      "voice",
+      "mood",
+      "gloss",
+      "source"
+    ],
+    "verse": [
+      "book",
+      "chapter",
+      "verse"
+    ],
+    "chapter": [
+      "book",
+      "chapter"
+    ],
+    "book": [
+      "name"
+    ]
+  },
+  "metadata": {
+    "name": "TR",
+    "version": "1.0",
+    "language": "grc"
+  }
+}

@@ -1,0 +1,76 @@
+2026-01-04 20:10:32 | INFO     | root | Logging to: /home/michael/bible/tr/logs/pipeline_20260104_201032.log
+2026-01-04 20:10:32 | INFO     | __main__ | Running 4 scripts...
+2026-01-04 20:10:32 | INFO     | __main__ | 
+============================================================
+2026-01-04 20:10:32 | INFO     | __main__ | Running: [p2_03] PoC Single Book
+2026-01-04 20:10:32 | INFO     | __main__ | Description: Proof of concept on 3 John
+2026-01-04 20:10:32 | INFO     | __main__ | ============================================================
+2026-01-04 20:10:32 | INFO     | scripts.phase2.p2_03_poc_single_book | Loading data...
+2026-01-04 20:10:33 | INFO     | scripts.phase2.p2_03_poc_single_book | Running PoC alignment on: 3John
+2026-01-04 20:10:33 | INFO     | scripts.phase2.p2_03_poc_single_book | Book: 3John
+2026-01-04 20:10:33 | INFO     | scripts.phase2.p2_03_poc_single_book |   TR words: 217
+2026-01-04 20:10:33 | INFO     | scripts.phase2.p2_03_poc_single_book |   N1904 words: 219
+2026-01-04 20:10:33 | INFO     | scripts.phase2.p2_03_poc_single_book |   Common verses: 14
+2026-01-04 20:10:33 | INFO     | scripts.phase2.p2_03_poc_single_book |   TR-only verses: 0
+2026-01-04 20:10:33 | INFO     | scripts.phase2.p2_03_poc_single_book |   N1904-only verses: 1
+2026-01-04 20:10:33 | INFO     | scripts.phase2.p2_03_poc_single_book | 
+==================================================
+2026-01-04 20:10:33 | INFO     | scripts.phase2.p2_03_poc_single_book | PoC Results for 3John
+2026-01-04 20:10:33 | INFO     | scripts.phase2.p2_03_poc_single_book | ==================================================
+2026-01-04 20:10:33 | INFO     | scripts.phase2.p2_03_poc_single_book | Alignment Rate: 0.0%
+2026-01-04 20:10:33 | INFO     | scripts.phase2.p2_03_poc_single_book | Aligned: 0 / 217 words
+2026-01-04 20:10:33 | INFO     | scripts.phase2.p2_03_poc_single_book | TR Gaps: 217
+2026-01-04 20:10:33 | INFO     | scripts.phase2.p2_03_poc_single_book | N1904 Gaps: 208
+2026-01-04 20:10:33 | INFO     | scripts.phase2.p2_03_poc_single_book | Report written to: /home/michael/bible/tr/reports/poc_3john_report.md
+2026-01-04 20:10:33 | WARNING  | scripts.phase2.p2_03_poc_single_book | Alignment rate 0.0% < 95.0%
+2026-01-04 20:10:33 | WARNING  | scripts.phase2.p2_03_poc_single_book | This may indicate data format issues
+2026-01-04 20:10:33 | INFO     | __main__ | 
+============================================================
+2026-01-04 20:10:33 | INFO     | __main__ | Running: [p2_04] Full Alignment
+2026-01-04 20:10:33 | INFO     | __main__ | Description: Run alignment on entire NT
+2026-01-04 20:10:33 | INFO     | __main__ | ============================================================
+2026-01-04 20:10:33 | INFO     | scripts.phase2.p2_04_full_alignment | Loading data...
+2026-01-04 20:10:33 | INFO     | scripts.phase2.p2_04_full_alignment | TR words: 140,366
+2026-01-04 20:10:33 | INFO     | scripts.phase2.p2_04_full_alignment | N1904 words: 137,779
+2026-01-04 20:10:33 | INFO     | scripts.phase2.p2_04_full_alignment | Processing 29 books...
+2026-01-04 20:10:49 | INFO     | scripts.phase2.p2_04_full_alignment | Saving results...
+2026-01-04 20:10:49 | INFO     | scripts.phase2.p2_04_full_alignment | Alignment map: 0 records -> /home/michael/bible/tr/data/intermediate/alignment_map.parquet
+2026-01-04 20:10:49 | INFO     | scripts.phase2.p2_04_full_alignment | Gaps: 140,366 records -> /home/michael/bible/tr/data/intermediate/gaps.csv
+2026-01-04 20:10:49 | INFO     | scripts.phase2.p2_04_full_alignment | Report: /home/michael/bible/tr/reports/alignment_report.md
+2026-01-04 20:10:49 | INFO     | scripts.phase2.p2_04_full_alignment | 
+==================================================
+2026-01-04 20:10:49 | INFO     | scripts.phase2.p2_04_full_alignment | ALIGNMENT COMPLETE
+2026-01-04 20:10:49 | INFO     | scripts.phase2.p2_04_full_alignment | ==================================================
+2026-01-04 20:10:49 | INFO     | scripts.phase2.p2_04_full_alignment | Alignment Rate: 0.0%
+2026-01-04 20:10:49 | INFO     | scripts.phase2.p2_04_full_alignment | Aligned: 0 words
+2026-01-04 20:10:49 | INFO     | scripts.phase2.p2_04_full_alignment | Gaps: 140,366 words
+2026-01-04 20:10:49 | INFO     | __main__ | 
+============================================================
+2026-01-04 20:10:49 | INFO     | __main__ | Running: [p2_05] Build ID Map
+2026-01-04 20:10:49 | INFO     | __main__ | Description: Create node ID translation table
+2026-01-04 20:10:49 | INFO     | __main__ | ============================================================
+2026-01-04 20:10:49 | INFO     | scripts.phase2.p2_05_build_id_map | Loading alignment map...
+2026-01-04 20:10:49 | INFO     | scripts.phase2.p2_05_build_id_map | Alignments: 0
+2026-01-04 20:10:49 | INFO     | scripts.phase2.p2_05_build_id_map | Loading N1904 data...
+2026-01-04 20:10:49 | INFO     | scripts.phase2.p2_05_build_id_map | Building ID translation table...
+2026-01-04 20:10:49 | ERROR    | __main__ | Script failed: "None of [Index(['n1904_node_id', 'tr_word_id'], dtype='object')] are in the [columns]"
+2026-01-04 20:10:49 | ERROR    | __main__ | Traceback (most recent call last):
+  File "/home/michael/bible/tr/run_pipeline.py", line 369, in run_script
+    success = module.main(config)
+              ^^^^^^^^^^^^^^^^^^^
+  File "/home/michael/bible/tr/scripts/phase2/p2_05_build_id_map.py", line 127, in main
+    id_translation = build_id_translation(alignment_df, n1904_df)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/michael/bible/tr/scripts/phase2/p2_05_build_id_map.py", line 41, in build_id_translation
+    word_map = alignment_df[["n1904_node_id", "tr_word_id"]].copy()
+               ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/michael/bible/venv/lib/python3.12/site-packages/pandas/core/frame.py", line 4119, in __getitem__
+    indexer = self.columns._get_indexer_strict(key, "columns")[1]
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/michael/bible/venv/lib/python3.12/site-packages/pandas/core/indexes/base.py", line 6212, in _get_indexer_strict
+    self._raise_if_missing(keyarr, indexer, axis_name)
+  File "/home/michael/bible/venv/lib/python3.12/site-packages/pandas/core/indexes/base.py", line 6261, in _raise_if_missing
+    raise KeyError(f"None of [{key}] are in the [{axis_name}]")
+KeyError: "None of [Index(['n1904_node_id', 'tr_word_id'], dtype='object')] are in the [columns]"
+
+2026-01-04 20:10:49 | ERROR    | __main__ | Stopping due to failure (--fail-fast)

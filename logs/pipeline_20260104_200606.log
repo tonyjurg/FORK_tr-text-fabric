@@ -1,0 +1,31 @@
+2026-01-04 20:06:06 | INFO     | root | Logging to: /home/michael/bible/tr/logs/pipeline_20260104_200606.log
+2026-01-04 20:06:06 | INFO     | __main__ | Running 6 scripts...
+2026-01-04 20:06:06 | INFO     | __main__ | 
+============================================================
+2026-01-04 20:06:06 | INFO     | __main__ | Running: [p2_01] Extract N1904
+2026-01-04 20:06:06 | INFO     | __main__ | Description: Extract N1904 words with syntax features
+2026-01-04 20:06:06 | INFO     | __main__ | ============================================================
+2026-01-04 20:06:06 | INFO     | scripts.phase2.p2_01_extract_n1904 | Loading N1904...
+2026-01-04 20:06:06 | INFO     | scripts.utils.tf_helpers | Loading N1904 from TF repository: CenterBLC/N1904
+2026-01-04 20:06:13 | INFO     | scripts.phase2.p2_01_extract_n1904 | Extracting features: ['word', 'lemma', 'sp', 'gn', 'nu', 'ps', 'case', 'tense', 'voice', 'mood', 'gloss', 'function', 'role', 'type']
+2026-01-04 20:06:13 | INFO     | scripts.phase2.p2_01_extract_n1904 | Processing 137,779 words...
+2026-01-04 20:06:17 | INFO     | scripts.phase2.p2_01_extract_n1904 | Extracted 137,779 words
+2026-01-04 20:06:17 | INFO     | scripts.phase2.p2_01_extract_n1904 | Columns: ['node_id', 'book', 'chapter', 'verse', 'word_rank', 'lemma', 'sp', 'case', 'tense', 'voice', 'mood', 'gloss', 'function', 'role', 'parent', 'clause_id', 'phrase_id']
+2026-01-04 20:06:17 | INFO     | scripts.phase2.p2_01_extract_n1904 | Saved to: /home/michael/bible/tr/data/intermediate/n1904_words.parquet
+2026-01-04 20:06:17 | INFO     | __main__ | 
+============================================================
+2026-01-04 20:06:17 | INFO     | __main__ | Running: [p2_02] Align Verses
+2026-01-04 20:06:17 | INFO     | __main__ | Description: Create verse alignment framework
+2026-01-04 20:06:17 | INFO     | __main__ | ============================================================
+2026-01-04 20:06:17 | INFO     | scripts.phase2.p2_02_align_verses | Alignment module verified
+2026-01-04 20:06:17 | INFO     | scripts.phase2.p2_02_align_verses | Functions available:
+2026-01-04 20:06:17 | INFO     | scripts.phase2.p2_02_align_verses |   - create_word_key(row, match_criteria)
+2026-01-04 20:06:17 | INFO     | scripts.phase2.p2_02_align_verses |   - align_verse_words(tr_words, n1904_words, match_criteria)
+2026-01-04 20:06:17 | INFO     | __main__ | 
+============================================================
+2026-01-04 20:06:17 | INFO     | __main__ | Running: [p2_03] PoC Single Book
+2026-01-04 20:06:17 | INFO     | __main__ | Description: Proof of concept on 3 John
+2026-01-04 20:06:17 | INFO     | __main__ | ============================================================
+2026-01-04 20:06:17 | WARNING  | scripts.phase2.p2_03_poc_single_book | Script not yet implemented: p2_03_poc_single_book
+2026-01-04 20:06:17 | INFO     | scripts.phase2.p2_03_poc_single_book | Refer to the phase plan for implementation details
+2026-01-04 20:06:17 | ERROR    | __main__ | Stopping due to failure (--fail-fast)

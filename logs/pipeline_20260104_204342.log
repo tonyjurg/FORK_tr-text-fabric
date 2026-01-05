@@ -1,0 +1,17 @@
+2026-01-04 20:43:42 | INFO     | root | Logging to: /home/michael/bible/tr/logs/pipeline_20260104_204342.log
+2026-01-04 20:43:42 | INFO     | __main__ | Running 1 scripts...
+2026-01-04 20:43:42 | INFO     | __main__ | 
+============================================================
+2026-01-04 20:43:42 | INFO     | __main__ | Running: [p3_06] Review Variants
+2026-01-04 20:43:42 | INFO     | __main__ | Description: LLM review of high-profile variants
+2026-01-04 20:43:42 | INFO     | __main__ | ============================================================
+2026-01-04 20:43:43 | INFO     | scripts.phase3.p3_06_review_variants | Loading data...
+2026-01-04 20:43:43 | INFO     | scripts.phase3.p3_06_review_variants | Priority variants: 7
+2026-01-04 20:43:43 | INFO     | scripts.phase3.p3_06_review_variants | Found 47 variant spans
+2026-01-04 20:43:43 | INFO     | scripts.phase3.p3_06_review_variants | Generated review: /home/michael/bible/tr/reviews/longer_ending_of_mark.md
+2026-01-04 20:43:43 | INFO     | scripts.phase3.p3_06_review_variants | Generated review: /home/michael/bible/tr/reviews/pericope_adulterae_start.md
+2026-01-04 20:43:43 | INFO     | scripts.phase3.p3_06_review_variants | Generated review: /home/michael/bible/tr/reviews/pericope_adulterae.md
+2026-01-04 20:43:43 | INFO     | scripts.phase3.p3_06_review_variants | Generated review: /home/michael/bible/tr/reviews/book_tree_of_life.md
+2026-01-04 20:43:43 | INFO     | scripts.phase3.p3_06_review_variants | 
+Review files generated in: /home/michael/bible/tr/reviews
+2026-01-04 20:43:43 | INFO     | scripts.phase3.p3_06_review_variants | Please review and update the generated documentation

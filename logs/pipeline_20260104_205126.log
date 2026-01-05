@@ -1,0 +1,172 @@
+2026-01-04 20:51:26 | INFO     | root | Logging to: /home/michael/bible/tr/logs/pipeline_20260104_205126.log
+2026-01-04 20:51:26 | INFO     | __main__ | Running 7 scripts...
+2026-01-04 20:51:26 | INFO     | __main__ | 
+============================================================
+2026-01-04 20:51:26 | INFO     | __main__ | Running: [p4_01] Merge Data
+2026-01-04 20:51:26 | INFO     | __main__ | Description: Combine transplanted and patched data
+2026-01-04 20:51:26 | INFO     | __main__ | ============================================================
+2026-01-04 20:51:26 | INFO     | scripts.phase4.p4_01_merge_data | Loading data...
+2026-01-04 20:51:26 | INFO     | scripts.phase4.p4_01_merge_data | Transplanted: 140366 words
+2026-01-04 20:51:26 | INFO     | scripts.phase4.p4_01_merge_data | Gap syntax: 20092 words
+2026-01-04 20:51:26 | INFO     | scripts.phase4.p4_01_merge_data | Original TR: 140366 words
+2026-01-04 20:51:26 | INFO     | scripts.phase4.p4_01_merge_data | Merging data...
+2026-01-04 20:51:26 | INFO     | scripts.phase4.p4_01_merge_data | Transplanted words: 140366
+2026-01-04 20:51:26 | INFO     | scripts.phase4.p4_01_merge_data | Gap syntax words: 20092
+2026-01-04 20:51:32 | INFO     | scripts.phase4.p4_01_merge_data | Updated 20092 gap words with NLP syntax
+2026-01-04 20:51:32 | INFO     | scripts.phase4.p4_01_merge_data | Merge validation passed
+2026-01-04 20:51:32 | INFO     | scripts.phase4.p4_01_merge_data | Saved to: /home/michael/bible/tr/data/intermediate/tr_complete.parquet
+2026-01-04 20:51:32 | INFO     | scripts.phase4.p4_01_merge_data | 
+Merge Summary:
+2026-01-04 20:51:32 | INFO     | scripts.phase4.p4_01_merge_data | ----------------------------------------
+2026-01-04 20:51:32 | INFO     | scripts.phase4.p4_01_merge_data | Total words: 140366
+2026-01-04 20:51:32 | INFO     | scripts.phase4.p4_01_merge_data | From N1904 (transplanted): 120274 (85.7%)
+2026-01-04 20:51:32 | INFO     | scripts.phase4.p4_01_merge_data | From NLP (generated): 20092 (14.3%)
+2026-01-04 20:51:32 | INFO     | __main__ | 
+============================================================
+2026-01-04 20:51:32 | INFO     | __main__ | Running: [p4_02] Generate Containers
+2026-01-04 20:51:32 | INFO     | __main__ | Description: Create clause/phrase/sentence nodes
+2026-01-04 20:51:32 | INFO     | __main__ | ============================================================
+2026-01-04 20:51:32 | INFO     | scripts.phase4.p4_02_generate_containers | Loading complete data...
+2026-01-04 20:51:32 | INFO     | scripts.phase4.p4_02_generate_containers | Words: 140366
+2026-01-04 20:51:34 | INFO     | scripts.phase4.p4_02_generate_containers | Generated 8260 section containers
+2026-01-04 20:51:34 | INFO     | scripts.phase4.p4_02_generate_containers | Saved to: /home/michael/bible/tr/data/intermediate/tr_containers.parquet
+2026-01-04 20:51:34 | INFO     | scripts.phase4.p4_02_generate_containers | 
+Container Summary:
+2026-01-04 20:51:34 | INFO     | scripts.phase4.p4_02_generate_containers | ----------------------------------------
+2026-01-04 20:51:34 | INFO     | scripts.phase4.p4_02_generate_containers |   verse: 7968
+2026-01-04 20:51:34 | INFO     | scripts.phase4.p4_02_generate_containers |   chapter: 263
+2026-01-04 20:51:34 | INFO     | scripts.phase4.p4_02_generate_containers |   book: 29
+2026-01-04 20:51:34 | INFO     | scripts.phase4.p4_02_generate_containers | Next available node ID: 148627
+2026-01-04 20:51:34 | INFO     | __main__ | 
+============================================================
+2026-01-04 20:51:34 | INFO     | __main__ | Running: [p4_03] Configure OTypes
+2026-01-04 20:51:34 | INFO     | __main__ | Description: Set up node type hierarchy
+2026-01-04 20:51:34 | INFO     | __main__ | ============================================================
+2026-01-04 20:51:34 | INFO     | scripts.phase4.p4_03_configure_otypes | Loading data...
+2026-01-04 20:51:34 | INFO     | scripts.phase4.p4_03_configure_otypes | OTypes configuration:
+2026-01-04 20:51:34 | INFO     | scripts.phase4.p4_03_configure_otypes |   book: 29 nodes
+2026-01-04 20:51:34 | INFO     | scripts.phase4.p4_03_configure_otypes |   chapter: 263 nodes
+2026-01-04 20:51:34 | INFO     | scripts.phase4.p4_03_configure_otypes |   verse: 7968 nodes
+2026-01-04 20:51:34 | INFO     | scripts.phase4.p4_03_configure_otypes |   word: 140366 nodes
+2026-01-04 20:51:34 | INFO     | scripts.phase4.p4_03_configure_otypes | Saved TF config to: /home/michael/bible/tr/data/intermediate/tf_config.json
+2026-01-04 20:51:34 | INFO     | __main__ | 
+============================================================
+2026-01-04 20:51:34 | INFO     | __main__ | Running: [p4_04] Generate Features
+2026-01-04 20:51:34 | INFO     | __main__ | Description: Write node feature .tf files
+2026-01-04 20:51:34 | INFO     | __main__ | ============================================================
+2026-01-04 20:51:34 | INFO     | scripts.phase4.p4_04_generate_features | Loading data...
+2026-01-04 20:51:34 | INFO     | scripts.phase4.p4_04_generate_features | Words: 140366
+2026-01-04 20:51:34 | INFO     | scripts.phase4.p4_04_generate_features | Containers: 8260
+2026-01-04 20:51:34 | INFO     | scripts.phase4.p4_04_generate_features | Building TF data structures...
+2026-01-04 20:52:25 | INFO     | scripts.phase4.p4_04_generate_features | Built 13 word features
+2026-01-04 20:52:25 | INFO     | scripts.phase4.p4_04_generate_features | Built oslots for 8260 containers
+2026-01-04 20:52:25 | INFO     | scripts.phase4.p4_04_generate_features | Writing TF dataset...
+2026-01-04 20:52:29 | INFO     | scripts.phase4.p4_04_generate_features | Writing TF dataset to: /home/michael/bible/tr/data/output/tf
+2026-01-04 20:52:29 | INFO     | scripts.phase4.p4_04_generate_features |   Wrote word: 140366 values
+2026-01-04 20:52:29 | INFO     | scripts.phase4.p4_04_generate_features |   Wrote lemma: 140366 values
+2026-01-04 20:52:29 | INFO     | scripts.phase4.p4_04_generate_features |   Wrote sp: 140366 values
+2026-01-04 20:52:29 | INFO     | scripts.phase4.p4_04_generate_features |   Wrote function: 59704 values
+2026-01-04 20:52:29 | INFO     | scripts.phase4.p4_04_generate_features |   Wrote case: 81426 values
+2026-01-04 20:52:29 | INFO     | scripts.phase4.p4_04_generate_features |   Wrote gn: 11868 values
+2026-01-04 20:52:29 | INFO     | scripts.phase4.p4_04_generate_features |   Wrote nu: 15013 values
+2026-01-04 20:52:29 | INFO     | scripts.phase4.p4_04_generate_features |   Wrote ps: 3145 values
+2026-01-04 20:52:29 | INFO     | scripts.phase4.p4_04_generate_features |   Wrote tense: 28529 values
+2026-01-04 20:52:29 | INFO     | scripts.phase4.p4_04_generate_features |   Wrote voice: 28529 values
+2026-01-04 20:52:29 | INFO     | scripts.phase4.p4_04_generate_features |   Wrote mood: 27540 values
+2026-01-04 20:52:29 | INFO     | scripts.phase4.p4_04_generate_features |   Wrote gloss: 120274 values
+2026-01-04 20:52:29 | INFO     | scripts.phase4.p4_04_generate_features |   Wrote source: 140366 values
+2026-01-04 20:52:29 | INFO     | scripts.phase4.p4_04_generate_features |   Wrote book@verse: 7968 values
+2026-01-04 20:52:29 | INFO     | scripts.phase4.p4_04_generate_features |   Wrote chapter@verse: 7968 values
+2026-01-04 20:52:29 | INFO     | scripts.phase4.p4_04_generate_features |   Wrote verse@verse: 7968 values
+2026-01-04 20:52:29 | INFO     | scripts.phase4.p4_04_generate_features |   Wrote book@chapter: 263 values
+2026-01-04 20:52:29 | INFO     | scripts.phase4.p4_04_generate_features |   Wrote chapter@chapter: 263 values
+2026-01-04 20:52:29 | INFO     | scripts.phase4.p4_04_generate_features |   Wrote book@book: 29 values
+2026-01-04 20:52:29 | INFO     | scripts.phase4.p4_04_generate_features |   Wrote oslots: 8260 containers
+2026-01-04 20:52:29 | INFO     | scripts.phase4.p4_04_generate_features | 
+TF dataset written to: /home/michael/bible/tr/data/output/tf
+2026-01-04 20:52:29 | INFO     | __main__ | 
+============================================================
+2026-01-04 20:52:29 | INFO     | __main__ | Running: [p4_05] Generate Edges
+2026-01-04 20:52:29 | INFO     | __main__ | Description: Write edge feature .tf files
+2026-01-04 20:52:29 | INFO     | __main__ | ============================================================
+2026-01-04 20:52:29 | INFO     | scripts.phase4.p4_05_generate_edges | Loading complete data...
+2026-01-04 20:52:29 | INFO     | scripts.phase4.p4_05_generate_edges | Words: 140366
+2026-01-04 20:52:29 | INFO     | scripts.phase4.p4_05_generate_edges | Building parent edges...
+2026-01-04 20:52:36 | INFO     | scripts.phase4.p4_05_generate_edges | Built 3962 parent edges
+2026-01-04 20:52:36 | INFO     | scripts.phase4.p4_05_generate_edges | Root words (no parent): 136404
+2026-01-04 20:52:36 | INFO     | scripts.phase4.p4_05_generate_edges | Wrote 3962 edges to /home/michael/bible/tr/data/output/tf/parent.tf
+2026-01-04 20:52:36 | INFO     | scripts.phase4.p4_05_generate_edges | 
+Edge Summary:
+2026-01-04 20:52:36 | INFO     | scripts.phase4.p4_05_generate_edges | ----------------------------------------
+2026-01-04 20:52:36 | INFO     | scripts.phase4.p4_05_generate_edges | Parent edges written: 3962
+2026-01-04 20:52:36 | INFO     | __main__ | 
+============================================================
+2026-01-04 20:52:36 | INFO     | __main__ | Running: [p4_06] Generate Metadata
+2026-01-04 20:52:36 | INFO     | __main__ | Description: Write TF metadata files
+2026-01-04 20:52:36 | INFO     | __main__ | ============================================================
+2026-01-04 20:52:36 | INFO     | scripts.phase4.p4_06_generate_metadata | Loading data...
+2026-01-04 20:52:36 | INFO     | scripts.phase4.p4_06_generate_metadata | Writing metadata files...
+2026-01-04 20:52:36 | INFO     | scripts.phase4.p4_06_generate_metadata | Wrote otext.tf to /home/michael/bible/tr/data/output/tf/otext.tf
+2026-01-04 20:52:37 | INFO     | scripts.phase4.p4_06_generate_metadata | Wrote otype.tf with 148626 nodes to /home/michael/bible/tr/data/output/tf/otype.tf
+2026-01-04 20:52:37 | INFO     | scripts.phase4.p4_06_generate_metadata | 
+Metadata Summary:
+2026-01-04 20:52:37 | INFO     | scripts.phase4.p4_06_generate_metadata | ----------------------------------------
+2026-01-04 20:52:37 | INFO     | scripts.phase4.p4_06_generate_metadata | Total nodes: 148626
+2026-01-04 20:52:37 | INFO     | scripts.phase4.p4_06_generate_metadata |   Words: 140366
+2026-01-04 20:52:37 | INFO     | scripts.phase4.p4_06_generate_metadata |   Containers: 8260
+2026-01-04 20:52:37 | INFO     | __main__ | 
+============================================================
+2026-01-04 20:52:37 | INFO     | __main__ | Running: [p4_07] Verify Build
+2026-01-04 20:52:37 | INFO     | __main__ | Description: Test that TF dataset loads correctly
+2026-01-04 20:52:37 | INFO     | __main__ | ============================================================
+2026-01-04 20:52:37 | INFO     | scripts.phase4.p4_07_verify_build | Verifying TF dataset at: /home/michael/bible/tr/data/output/tf
+2026-01-04 20:52:37 | INFO     | scripts.phase4.p4_07_verify_build | ==================================================
+2026-01-04 20:52:37 | INFO     | scripts.phase4.p4_07_verify_build | 
+1. File Structure Check
+2026-01-04 20:52:37 | INFO     | scripts.phase4.p4_07_verify_build | ----------------------------------------
+2026-01-04 20:52:37 | INFO     | scripts.phase4.p4_07_verify_build | Checking required files...
+2026-01-04 20:52:37 | INFO     | scripts.phase4.p4_07_verify_build |   otext.tf: 268 bytes
+2026-01-04 20:52:37 | INFO     | scripts.phase4.p4_07_verify_build |   otype.tf: 1,681,205 bytes
+2026-01-04 20:52:37 | INFO     | scripts.phase4.p4_07_verify_build |   oslots.tf: 160,184 bytes
+2026-01-04 20:52:37 | INFO     | scripts.phase4.p4_07_verify_build |   word.tf: 2,526,768 bytes
+2026-01-04 20:52:37 | INFO     | scripts.phase4.p4_07_verify_build |   lemma.tf: 2,381,687 bytes
+2026-01-04 20:52:37 | INFO     | scripts.phase4.p4_07_verify_build | Checking optional files...
+2026-01-04 20:52:37 | INFO     | scripts.phase4.p4_07_verify_build |   sp.tf: 1,549,730 bytes
+2026-01-04 20:52:37 | INFO     | scripts.phase4.p4_07_verify_build |   function.tf: 759,629 bytes
+2026-01-04 20:52:37 | INFO     | scripts.phase4.p4_07_verify_build |   case.tf: 1,239,658 bytes
+2026-01-04 20:52:37 | INFO     | scripts.phase4.p4_07_verify_build |   gn.tf: 97,059 bytes
+2026-01-04 20:52:37 | INFO     | scripts.phase4.p4_07_verify_build |   nu.tf: 122,777 bytes
+2026-01-04 20:52:37 | INFO     | scripts.phase4.p4_07_verify_build |   ps.tf: 25,753 bytes
+2026-01-04 20:52:37 | INFO     | scripts.phase4.p4_07_verify_build |   tense.tf: 384,159 bytes
+2026-01-04 20:52:37 | INFO     | scripts.phase4.p4_07_verify_build |   voice.tf: 377,772 bytes
+2026-01-04 20:52:37 | INFO     | scripts.phase4.p4_07_verify_build |   mood.tf: 453,190 bytes
+2026-01-04 20:52:37 | INFO     | scripts.phase4.p4_07_verify_build |   gloss.tf: 2,852,598 bytes
+2026-01-04 20:52:37 | INFO     | scripts.phase4.p4_07_verify_build |   source.tf: 1,673,509 bytes
+2026-01-04 20:52:37 | INFO     | scripts.phase4.p4_07_verify_build |   parent.tf: 49,220 bytes
+2026-01-04 20:52:37 | INFO     | scripts.phase4.p4_07_verify_build | 
+2. File Format Check
+2026-01-04 20:52:37 | INFO     | scripts.phase4.p4_07_verify_build | ----------------------------------------
+2026-01-04 20:52:37 | INFO     | scripts.phase4.p4_07_verify_build | otext.tf: valid config format
+2026-01-04 20:52:37 | INFO     | scripts.phase4.p4_07_verify_build | otype.tf: valid node format
+2026-01-04 20:52:37 | INFO     | scripts.phase4.p4_07_verify_build | oslots.tf: valid edge format
+2026-01-04 20:52:37 | INFO     | scripts.phase4.p4_07_verify_build | 
+3. Node Counts
+2026-01-04 20:52:37 | INFO     | scripts.phase4.p4_07_verify_build | ----------------------------------------
+2026-01-04 20:52:37 | INFO     | scripts.phase4.p4_07_verify_build |   book: 29
+2026-01-04 20:52:37 | INFO     | scripts.phase4.p4_07_verify_build |   chapter: 263
+2026-01-04 20:52:37 | INFO     | scripts.phase4.p4_07_verify_build |   verse: 7,968
+2026-01-04 20:52:37 | INFO     | scripts.phase4.p4_07_verify_build |   word: 140,366
+2026-01-04 20:52:37 | INFO     | scripts.phase4.p4_07_verify_build |   TOTAL: 148,626
+2026-01-04 20:52:37 | INFO     | scripts.phase4.p4_07_verify_build | 
+4. Data Sample
+2026-01-04 20:52:37 | INFO     | scripts.phase4.p4_07_verify_build | ----------------------------------------
+2026-01-04 20:52:37 | INFO     | scripts.phase4.p4_07_verify_build | Sample of first 5 words:
+2026-01-04 20:52:37 | INFO     | scripts.phase4.p4_07_verify_build |   Node 1: Παῦλος
+2026-01-04 20:52:37 | INFO     | scripts.phase4.p4_07_verify_build |   Node 2: κλητὸς
+2026-01-04 20:52:37 | INFO     | scripts.phase4.p4_07_verify_build |   Node 3: ἀπόστολος
+2026-01-04 20:52:37 | INFO     | scripts.phase4.p4_07_verify_build |   Node 4: Ἰησοῦ
+2026-01-04 20:52:37 | INFO     | scripts.phase4.p4_07_verify_build |   Node 5: χριστοῦ
+2026-01-04 20:52:37 | INFO     | scripts.phase4.p4_07_verify_build | 
+==================================================
+2026-01-04 20:52:37 | INFO     | scripts.phase4.p4_07_verify_build | VERIFICATION PASSED
+2026-01-04 20:52:37 | INFO     | scripts.phase4.p4_07_verify_build | TF dataset appears to be valid
