@@ -205,6 +205,14 @@ PIPELINE_SCRIPTS: List[ScriptInfo] = [
     ),
     ScriptInfo(
         phase=4, step=3,
+        module="scripts.phase4.p4_01c_fix_nlp_errors",
+        name="Fix NLP Errors",
+        description="Correct systematic NLP lemma/POS errors",
+        inputs=["data/intermediate/tr_complete.parquet", "data/intermediate/n1904_words.parquet"],
+        outputs=["data/intermediate/tr_complete.parquet"]
+    ),
+    ScriptInfo(
+        phase=4, step=4,
         module="scripts.phase4.p4_02_generate_containers",
         name="Generate Containers",
         description="Create clause/phrase/sentence nodes",
@@ -212,7 +220,7 @@ PIPELINE_SCRIPTS: List[ScriptInfo] = [
         outputs=["data/intermediate/tr_containers.parquet"]
     ),
     ScriptInfo(
-        phase=4, step=4,
+        phase=4, step=5,
         module="scripts.phase4.p4_03_configure_otypes",
         name="Configure OTypes",
         description="Set up node type hierarchy",
@@ -220,7 +228,7 @@ PIPELINE_SCRIPTS: List[ScriptInfo] = [
         outputs=[]
     ),
     ScriptInfo(
-        phase=4, step=5,
+        phase=4, step=6,
         module="scripts.phase4.p4_04_generate_features",
         name="Generate Features",
         description="Write node feature .tf files",
@@ -228,7 +236,7 @@ PIPELINE_SCRIPTS: List[ScriptInfo] = [
         outputs=["data/output/tf/"]
     ),
     ScriptInfo(
-        phase=4, step=6,
+        phase=4, step=7,
         module="scripts.phase4.p4_05_generate_edges",
         name="Generate Edges",
         description="Write edge feature .tf files",
@@ -236,7 +244,7 @@ PIPELINE_SCRIPTS: List[ScriptInfo] = [
         outputs=["data/output/tf/parent.tf"]
     ),
     ScriptInfo(
-        phase=4, step=7,
+        phase=4, step=8,
         module="scripts.phase4.p4_06_generate_metadata",
         name="Generate Metadata",
         description="Write TF metadata files",
@@ -244,7 +252,7 @@ PIPELINE_SCRIPTS: List[ScriptInfo] = [
         outputs=["data/output/tf/otext.tf", "data/output/tf/__desc__.tf"]
     ),
     ScriptInfo(
-        phase=4, step=8,
+        phase=4, step=9,
         module="scripts.phase4.p4_07_verify_build",
         name="Verify Build",
         description="Test that TF dataset loads correctly",
