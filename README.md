@@ -199,4 +199,4 @@ for v in api.F.otype.s('verse'):
 
 ## License
 
-The pipeline code is provided as-is for research purposes. The underlying text data is subject to the licenses of its respective sources.
+MIT License. See [LICENSE](LICENSE) for details.
