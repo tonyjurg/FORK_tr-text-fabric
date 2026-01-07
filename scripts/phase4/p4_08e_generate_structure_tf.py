@@ -146,7 +146,10 @@ def generate_phrases_from_assignments(verse_words: pd.DataFrame, word_assignment
     """
     Generate phrase nodes from word assignments (inferred/unknown verses).
 
-    Groups consecutive words with the same phrase type into phrase nodes.
+    Uses linguistically-aware phrase grouping:
+    - Conjunctions break phrases (they're phrase-level boundaries)
+    - Prepositions start PP and include following nominals
+    - Verbs form VP, nominals form NP, etc.
 
     Returns:
         - phrase_nodes: list of phrase node dicts
@@ -157,16 +160,19 @@ def generate_phrases_from_assignments(verse_words: pd.DataFrame, word_assignment
     # Sort words by position
     verse_words = verse_words.sort_values('word_rank')
 
-    current_phrase = None
-    current_slots = []
-    current_function = None
-    current_confidence = 0
+    # POS tags in this dataset (N1904-style):
+    # subs (noun), adjv (adjective), verb, prep, conj, art (article),
+    # pron, adv/advb, intj, ptcl (particle), nmpr (proper noun), num (numeral)
 
+    # Build list of (slot, sp, phrase_type, function, confidence) tuples
+    word_info = []
     for _, row in verse_words.iterrows():
         word_id = row['word_id']
         slot = word_to_slot.get(word_id)
         if not slot:
             continue
+
+        sp = row.get('sp', '')
 
         # Get assignment for this word
         assignment = word_assignments.get(str(word_id), word_assignments.get(word_id, {}))
@@ -174,70 +180,151 @@ def generate_phrases_from_assignments(verse_words: pd.DataFrame, word_assignment
         function = assignment.get('inferred_function') or assignment.get('function')
         confidence = assignment.get('confidence', structure.get('confidence', 0.8))
 
-        # If no phrase type, use a default based on POS
-        if not phrase_type:
-            sp = row.get('sp', '')
-            if sp in ('noun', 'adj', 'art', 'det', 'pron'):
-                phrase_type = 'NP'
-            elif sp in ('verb',):
-                phrase_type = 'VP'
-            elif sp in ('prep', 'adp'):
-                phrase_type = 'PP'
-            elif sp in ('adv',):
-                phrase_type = 'AdvP'
-            else:
-                phrase_type = 'NP'  # default
+        word_info.append({
+            'slot': slot,
+            'sp': sp,
+            'phrase_type': phrase_type,
+            'function': function,
+            'confidence': confidence
+        })
 
-        # Check if we should start a new phrase
-        if phrase_type != current_phrase or (current_slots and slot != current_slots[-1] + 1):
-            # Save current phrase if exists
-            if current_slots:
-                node = {
-                    'node_id': next_id,
-                    'otype': 'phrase',
-                    'book': structure['book'],
-                    'chapter': structure['chapter'],
-                    'verse': structure['verse'],
-                    'first_slot': min(current_slots),
-                    'last_slot': max(current_slots),
-                    'typ': current_phrase,
+    if not word_info:
+        return phrase_nodes, next_id
+
+    def get_phrase_type_for_pos(sp: str) -> str:
+        """Determine phrase type from POS tag."""
+        # Nominals -> NP
+        if sp in ('subs', 'noun', 'adjv', 'adj', 'art', 'det', 'pron', 'nmpr', 'num'):
+            return 'NP'
+        # Verbs -> VP
+        elif sp in ('verb',):
+            return 'VP'
+        # Prepositions -> PP (will include following nominals)
+        elif sp in ('prep', 'adp'):
+            return 'PP'
+        # Adverbs -> AdvP
+        elif sp in ('adv', 'advb'):
+            return 'AdvP'
+        # Conjunctions, particles, interjections -> phrase boundary markers
+        elif sp in ('conj', 'ptcl', 'intj'):
+            return None  # Don't include in phrases, they mark boundaries
+        else:
+            return 'NP'  # Default for unknown
+
+    def is_phrase_breaker(sp: str) -> bool:
+        """Check if this POS breaks phrase continuity."""
+        return sp in ('conj', 'intj')  # Conjunctions and interjections break phrases
+
+    def can_extend_pp(sp: str) -> bool:
+        """Check if this POS can be part of a PP (governed by preposition)."""
+        return sp in ('subs', 'noun', 'adjv', 'adj', 'art', 'det', 'pron', 'nmpr', 'num', 'adv', 'advb')
+
+    # Two-pass approach:
+    # Pass 1: Mark phrase boundaries and assign base types
+    # Pass 2: Merge PP with following nominals
+
+    # Pass 1: Assign phrase types, marking conjunctions as boundaries
+    current_phrase_type = None
+    current_slots = []
+    current_function = None
+    current_confidence = 0
+    pending_phrases = []
+
+    for info in word_info:
+        slot = info['slot']
+        sp = info['sp']
+        assigned_type = info['phrase_type']
+        function = info['function']
+        confidence = info['confidence']
+
+        # Use assigned type if available, otherwise infer from POS
+        phrase_type = assigned_type or get_phrase_type_for_pos(sp)
+
+        # Check for phrase break conditions
+        is_break = (
+            is_phrase_breaker(sp) or  # Conjunction/interjection
+            phrase_type is None or  # Non-phrasal element
+            (current_slots and slot != current_slots[-1] + 1) or  # Non-consecutive
+            (phrase_type != current_phrase_type and current_phrase_type is not None and
+             not (current_phrase_type == 'PP' and can_extend_pp(sp)))  # Type change (except PP extension)
+        )
+
+        if is_break:
+            # Save current phrase if it has content
+            if current_slots and current_phrase_type:
+                pending_phrases.append({
+                    'slots': current_slots,
+                    'typ': current_phrase_type,
                     'function': current_function,
-                    'rela': None,
-                    'n1904_node_id': None,
-                    'source': structure['source'],
                     'confidence': current_confidence / len(current_slots)
-                }
-                phrase_nodes.append(node)
-                next_id += 1
+                })
+            # Reset
+            current_slots = []
+            current_phrase_type = None
+            current_function = None
+            current_confidence = 0
 
-            # Start new phrase
-            current_phrase = phrase_type
+        # Skip non-phrasal elements (conjunctions, etc.)
+        if phrase_type is None:
+            continue
+
+        # Start or extend phrase
+        if not current_slots:
+            current_phrase_type = phrase_type
             current_slots = [slot]
             current_function = function
             current_confidence = confidence
         else:
-            # Continue current phrase
-            current_slots.append(slot)
-            current_confidence += confidence
-            if function and not current_function:
+            # Extend current phrase
+            # PP can absorb following nominals
+            if current_phrase_type == 'PP' and can_extend_pp(sp):
+                current_slots.append(slot)
+                current_confidence += confidence
+                if function and not current_function:
+                    current_function = function
+            elif phrase_type == current_phrase_type:
+                current_slots.append(slot)
+                current_confidence += confidence
+                if function and not current_function:
+                    current_function = function
+            else:
+                # Save current and start new
+                pending_phrases.append({
+                    'slots': current_slots,
+                    'typ': current_phrase_type,
+                    'function': current_function,
+                    'confidence': current_confidence / len(current_slots)
+                })
+                current_phrase_type = phrase_type
+                current_slots = [slot]
                 current_function = function
+                current_confidence = confidence
 
     # Save final phrase
-    if current_slots:
+    if current_slots and current_phrase_type:
+        pending_phrases.append({
+            'slots': current_slots,
+            'typ': current_phrase_type,
+            'function': current_function,
+            'confidence': current_confidence / len(current_slots)
+        })
+
+    # Convert to nodes
+    for p in pending_phrases:
         node = {
             'node_id': next_id,
             'otype': 'phrase',
             'book': structure['book'],
             'chapter': structure['chapter'],
             'verse': structure['verse'],
-            'first_slot': min(current_slots),
-            'last_slot': max(current_slots),
-            'typ': current_phrase,
-            'function': current_function,
+            'first_slot': min(p['slots']),
+            'last_slot': max(p['slots']),
+            'typ': p['typ'],
+            'function': p['function'],
             'rela': None,
             'n1904_node_id': None,
             'source': structure['source'],
-            'confidence': current_confidence / len(current_slots)
+            'confidence': p['confidence']
         }
         phrase_nodes.append(node)
         next_id += 1
@@ -494,12 +581,12 @@ def write_structure_features(clause_nodes: list, phrase_nodes: list,
             if node.get('source'):
                 f.write(f"{node['node_id']}\t{node['source']}\n")
 
-    # Write structure_confidence feature
+    # Write structure_confidence feature (as string since TF doesn't support float)
     conf_path = output_dir / 'structure_confidence.tf'
     with open(conf_path, 'w', encoding='utf-8') as f:
         f.write("@node\n")
         f.write("@description=confidence score for structure inference (0-1)\n")
-        f.write("@valueType=float\n")
+        f.write("@valueType=str\n")
         f.write("\n")
         for node in sorted(all_nodes, key=lambda n: n['node_id']):
             if node.get('confidence') is not None:

@@ -22,9 +22,11 @@ This dataset includes clause, phrase, and word group nodes for all verses. Struc
 | Inferred (known words, different positions) | 3,214 | 40.4% |
 | Generated from word assignments | 2,931 | 36.8% |
 
-**Totals**: 7,964 clauses, 72,806 phrases, 19,520 word groups
+**Totals**: 7,964 clauses, 67,357 phrases, 19,520 word groups
 
 Confidence breakdown: 99.3% high confidence (≥80%), 0.7% medium confidence (60-80%).
+
+Phrase type accuracy: 84.8% consistent (phrase type matches POS of contained words).
 
 ## Disclaimer
 
@@ -45,9 +47,9 @@ This project creates an annotated Text-Fabric dataset for the TR using a "Graft 
 | Total verses | 7,957 |
 | Books | 27 (complete NT) |
 | Clauses | 7,964 |
-| Phrases | 72,806 |
+| Phrases | 67,357 |
 | Word groups | 19,520 |
-| **Total nodes** | **249,260** |
+| **Total nodes** | **243,811** |
 | Unique lemmas | 7,943 |
 | Word annotations from N1904 | 88.8% |
 | Word annotations from NLP | 11.2% |
@@ -279,7 +281,7 @@ for w in words:
 | chapter | 260 | Chapter containers |
 | book | 27 | Book containers |
 | clause | 7,964 | Clause structure |
-| phrase | 72,806 | Phrase structure |
+| phrase | 67,357 | Phrase structure |
 | wg | 19,520 | Word group structure |
 
 ## License
