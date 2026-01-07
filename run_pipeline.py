@@ -259,6 +259,62 @@ PIPELINE_SCRIPTS: List[ScriptInfo] = [
         inputs=["data/output/tf/"],
         outputs=[]
     ),
+    ScriptInfo(
+        phase=4, step=10,
+        module="scripts.phase4.p4_08a_prepare_structure_data",
+        name="Prepare Structure Data",
+        description="Classify words for structure transplant",
+        inputs=["data/intermediate/tr_transplanted.parquet", "data/intermediate/n1904_words.parquet"],
+        outputs=["data/intermediate/tr_structure_classified.parquet", "data/intermediate/verse_structure_stats.parquet"]
+    ),
+    ScriptInfo(
+        phase=4, step=11,
+        module="scripts.phase4.p4_08b_transplant_structure",
+        name="Transplant Structure",
+        description="Direct structure transplant for 100% aligned verses",
+        inputs=["data/intermediate/tr_structure_classified.parquet"],
+        outputs=["data/intermediate/tr_structure_direct.json"]
+    ),
+    ScriptInfo(
+        phase=4, step=12,
+        module="scripts.phase4.p4_08c_infer_structure",
+        name="Infer Structure",
+        description="Infer structure for known words with different positions",
+        inputs=["data/intermediate/tr_structure_classified.parquet"],
+        outputs=["data/intermediate/tr_structure_inferred.json"]
+    ),
+    ScriptInfo(
+        phase=4, step=13,
+        module="scripts.phase4.p4_08d_handle_unknowns",
+        name="Handle Unknowns",
+        description="Resolve unknown word forms for structure",
+        inputs=["data/intermediate/tr_structure_classified.parquet"],
+        outputs=["data/intermediate/unknown_word_resolutions.json"]
+    ),
+    ScriptInfo(
+        phase=4, step=14,
+        module="scripts.phase4.p4_08e_generate_structure_tf",
+        name="Generate Structure TF",
+        description="Generate clause/phrase/wg nodes in TF format",
+        inputs=["data/intermediate/tr_structure_direct.json", "data/intermediate/tr_structure_inferred.json"],
+        outputs=["data/intermediate/tr_structure_nodes.parquet"]
+    ),
+    ScriptInfo(
+        phase=4, step=15,
+        module="scripts.phase4.p4_08f_integrate_structure",
+        name="Integrate Structure",
+        description="Integrate structure nodes into TF dataset",
+        inputs=["data/intermediate/tr_structure_nodes.parquet"],
+        outputs=["data/output/tf/otype.tf", "data/output/tf/oslots.tf"]
+    ),
+    ScriptInfo(
+        phase=4, step=16,
+        module="scripts.phase4.p4_08g_verify_structure",
+        name="Verify Structure",
+        description="Verify structure integrity in TF dataset",
+        inputs=["data/output/tf/"],
+        outputs=[]
+    ),
 
     # Phase 5: QA
     ScriptInfo(

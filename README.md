@@ -10,11 +10,21 @@ This dataset combines the TR text with annotations (morphology, semantic domains
 |----------|------|------------|------------------|---------|--------------|
 | MACULA Greek | Nestle 1904 | ✅ | ✅ | ✅ | ✅ |
 | Robinson-Pierpont | Byzantine | ✅ | ❌ | ❌ | ❌ |
-| **This Dataset** | **TR 1550** | **✅** | **✅** | **✅** | **❌** |
+| **This Dataset** | **TR 1550** | **✅** | **✅** | **✅** | **~23%** |
 
-### What's Missing
+### Hierarchical Structure (Partial)
 
-This dataset does **not** include hierarchical syntactic structure (clause, phrase, sentence nodes) that N1904 has. The ~11% of TR words that differ from N1904 would require either manual annotation by scholars or heuristic generation with unverifiable accuracy. Rather than include questionable structure, we provide only word-level annotations where quality can be assured.
+This dataset includes clause, phrase, and word group nodes transplanted from N1904 where possible:
+
+| Structure Source | Verses | Coverage |
+|-----------------|--------|----------|
+| Direct transplant (100% word alignment) | 1,812 | 22.8% |
+| Inferred (known words, different positions) | 3,214 | 40.4% |
+| Unknown word resolution | 2,931 | 36.8% |
+
+**Totals**: 7,964 clauses, 13,428 phrases, 19,520 word groups
+
+The ~23% of verses with direct structure transplant have full N1904-compatible phrase/clause structure. The remaining verses have word-level annotations but limited hierarchical structure. Full syntax trees for the entire TR would require manual scholar annotation.
 
 ## Disclaimer
 
@@ -34,9 +44,13 @@ This project creates an annotated Text-Fabric dataset for the TR using a "Graft 
 | Total words | 140,726 |
 | Total verses | 7,957 |
 | Books | 27 (complete NT) |
+| Clauses | 7,964 |
+| Phrases | 13,428 |
+| Word groups | 19,520 |
+| **Total nodes** | **189,882** |
 | Unique lemmas | 7,943 |
-| Syntax from N1904 | 88.8% |
-| Syntax from NLP | 11.2% |
+| Word annotations from N1904 | 88.8% |
+| Word annotations from NLP | 11.2% |
 
 ### High-Profile TR Variants Included
 
@@ -140,6 +154,8 @@ python scripts/compare_tr_n1904.py
 - Generate TF node features (word, lemma, pos, case, etc.)
 - Generate TF edge features (parent relationships)
 - Build container nodes (book, chapter, verse)
+- **Structure transplant**: Classify verses, transplant clause/phrase/wg nodes from N1904
+- **Structure inference**: Resolve unknown word forms, integrate structure into TF
 
 ### Phase 5: Quality Assurance
 - Check for cycles in syntax trees
@@ -166,6 +182,8 @@ Edit `config.yaml` to customize:
 ## Output
 
 The final Text-Fabric dataset is generated in `data/output/tf/` with features including:
+
+**Word Features:**
 
 | Feature | Description | Coverage |
 |---------|-------------|----------|
@@ -195,6 +213,18 @@ The final Text-Fabric dataset is generated in `data/output/tf/` with features in
 | domain | Semantic domain codes | 90% |
 | typems | Morphological subtype | 32% |
 
+**Structure Features (clause/phrase/wg nodes):**
+
+| Feature | Description |
+|---------|-------------|
+| typ | Phrase/clause type (NP, PP, VP) |
+| function | Syntactic function (Subj, Pred, Objc, Cmpl) |
+| rela | Relation to context |
+| rule | Word group syntactic rule |
+| clausetype | Clause type |
+| structure_source | Origin: direct/inferred |
+| structure_confidence | Confidence score (0-1) |
+
 ### Gloss Coverage
 
 100% gloss coverage is achieved automatically as part of Phase 4:
@@ -220,15 +250,37 @@ Load the dataset with Text-Fabric:
 from tf.fabric import Fabric
 
 TF = Fabric(locations='data/output/tf')
-api = TF.load('word lemma sp case gn nu ps tense voice mood function gloss source')
+api = TF.load('unicode lemma sp function typ')
+F, T, L = api.F, api.T, api.L
 
-# Get John 3:16
-for v in api.F.otype.s('verse'):
-    if api.F.book_at_verse.v(v) == 'JHN' and api.F.chapter_at_verse.v(v) == 3 and api.F.verse_at_verse.v(v) == 16:
-        words = api.L.d(v, otype='word')
-        for w in words:
-            print(api.F.word.v(w), api.F.lemma.v(w), api.F.sp.v(w))
+# Navigate to a verse
+verse = T.nodeFromSection(('I_Corinthians', 1, 5))
+words = L.d(verse, otype='w')
+print(f"Verse has {len(words)} words")
+
+# Get word annotations
+for w in words[:5]:
+    print(f"{F.unicode.v(w)} - {F.lemma.v(w)} ({F.sp.v(w)})")
+
+# Navigate structure (for verses with transplanted structure)
+for w in words:
+    phrases = L.u(w, otype='phrase')
+    if phrases:
+        p = phrases[0]
+        print(f"Word '{F.unicode.v(w)}' in phrase with function: {F.function.v(p)}")
 ```
+
+### Node Types
+
+| Type | Count | Description |
+|------|-------|-------------|
+| w | 140,726 | Word (slot) nodes |
+| verse | 7,957 | Verse containers |
+| chapter | 260 | Chapter containers |
+| book | 27 | Book containers |
+| clause | 7,964 | Clause structure |
+| phrase | 13,428 | Phrase structure |
+| wg | 19,520 | Word group structure |
 
 ## License
 

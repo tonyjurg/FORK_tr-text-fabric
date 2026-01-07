@@ -221,6 +221,7 @@ def build_strong_to_phrase_map(n1904: pd.DataFrame) -> dict:
 def process_unknown_word(
     word: str,
     strong: str,
+    morph: str,
     strong_to_phrase: dict,
     n1904_words: set
 ) -> dict:
@@ -288,11 +289,98 @@ def process_unknown_word(
         result['confidence'] = 0.85
         return result
 
-    # 5. Default handling
+    # 5. Try morph code inference
+    phrase_type, function, conf = infer_from_morph(morph)
+    if conf > 0:
+        result['phrase_type'] = phrase_type
+        result['function'] = function
+        result['confidence'] = conf
+        result['method'] = 'morph_inference'
+        return result
+
+    # 6. Default handling
     result['method'] = 'default'
     result['confidence'] = 0.5
 
     return result
+
+
+def infer_from_morph(morph: str) -> tuple:
+    """
+    Infer phrase type and function from morphology code.
+
+    Returns (phrase_type, function, confidence) or (None, None, 0)
+    """
+    if not morph:
+        return (None, None, 0)
+
+    morph = str(morph).upper()
+
+    # Prepositions -> PP
+    if morph == 'PREP':
+        return ('PP', 'Cmpl', 0.90)
+
+    # Conjunctions -> clause level (no phrase type)
+    if morph == 'CONJ':
+        return (None, None, 0.85)
+
+    # Indeclinable (proper names) -> NP
+    if morph == 'IND':
+        return ('NP', None, 0.90)
+
+    # Adverbs -> AdvP
+    if morph == 'ADV':
+        return ('AdvP', 'Cmpl', 0.85)
+
+    # Nouns (N-*) -> NP
+    if morph.startswith('N-'):
+        return ('NP', None, 0.85)
+
+    # Verbs (V-*) -> Predicate
+    if morph.startswith('V-'):
+        return (None, 'Pred', 0.85)
+
+    # Pronouns/relatives (R-*) -> depends on context
+    if morph.startswith('R-'):
+        return ('NP', None, 0.80)
+
+    # Adjectives (A-*) -> AdjP or part of NP
+    if morph.startswith('A-'):
+        return ('AdjP', None, 0.75)
+
+    # Articles (T-*) -> part of NP
+    if morph.startswith('T-'):
+        return ('NP', None, 0.80)
+
+    # Particles, conditionals -> clause level
+    if morph in ('PRT', 'COND'):
+        return (None, None, 0.80)
+
+    # Reflexive pronouns (REF-*) -> NP
+    if morph.startswith('REF-'):
+        return ('NP', None, 0.85)
+
+    # Personal pronouns (P-*) -> NP
+    if morph.startswith('P-'):
+        return ('NP', None, 0.85)
+
+    # Demonstrative pronouns (D-PRO-*) -> NP
+    if morph.startswith('D-PRO-') or morph.startswith('D-'):
+        return ('NP', None, 0.80)
+
+    # Correlative pronouns (COR-*) -> NP
+    if morph.startswith('COR-'):
+        return ('NP', None, 0.80)
+
+    # Interrogative pronouns (INT-*) -> NP
+    if morph.startswith('INT-'):
+        return ('NP', None, 0.80)
+
+    # Hebrew/Aramaic (indeclinable) -> NP
+    if morph in ('HEB', 'ARA'):
+        return ('NP', None, 0.85)
+
+    return (None, None, 0)
 
 
 def main():
@@ -316,6 +404,17 @@ def main():
         n1904_words = set(n1904['word'].str.lower().dropna())
         logger.info(f"  {len(n1904_words):,} unique N1904 word forms")
 
+        # Load TR data to get morph codes
+        tr = pd.read_parquet('data/intermediate/tr_structure_classified.parquet')
+        unknown_tr = tr[tr['structure_status'] == 'unknown']
+
+        # Build word -> morph lookup
+        word_to_morph = {}
+        for _, row in unknown_tr.iterrows():
+            word = row['word']
+            if word not in word_to_morph:
+                word_to_morph[word] = row.get('morph')
+
         # Process each unknown form
         logger.info("Processing unknown forms...")
         results = []
@@ -325,10 +424,12 @@ def main():
             word = row['word']
             strong = row['strong']
             count = row['count']
+            morph = word_to_morph.get(word)
 
-            result = process_unknown_word(word, strong, strong_to_phrase, n1904_words)
+            result = process_unknown_word(word, strong, morph, strong_to_phrase, n1904_words)
             result['count'] = count
             result['strong'] = strong
+            result['morph'] = morph
             results.append(result)
             method_counts[result['method']] += count
 
