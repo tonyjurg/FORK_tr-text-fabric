@@ -141,6 +141,110 @@ def merge_structures(direct: list, inferred: list, unknown_res: list,
     return merged
 
 
+def generate_phrases_from_assignments(verse_words: pd.DataFrame, word_assignments: dict,
+                                      word_to_slot: dict, structure: dict, next_id: int) -> tuple:
+    """
+    Generate phrase nodes from word assignments (inferred/unknown verses).
+
+    Groups consecutive words with the same phrase type into phrase nodes.
+
+    Returns:
+        - phrase_nodes: list of phrase node dicts
+        - next_id: updated next node ID
+    """
+    phrase_nodes = []
+
+    # Sort words by position
+    verse_words = verse_words.sort_values('word_rank')
+
+    current_phrase = None
+    current_slots = []
+    current_function = None
+    current_confidence = 0
+
+    for _, row in verse_words.iterrows():
+        word_id = row['word_id']
+        slot = word_to_slot.get(word_id)
+        if not slot:
+            continue
+
+        # Get assignment for this word
+        assignment = word_assignments.get(str(word_id), word_assignments.get(word_id, {}))
+        phrase_type = assignment.get('inferred_phrase_type') or assignment.get('phrase_type')
+        function = assignment.get('inferred_function') or assignment.get('function')
+        confidence = assignment.get('confidence', structure.get('confidence', 0.8))
+
+        # If no phrase type, use a default based on POS
+        if not phrase_type:
+            sp = row.get('sp', '')
+            if sp in ('noun', 'adj', 'art', 'det', 'pron'):
+                phrase_type = 'NP'
+            elif sp in ('verb',):
+                phrase_type = 'VP'
+            elif sp in ('prep', 'adp'):
+                phrase_type = 'PP'
+            elif sp in ('adv',):
+                phrase_type = 'AdvP'
+            else:
+                phrase_type = 'NP'  # default
+
+        # Check if we should start a new phrase
+        if phrase_type != current_phrase or (current_slots and slot != current_slots[-1] + 1):
+            # Save current phrase if exists
+            if current_slots:
+                node = {
+                    'node_id': next_id,
+                    'otype': 'phrase',
+                    'book': structure['book'],
+                    'chapter': structure['chapter'],
+                    'verse': structure['verse'],
+                    'first_slot': min(current_slots),
+                    'last_slot': max(current_slots),
+                    'typ': current_phrase,
+                    'function': current_function,
+                    'rela': None,
+                    'n1904_node_id': None,
+                    'source': structure['source'],
+                    'confidence': current_confidence / len(current_slots)
+                }
+                phrase_nodes.append(node)
+                next_id += 1
+
+            # Start new phrase
+            current_phrase = phrase_type
+            current_slots = [slot]
+            current_function = function
+            current_confidence = confidence
+        else:
+            # Continue current phrase
+            current_slots.append(slot)
+            current_confidence += confidence
+            if function and not current_function:
+                current_function = function
+
+    # Save final phrase
+    if current_slots:
+        node = {
+            'node_id': next_id,
+            'otype': 'phrase',
+            'book': structure['book'],
+            'chapter': structure['chapter'],
+            'verse': structure['verse'],
+            'first_slot': min(current_slots),
+            'last_slot': max(current_slots),
+            'typ': current_phrase,
+            'function': current_function,
+            'rela': None,
+            'n1904_node_id': None,
+            'source': structure['source'],
+            'confidence': current_confidence / len(current_slots)
+        }
+        phrase_nodes.append(node)
+        next_id += 1
+
+    return phrase_nodes, next_id
+
+
 def generate_structure_nodes(merged: dict, complete_df: pd.DataFrame) -> tuple:
     """
     Generate clause, phrase, and word group container nodes.
@@ -167,7 +271,9 @@ def generate_structure_nodes(merged: dict, complete_df: pd.DataFrame) -> tuple:
     wg_nodes = []
 
     for verse_key, structure in merged.items():
-        # Process clauses
+        source = structure.get('source', 'unknown')
+
+        # Process direct transplant clauses
         for clause in structure.get('clauses', []):
             tr_word_ids = clause.get('tr_word_ids', [])
             if not tr_word_ids:
@@ -189,13 +295,13 @@ def generate_structure_nodes(merged: dict, complete_df: pd.DataFrame) -> tuple:
                 'clausetype': clause.get('clausetype'),
                 'cltype': clause.get('cltype'),
                 'n1904_node_id': clause.get('n1904_node_id'),
-                'source': structure['source'],
-                'confidence': clause.get('confidence', structure['confidence'])
+                'source': source,
+                'confidence': clause.get('confidence', structure.get('confidence', 1.0))
             }
             clause_nodes.append(node)
             next_id += 1
 
-        # Process phrases
+        # Process direct transplant phrases
         for phrase in structure.get('phrases', []):
             tr_word_ids = phrase.get('tr_word_ids', [])
             if not tr_word_ids:
@@ -217,13 +323,13 @@ def generate_structure_nodes(merged: dict, complete_df: pd.DataFrame) -> tuple:
                 'function': phrase.get('function'),
                 'rela': phrase.get('rela'),
                 'n1904_node_id': phrase.get('n1904_node_id'),
-                'source': structure['source'],
-                'confidence': phrase.get('confidence', structure['confidence'])
+                'source': source,
+                'confidence': phrase.get('confidence', structure.get('confidence', 1.0))
             }
             phrase_nodes.append(node)
             next_id += 1
 
-        # Process word groups
+        # Process direct transplant word groups
         for wg in structure.get('wgs', []):
             tr_word_ids = wg.get('tr_word_ids', [])
             if not tr_word_ids:
@@ -246,11 +352,50 @@ def generate_structure_nodes(merged: dict, complete_df: pd.DataFrame) -> tuple:
                 'rela': wg.get('rela'),
                 'rule': wg.get('rule'),
                 'n1904_node_id': wg.get('n1904_node_id'),
-                'source': structure['source'],
-                'confidence': wg.get('confidence', structure['confidence'])
+                'source': source,
+                'confidence': wg.get('confidence', structure.get('confidence', 1.0))
             }
             wg_nodes.append(node)
             next_id += 1
+
+        # Generate phrases from word assignments (inferred verses)
+        if source == 'inferred' and structure.get('word_assignments'):
+            # Get verse words
+            verse_words = complete_df[
+                (complete_df['book'] == structure['book']) &
+                (complete_df['chapter'] == structure['chapter']) &
+                (complete_df['verse'] == structure['verse'])
+            ]
+
+            new_phrases, next_id = generate_phrases_from_assignments(
+                verse_words, structure['word_assignments'],
+                word_to_slot, structure, next_id
+            )
+            phrase_nodes.extend(new_phrases)
+
+        # Generate phrases from unknown word resolutions
+        if source == 'unknown_only' and structure.get('unknown_words'):
+            # Build word_assignments from unknown_words list
+            word_assignments = {}
+            for uw in structure['unknown_words']:
+                word_assignments[uw['word_id']] = {
+                    'phrase_type': uw.get('phrase_type'),
+                    'function': uw.get('function'),
+                    'confidence': uw.get('confidence', 0.8)
+                }
+
+            # Get verse words
+            verse_words = complete_df[
+                (complete_df['book'] == structure['book']) &
+                (complete_df['chapter'] == structure['chapter']) &
+                (complete_df['verse'] == structure['verse'])
+            ]
+
+            new_phrases, next_id = generate_phrases_from_assignments(
+                verse_words, word_assignments,
+                word_to_slot, structure, next_id
+            )
+            phrase_nodes.extend(new_phrases)
 
     return clause_nodes, phrase_nodes, wg_nodes, next_id
 

@@ -3,17 +3,17 @@
     "book",
     "chapter",
     "verse",
-    "word"
+    "w"
   ],
-  "slot_type": "word",
+  "slot_type": "w",
   "counts": {
-    "word": 140726,
+    "w": 140726,
     "verse": 7957,
     "chapter": 260,
     "book": 27
   },
   "node_ranges": {
-    "word": [
+    "w": [
       1,
       140726
     ],
@@ -31,32 +31,32 @@
     ]
   },
   "features": {
-    "word": [
-      "word",
+    "w": [
+      "unicode",
       "lemma",
       "sp",
       "function",
+      "role",
       "case",
-      "gn",
-      "nu",
-      "ps",
+      "gender",
+      "number",
+      "person",
       "tense",
       "voice",
       "mood",
       "gloss",
-      "source"
+      "source",
+      "strong",
+      "morph"
     ],
     "verse": [
-      "book",
-      "chapter",
       "verse"
     ],
     "chapter": [
-      "book",
       "chapter"
     ],
     "book": [
-      "name"
+      "book"
     ]
   },
   "metadata": {
