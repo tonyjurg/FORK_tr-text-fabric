@@ -24,7 +24,31 @@ This dataset includes clause, phrase, and word group nodes for all verses. Struc
 
 **Totals**: 7,964 clauses, 67,357 phrases, 19,520 word groups
 
-Confidence breakdown: 99.3% high confidence (≥80%), 0.7% medium confidence (60-80%).
+#### Confidence Scores
+
+Each structure node has a confidence score (0-1) indicating reliability:
+
+![Confidence Distribution](docs/confidence_distribution.png)
+
+| Confidence Level | Nodes | Percentage |
+|-----------------|-------|------------|
+| 100% (direct transplant) | 40,912 | 43.1% |
+| 95-100% | 7,034 | 7.4% |
+| 90-95% | 4,494 | 4.7% |
+| 80-90% | 41,758 | 44.0% |
+| 60-80% | 643 | 0.7% |
+| <60% | 0 | 0.0% |
+
+**How confidence is calculated:**
+
+| Source | Method | Confidence |
+|--------|--------|------------|
+| Direct | 100% word alignment with N1904 | 100% |
+| Inferred | Word appears in N1904 with known function | 85% |
+| Unknown | Elision mapping (ἀλλ᾽ → ἀλλά) | 95% |
+| Unknown | Strong's number lookup | 85-90% |
+| Unknown | Capitalized proper name | 85% |
+| Unknown | Morphology inference (N-* → NP) | 75-90% |
 
 Phrase type accuracy: 84.8% consistent (phrase type matches POS of contained words).
 
