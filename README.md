@@ -22,7 +22,7 @@ This dataset includes clause, phrase, and word group nodes for all verses. Struc
 | Inferred (known words, different positions) | 3,214 | 40.4% |
 | Generated from word assignments | 2,931 | 36.8% |
 
-**Totals**: 7,964 clauses, 67,357 phrases, 19,520 word groups
+**Totals**: 18,850 clauses, 67,357 phrases, 37,354 word groups
 
 #### Confidence Scores
 
@@ -64,13 +64,32 @@ This dataset is a derivative work, not original academic scholarship. The annota
 | Phrase boundaries | ✅ From N1904 | ✅ Generated from POS |
 | Phrase types (NP, VP, PP) | ✅ From N1904 | ✅ Inferred from POS |
 | Phrase functions (Subj, Pred, Objc) | ✅ From N1904 | ⚠️ Partial |
-| Clause boundaries | ✅ From N1904 | ❌ Not generated |
-| Clause types (content, purpose, conditional) | ✅ From N1904 | ❌ Not generated |
+| Clause boundaries | ✅ From N1904 | ✅ Generated from conjunctions |
+| Clause types (content, purpose, conditional) | ✅ From N1904 | ⚠️ Basic types only |
 | Phrase relations (rela) | ✅ From N1904 | ❌ Not generated |
-| Word groups | ✅ From N1904 | ❌ Not generated |
+| Word groups | ✅ From N1904 | ✅ DetNP, PrepNp, NPofNP patterns |
 | Nested hierarchy | ✅ From N1904 | ❌ Flat structure |
 
-**Bottom line**: For the 23% of verses with direct transplant, you get full N1904-equivalent structure. For the remaining 77%, you get word-level annotations and basic phrase groupings, but not the rich hierarchical syntax that N1904 provides.
+**Bottom line**: For the 23% of verses with direct transplant, you get full N1904-equivalent structure. For the remaining 77%, you get word-level annotations, phrase groupings, clause boundaries, and word group patterns - sufficient for most text analysis but without the deep hierarchical nesting that N1904 provides.
+
+#### Generated Structure Accuracy
+
+The generated structure (for the 77% non-direct verses) is **simpler but not incorrect**. Comparison with N1904:
+
+| Pattern | Coverage | Notes |
+|---------|----------|-------|
+| PrepNp | 78.6% | Preposition + NP groups |
+| DetNP | 49.7% | Article + noun groups |
+| AdjpNp/NpAdjp | ~33% | Adjective-noun patterns |
+| Clauses | ~44% | Fewer divisions (2.4 vs 5.4 per verse) |
+
+The generated structures are valid - N1904 simply provides finer granularity:
+- **TR generated clauses**: Split at conjunctions and subordinators
+- **N1904 clauses**: Also split at every finite verb
+- **TR generated word groups**: Flat patterns (DetNP, PrepNp)
+- **N1904 word groups**: Hierarchical nesting (3-5 levels deep)
+
+For syntactic analysis requiring N1904-level detail, filter to `structure_source=direct`.
 
 ## Overview
 
@@ -86,10 +105,10 @@ This project creates an annotated Text-Fabric dataset for the TR using a "Graft 
 | Total words | 140,726 |
 | Total verses | 7,957 |
 | Books | 27 (complete NT) |
-| Clauses | 7,964 |
+| Clauses | 18,850 |
 | Phrases | 67,357 |
-| Word groups | 19,520 |
-| **Total nodes** | **243,811** |
+| Word groups | 37,354 |
+| **Total nodes** | **272,531** |
 | Unique lemmas | 7,943 |
 | Word annotations from N1904 | 88.8% |
 | Word annotations from NLP | 11.2% |
@@ -320,9 +339,9 @@ for w in words:
 | verse | 7,957 | Verse containers |
 | chapter | 260 | Chapter containers |
 | book | 27 | Book containers |
-| clause | 7,964 | Clause structure |
+| clause | 18,850 | Clause structure |
 | phrase | 67,357 | Phrase structure |
-| wg | 19,520 | Word group structure |
+| wg | 37,354 | Word group structure |
 
 ## License
 

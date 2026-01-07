@@ -301,6 +301,14 @@ PIPELINE_SCRIPTS: List[ScriptInfo] = [
     ),
     ScriptInfo(
         phase=4, step=15,
+        module="scripts.phase4.p4_08h_generate_clauses_wg",
+        name="Generate Clauses & WG",
+        description="Generate clause and word group nodes for non-direct verses",
+        inputs=["data/intermediate/tr_structure_nodes.parquet", "data/intermediate/tr_complete.parquet"],
+        outputs=["data/intermediate/tr_structure_nodes.parquet"]
+    ),
+    ScriptInfo(
+        phase=4, step=16,
         module="scripts.phase4.p4_08f_integrate_structure",
         name="Integrate Structure",
         description="Integrate structure nodes into TF dataset",
@@ -308,7 +316,7 @@ PIPELINE_SCRIPTS: List[ScriptInfo] = [
         outputs=["data/output/tf/otype.tf", "data/output/tf/oslots.tf"]
     ),
     ScriptInfo(
-        phase=4, step=16,
+        phase=4, step=17,
         module="scripts.phase4.p4_08g_verify_structure",
         name="Verify Structure",
         description="Verify structure integrity in TF dataset",
