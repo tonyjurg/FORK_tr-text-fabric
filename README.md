@@ -56,6 +56,22 @@ Phrase type accuracy: 84.8% consistent (phrase type matches POS of contained wor
 
 This dataset is a derivative work, not original academic scholarship. The annotations are transplanted from the [N1904 dataset](https://github.com/CenterBLC/N1904), which was created by biblical scholars at the Center for Biblical Languages and Computing. The author of this repository is not a biblical scholar. This dataset is provided for convenience and experimentation; please use it with discretion and verify findings against authoritative sources when accuracy matters.
 
+### Limitations Compared to N1904
+
+| Feature | Direct Transplant (23%) | Inferred/Generated (77%) |
+|---------|------------------------|--------------------------|
+| Word annotations (lemma, morph, gloss) | ✅ Full N1904 quality | ✅ NLP + lexicon |
+| Phrase boundaries | ✅ From N1904 | ✅ Generated from POS |
+| Phrase types (NP, VP, PP) | ✅ From N1904 | ✅ Inferred from POS |
+| Phrase functions (Subj, Pred, Objc) | ✅ From N1904 | ⚠️ Partial |
+| Clause boundaries | ✅ From N1904 | ❌ Not generated |
+| Clause types (content, purpose, conditional) | ✅ From N1904 | ❌ Not generated |
+| Phrase relations (rela) | ✅ From N1904 | ❌ Not generated |
+| Word groups | ✅ From N1904 | ❌ Not generated |
+| Nested hierarchy | ✅ From N1904 | ❌ Flat structure |
+
+**Bottom line**: For the 23% of verses with direct transplant, you get full N1904-equivalent structure. For the remaining 77%, you get word-level annotations and basic phrase groupings, but not the rich hierarchical syntax that N1904 provides.
+
 ## Overview
 
 This project creates an annotated Text-Fabric dataset for the TR using a "Graft and Patch" strategy:
