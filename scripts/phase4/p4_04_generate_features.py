@@ -64,6 +64,12 @@ def build_tf_data(complete_df, containers_df, config: dict) -> tuple:
         ("mood", "mood"),
         ("gloss", "gloss"),
         ("source", "source"),
+        # Text features (added for N1904 compatibility)
+        ("translit", "translit"),         # Transliteration of word
+        ("lemmatranslit", "lemmatranslit"), # Transliteration of lemma
+        ("unaccent", "unaccent"),         # Word without diacritics
+        ("after", "after"),               # Trailing punctuation/space
+        ("ln", "ln"),                     # Louw-Nida semantic domains
     ]
 
     for output_name, input_col in word_feature_map:

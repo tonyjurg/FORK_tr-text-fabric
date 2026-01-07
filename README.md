@@ -155,12 +155,20 @@ The final Text-Fabric dataset is generated in `data/output/tf/` with features in
 
 | Feature | Description | Coverage |
 |---------|-------------|----------|
-| word | Surface form | 100% |
+| unicode | Surface form (Greek) | 100% |
 | lemma | Dictionary form | 100% |
 | sp | Part of speech | 100% |
+| strong | Strong's number | 100% |
+| morph | Morphology code | 100% |
 | function | Syntactic function | 41% |
+| role | Syntactic role (s/o/v/etc) | 76% |
 | case | Grammatical case | 57% |
 | gloss | English gloss | 100% |
+| translit | Latin transliteration | 100% |
+| lemmatranslit | Lemma transliteration | 100% |
+| unaccent | Greek without diacritics | 100% |
+| after | Trailing punctuation/space | 100% |
+| ln | Louw-Nida semantic domains | 97% |
 
 ### Gloss Coverage
 
