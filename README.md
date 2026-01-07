@@ -1,17 +1,31 @@
 # Textus Receptus Text-Fabric Dataset
 
-A complete Text-Fabric dataset for the Stephanus 1550 Textus Receptus (TR) Greek New Testament, with syntactic annotations transplanted from the N1904 (Nestle 1904) dataset.
+A Text-Fabric dataset for the Stephanus 1550 Textus Receptus Greek New Testament with linguistic annotations.
+
+## Why This Dataset?
+
+This dataset combines the TR text with annotations (morphology, semantic domains, glosses) derived from N1904, filling a gap for TR users who want similar tooling to what exists for critical text editions.
+
+| Resource | Text | Morphology | Semantic Domains | Glosses | Syntax Trees |
+|----------|------|------------|------------------|---------|--------------|
+| MACULA Greek | Nestle 1904 | ✅ | ✅ | ✅ | ✅ |
+| Robinson-Pierpont | Byzantine | ✅ | ❌ | ❌ | ❌ |
+| **This Dataset** | **TR 1550** | **✅** | **✅** | **✅** | **❌** |
+
+### What's Missing
+
+This dataset does **not** include hierarchical syntactic structure (clause, phrase, sentence nodes) that N1904 has. The ~11% of TR words that differ from N1904 would require either manual annotation by scholars or heuristic generation with unverifiable accuracy. Rather than include questionable structure, we provide only word-level annotations where quality can be assured.
 
 ## Disclaimer
 
-This dataset is a derivative work, not original academic scholarship. The syntactic annotations are transplanted from the [N1904 dataset](https://github.com/CenterBLC/N1904), which was created by biblical scholars at the Center for Biblical Languages and Computing. The author of this repository is not a biblical scholar. This dataset is provided for convenience and experimentation; please use it with discretion and verify findings against authoritative sources when accuracy matters.
+This dataset is a derivative work, not original academic scholarship. The annotations are transplanted from the [N1904 dataset](https://github.com/CenterBLC/N1904), which was created by biblical scholars at the Center for Biblical Languages and Computing. The author of this repository is not a biblical scholar. This dataset is provided for convenience and experimentation; please use it with discretion and verify findings against authoritative sources when accuracy matters.
 
 ## Overview
 
-This project creates a syntactically-annotated Text-Fabric dataset for the TR using a "Graft and Patch" strategy:
+This project creates an annotated Text-Fabric dataset for the TR using a "Graft and Patch" strategy:
 
-- **~89% of words**: Syntax transplanted from the aligned N1904 dataset
-- **~11% of words**: Syntax generated via Stanza NLP (for TR-only variants)
+- **~89% of words**: Annotations transplanted from the aligned N1904 dataset
+- **~11% of words**: Annotations generated via NLP + lexicon lookup (for TR-only variants)
 
 ### Dataset Statistics
 
