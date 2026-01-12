@@ -1,0 +1,53 @@
+apiVersion: 3
+dataDisplay:
+  textFormat: text-orig-full
+  excludedFeatures: []
+  noneValues:
+  - none
+  - unknown
+  - null
+  - NA
+  sectionSep1: ' '
+  sectionSep2: ':'
+docs:
+  docPage: about
+  featureBase: https://github.com/mjredmond/tr-text-fabric/tree/main/featuredocs<feature>.md
+  featurePage: featuresbyname.md
+  docRoot: https://github.com/mjredmond/tr-text-fabric/tree/main/featuredocs
+  docBase: https://github.com/mjredmond/tr-text-fabric/tree/main/featuredocs
+interfaceDefaults:
+  fmt: text-orig-full
+provenanceSpec:
+  corpus: Stephanus 1550 Textus Receptus Greek New Testament
+  version: 0.1
+  webBase: https://www.blueletterbible.org/verse/tr/<bookCode>/<chapter>/<verse>/
+  webHint: Show this on the blueletterbible website
+  webLang: en
+  webUrl: https://www.blueletterbible.org/verse/tr/<1>/<2>/<3>
+  webUrlLex: 'https://www.blueletterbible.org/lang/lexicon/inflections.cfm?strongs=<strong>&t=TR&ot=TR&word=<unicode>'
+  branch: main
+  org: mjredmond
+  repro: tr-text-fabric
+typeDisplay:
+  clause:
+    label: '{typ} {clausetype}'
+    style: ''
+    condense: true
+  wg:
+    label: '{function}'
+  phrase:
+    label: '{typ}'
+    style: ''
+    condense: true
+  verse:
+    label: '{book} {chapter}:{verse}'
+    style: ''
+    condense: true
+  w:
+    featuresBare:
+    - gloss
+    features:
+    - lemma
+    - sp
+    - morph
+writing: grc
