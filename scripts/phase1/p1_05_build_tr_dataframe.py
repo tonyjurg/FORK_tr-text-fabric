@@ -4,7 +4,7 @@ Script: p1_05_build_tr_dataframe.py
 Phase: 1 - Reconnaissance
 Purpose: Load TR source into standardized DataFrame with unique word IDs
 
-Input:  data/source/tr_blb.csv
+Input:  data/source/tr_source_prepared.csv or data/source/tr_source.csv
 Output: data/intermediate/tr_words.parquet
 
 Usage:
@@ -104,21 +104,30 @@ def parse_robinson_morphology(morph_code: str) -> dict:
     return result
 
 
-def tokenize_greek(text: str) -> list:
+GREEK_WORD_RE = r"[\u0370-\u03FF\u1F00-\u1FFF]+"
+GREEK_TOKEN_WITH_AFTER_RE = r"([\u0370-\u03FF\u1F00-\u1FFF]+)([^\u0370-\u03FF\u1F00-\u1FFF]*)"
+
+
+def tokenize_greek_with_after(text: str) -> list[tuple[str, str]]:
     """
-    Tokenize Greek text into words.
+    Tokenize Greek text into words and preserve trailing material.
 
     Args:
         text: Greek text string
 
     Returns:
-        List of word tokens
+        List of (word, after) tuples
     """
     import re
-    # Remove punctuation but keep Greek letters and diacritics
-    # Split on whitespace and punctuation
-    words = re.findall(r'[\u0370-\u03FF\u1F00-\u1FFF]+', text)
-    return words
+
+    token_pattern = re.compile(GREEK_TOKEN_WITH_AFTER_RE)
+    tokens = []
+    for match in token_pattern.finditer(text):
+        word = match.group(1)
+        after = match.group(2) or " "
+        tokens.append((word, after))
+
+    return tokens
 
 
 def load_and_process_tr(input_path: Path, config: dict) -> "pd.DataFrame":
@@ -170,14 +179,15 @@ def load_and_process_tr(input_path: Path, config: dict) -> "pd.DataFrame":
             verse = int(row["verse"])
             text = row["text"]
 
-            words = tokenize_greek(text)
-            for word_rank, word in enumerate(words, 1):
+            words = tokenize_greek_with_after(text)
+            for word_rank, (word, after) in enumerate(words, 1):
                 word_records.append({
                     "book": book,
                     "chapter": chapter,
                     "verse": verse,
                     "word_rank": word_rank,
                     "word": word,
+                    "after": after,
                 })
 
         df = pd.DataFrame(word_records)
@@ -207,7 +217,20 @@ def load_and_process_tr(input_path: Path, config: dict) -> "pd.DataFrame":
     output_cols = ["word_id", "book", "chapter", "verse", "word_rank", "word"]
 
     # Add optional columns if present
-    optional_cols = ["lemma", "morph", "strong", "sp", "tense", "voice", "mood", "case", "number", "gender", "person"]
+    optional_cols = [
+        "after",
+        "lemma",
+        "morph",
+        "strong",
+        "sp",
+        "tense",
+        "voice",
+        "mood",
+        "case",
+        "number",
+        "gender",
+        "person",
+    ]
     for col in optional_cols:
         if col in df.columns:
             output_cols.append(col)
@@ -224,7 +247,9 @@ def main(config: dict = None, dry_run: bool = False) -> bool:
 
     logger = get_logger(__name__)
 
-    input_path = Path(config["paths"]["data"]["source"]) / "tr_blb.csv"
+    source_dir = Path(config["paths"]["data"]["source"])
+    prepared_path = source_dir / "tr_source_prepared.csv"
+    input_path = prepared_path if prepared_path.exists() else source_dir / "tr_source.csv"
     output_path = Path(config["paths"]["data"]["intermediate"]) / "tr_words.parquet"
 
     if dry_run:

@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """
-Phase 4 Step 8e: Generate Structure TF Files
+Phase 4 Step 8e: Generate Canonical Structure Nodes
 
 Combines structure data from:
 - Direct transplant (100% aligned verses)
 - Inferred structure (known words, different positions)
 - Unknown word resolutions
 
-Generates TF files for clause, phrase, and word group nodes.
+Generates canonical structure nodes for clause, phrase, and word group layers.
 """
 
 import pandas as pd
@@ -19,6 +19,11 @@ from collections import defaultdict
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 from scripts.utils.logging import ScriptLogger
 from scripts.utils.config import load_config
+from scripts.utils.canonical import (
+    get_book_order,
+    sort_canonically,
+    validate_word_id_canonical_order,
+)
 
 
 def load_structure_data() -> tuple:
@@ -26,15 +31,15 @@ def load_structure_data() -> tuple:
     intermediate = Path('data/intermediate')
 
     # Direct transplant (100% aligned)
-    with open(intermediate / 'tr_structure_direct.json', 'r') as f:
+    with open(intermediate / 'tr_structure_direct.json', 'r', encoding='utf-8') as f:
         direct = json.load(f)
 
     # Inferred structure
-    with open(intermediate / 'tr_structure_inferred.json', 'r') as f:
+    with open(intermediate / 'tr_structure_inferred.json', 'r', encoding='utf-8') as f:
         inferred = json.load(f)
 
     # Unknown word resolutions
-    with open(intermediate / 'unknown_word_resolutions.json', 'r') as f:
+    with open(intermediate / 'unknown_word_resolutions.json', 'r', encoding='utf-8') as f:
         unknown_resolutions = json.load(f)
 
     # Word classification data
@@ -348,16 +353,20 @@ def generate_structure_nodes(merged: dict, complete_df: pd.DataFrame) -> tuple:
     next_id = containers['node_id'].max() + 1
 
     # Build word_id to slot mapping
-    complete_df = complete_df.sort_values(
-        ['book', 'chapter', 'verse', 'word_rank']
-    ).reset_index(drop=True)
+    complete_df = sort_canonically(complete_df)
+    validate_word_id_canonical_order(complete_df)
     word_to_slot = {row['word_id']: idx + 1 for idx, row in complete_df.iterrows()}
 
     clause_nodes = []
     phrase_nodes = []
     wg_nodes = []
 
-    for verse_key, structure in merged.items():
+    sorted_structures = sorted(
+        merged.values(),
+        key=lambda item: (get_book_order(item['book']), item['chapter'], item['verse']),
+    )
+
+    for structure in sorted_structures:
         source = structure.get('source', 'unknown')
 
         # Process direct transplant clauses
@@ -677,13 +686,6 @@ def main(config=None):
         logger.info(f"  Word groups: {len(wg_nodes):,}")
         logger.info(f"  Next node ID: {next_id:,}")
 
-        # Write TF files
-        output_dir = Path('data/output/tf')
-        output_dir.mkdir(parents=True, exist_ok=True)
-
-        logger.info("Writing TF feature files...")
-        write_structure_features(clause_nodes, phrase_nodes, wg_nodes, output_dir)
-
         # Save structure summary
         summary_path = Path('data/intermediate/tr_structure_nodes.parquet')
         save_structure_summary(clause_nodes, phrase_nodes, wg_nodes, summary_path)
@@ -709,7 +711,7 @@ def main(config=None):
         logger.info(f"  Medium (60-80%): {med_conf:,}")
         logger.info(f"  Low (<60%): {low_conf:,}")
 
-        logger.info(f"\nTF files written to: {output_dir}")
+        logger.info("\nStructure nodes are ready for canonical TF export")
 
     return 0
 

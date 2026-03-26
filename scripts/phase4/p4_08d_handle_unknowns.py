@@ -129,6 +129,13 @@ STRONG_PHRASE_MAP = {
 PROPER_NAME_STRONGS = set()  # Will be populated from data
 
 
+def _text_or_empty(value) -> str:
+    """Normalize optional scalar values to strings for safe downstream use."""
+    if pd.isna(value):
+        return ""
+    return str(value)
+
+
 def is_proper_name(word: str, strong: str) -> bool:
     """Check if a word is a proper name."""
     # Check if starts with uppercase (Greek capital)
@@ -137,6 +144,7 @@ def is_proper_name(word: str, strong: str) -> bool:
 
     # Check Strong's number pattern (names often have specific ranges)
     # Most Hebrew/Aramaic names are in certain ranges
+    strong = _text_or_empty(strong)
     if strong:
         num = int(re.sub(r'[^0-9]', '', strong) or 0)
         # This is a heuristic - proper names often cluster
@@ -244,6 +252,9 @@ def process_unknown_word(
         'method': 'unknown'
     }
 
+    word = _text_or_empty(word)
+    strong = _text_or_empty(strong)
+    morph = _text_or_empty(morph)
     word_lower = word.lower()
 
     # 1. Try elision mapping (with phrase type info)
@@ -311,7 +322,7 @@ def infer_from_morph(morph: str) -> tuple:
 
     Returns (phrase_type, function, confidence) or (None, None, 0)
     """
-    if not morph:
+    if not morph or pd.isna(morph):
         return (None, None, 0)
 
     morph = str(morph).upper()
@@ -422,7 +433,7 @@ def main(config=None):
 
         for _, row in unknown_forms.iterrows():
             word = row['word']
-            strong = row['strong']
+            strong = row.get('strong')
             count = row['count']
             morph = word_to_morph.get(word)
 
@@ -433,22 +444,30 @@ def main(config=None):
             results.append(result)
             method_counts[result['method']] += count
 
+        total_occ = unknown_forms['count'].sum()
         # Summary
         logger.info("\nResolution methods (by occurrence count):")
-        for method, count in method_counts.most_common():
-            pct = count / unknown_forms['count'].sum() * 100
-            logger.info(f"  {method}: {count:,} ({pct:.1f}%)")
+        if total_occ:
+            for method, count in method_counts.most_common():
+                pct = count / total_occ * 100
+                logger.info(f"  {method}: {count:,} ({pct:.1f}%)")
+        else:
+            logger.info("  No unknown forms required resolution.")
 
         # Confidence distribution
-        total_occ = unknown_forms['count'].sum()
         high_conf = sum(r['count'] for r in results if r['confidence'] >= 0.8)
         med_conf = sum(r['count'] for r in results if 0.6 <= r['confidence'] < 0.8)
         low_conf = sum(r['count'] for r in results if r['confidence'] < 0.6)
 
         logger.info(f"\nConfidence distribution:")
-        logger.info(f"  High (>=80%): {high_conf:,} ({high_conf/total_occ*100:.1f}%)")
-        logger.info(f"  Medium (60-80%): {med_conf:,} ({med_conf/total_occ*100:.1f}%)")
-        logger.info(f"  Low (<60%): {low_conf:,} ({low_conf/total_occ*100:.1f}%)")
+        if total_occ:
+            logger.info(f"  High (>=80%): {high_conf:,} ({high_conf/total_occ*100:.1f}%)")
+            logger.info(f"  Medium (60-80%): {med_conf:,} ({med_conf/total_occ*100:.1f}%)")
+            logger.info(f"  Low (<60%): {low_conf:,} ({low_conf/total_occ*100:.1f}%)")
+        else:
+            logger.info("  High (>=80%): 0 (0.0%)")
+            logger.info("  Medium (60-80%): 0 (0.0%)")
+            logger.info("  Low (<60%): 0 (0.0%)")
 
         # Save results
         output_path = Path('data/intermediate/unknown_word_resolutions.json')
@@ -464,8 +483,11 @@ def main(config=None):
 
         # Show sample resolutions
         logger.info("\nSample resolutions:")
-        for r in results[:15]:
-            logger.info(f"  {r['original']} ({r['strong']}): {r['method']} -> conf={r['confidence']:.0%}")
+        if results:
+            for r in results[:15]:
+                logger.info(f"  {r['original']} ({r['strong']}): {r['method']} -> conf={r['confidence']:.0%}")
+        else:
+            logger.info("  No sample resolutions to display.")
 
     return 0
 

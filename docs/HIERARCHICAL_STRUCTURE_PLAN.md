@@ -1,4 +1,7 @@
-# Hierarchical Structure Implementation Plan
+# Historical Hierarchical Structure Plan
+
+> Historical note
+> This planning document predates the Stephens-source rebase and the canonical TF rebuild. Treat the counts below as archival planning data, not as the current implementation state. For the current pipeline, use [README.md](D:/Onedrive/GitHub/FORK_tr-text-fabric/README.md) and [docs/TF_BUILD.md](D:/Onedrive/GitHub/FORK_tr-text-fabric/docs/TF_BUILD.md).
 
 This document outlines the plan to add hierarchical syntactic structure (clause, phrase, sentence, wg nodes) to the TR Text-Fabric dataset.
 

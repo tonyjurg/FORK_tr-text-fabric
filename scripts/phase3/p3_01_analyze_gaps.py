@@ -220,7 +220,7 @@ def generate_report(spans_df, gaps_df, output_path: Path) -> None:
         lines.append(f"| {loc} | {row['word_count']} | {text} |")
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    output_path.write_text("\n".join(lines))
+    output_path.write_text("\n".join(lines), encoding="utf-8")
     logger.info(f"Report written to: {output_path}")
 
 

@@ -26,7 +26,7 @@ HIGH_PROFILE_VARIANTS = [
     {
         "name": "Comma Johanneum",
         "ref": "1 John 5:7-8",
-        "book": "1JN",  # BLB format
+        "book": "1JN",  # TR book code
         "chapter": 5,
         "verses": [7, 8],
         "description": "Three heavenly witnesses passage",
@@ -42,7 +42,7 @@ HIGH_PROFILE_VARIANTS = [
     {
         "name": "Pericope Adulterae",
         "ref": "John 7:53-8:11",
-        "book": "JHN",  # BLB format
+        "book": "JHN",  # TR book code
         "chapter": 8,
         "verses": list(range(1, 12)),  # 8:1-11
         "description": "Woman caught in adultery",

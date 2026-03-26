@@ -2,14 +2,15 @@
 """
 Script: p4_07_verify_build
 Phase: 4 - Compilation
-Purpose: Test that TF dataset loads correctly
+Purpose: Verify the canonical Text-Fabric build
 
-Input:  data/output/tf/ directory
-Output: verification log
-
-Usage:
-    python -m scripts.phase4.p4_07_verify_build
-    python -m scripts.phase4.p4_07_verify_build --dry-run
+Checks:
+    - dataset loads from tf/<version>
+    - slot 1 is Matthew 1:1
+    - section navigation works
+    - node counts match intermediate data
+    - required features exist
+    - parent edges stay within slot range
 """
 
 import argparse
@@ -20,226 +21,172 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from scripts.utils.config import load_config
 from scripts.utils.logging import ScriptLogger, get_logger
+from scripts.utils.canonical import BOOK_NAME_MAP, NT_CANONICAL_BOOKS, get_tf_dataset_dir
 
 
-def verify_file_structure(tf_dir: Path) -> bool:
-    """Verify all expected TF files exist."""
+REQUIRED_FILES = [
+    "otext.tf",
+    "otype.tf",
+    "oslots.tf",
+    "unicode.tf",
+    "book.tf",
+    "chapter.tf",
+    "verse.tf",
+    "parent.tf",
+]
+
+
+def verify_required_files(tf_dir: Path) -> bool:
     logger = get_logger(__name__)
-
-    # Feature names now match N1904 convention
-    required_files = [
-        "otext.tf",
-        "otype.tf",
-        "oslots.tf",
-        "unicode.tf",   # N1904-compatible name for word text
-        "lemma.tf",
-    ]
-
-    optional_files = [
-        "sp.tf",
-        "function.tf",
-        "role.tf",      # N1904-compatible syntactic role (s/o/io/v/adv)
-        "case.tf",
-        "gender.tf",    # N1904-compatible name (was gn)
-        "number.tf",    # N1904-compatible name (was nu)
-        "person.tf",    # N1904-compatible name (was ps)
-        "tense.tf",
-        "voice.tf",
-        "mood.tf",
-        "gloss.tf",
-        "source.tf",
-        "parent.tf",
-        "strong.tf",
-        "morph.tf",
-        "book.tf",
-        "chapter.tf",
-        "verse.tf",
-    ]
-
-    all_ok = True
-
-    logger.info("Checking required files...")
-    for fname in required_files:
-        fpath = tf_dir / fname
-        if fpath.exists():
-            size = fpath.stat().st_size
-            logger.info(f"  {fname}: {size:,} bytes")
+    ok = True
+    for name in REQUIRED_FILES:
+        path = tf_dir / name
+        if path.exists():
+            logger.info(f"  {name}: {path.stat().st_size:,} bytes")
         else:
-            logger.error(f"  {fname}: MISSING")
-            all_ok = False
-
-    logger.info("Checking optional files...")
-    for fname in optional_files:
-        fpath = tf_dir / fname
-        # Handle @-escaped filenames
-        alt_fname = fname.replace("@", "_at_")
-        alt_fpath = tf_dir / alt_fname
-
-        if fpath.exists():
-            size = fpath.stat().st_size
-            logger.info(f"  {fname}: {size:,} bytes")
-        elif alt_fpath.exists():
-            size = alt_fpath.stat().st_size
-            logger.info(f"  {alt_fname}: {size:,} bytes")
-        else:
-            logger.info(f"  {fname}: not present (optional)")
-
-    return all_ok
+            logger.error(f"  {name}: missing")
+            ok = False
+    return ok
 
 
-def verify_file_format(tf_dir: Path) -> bool:
-    """Verify TF file format is correct."""
+def load_expected_counts(config: dict) -> dict:
+    import pandas as pd
+
+    intermediate = Path(config["paths"]["data"]["intermediate"])
+    complete = pd.read_parquet(intermediate / "tr_complete.parquet")
+    containers = pd.read_parquet(intermediate / "tr_containers.parquet")
+    structure = pd.read_parquet(intermediate / "tr_structure_nodes.parquet")
+
+    return {
+        "w": len(complete),
+        "verse": int((containers["otype"] == "verse").sum()),
+        "chapter": int((containers["otype"] == "chapter").sum()),
+        "book": int((containers["otype"] == "book").sum()),
+        "clause": int((structure["otype"] == "clause").sum()),
+        "phrase": int((structure["otype"] == "phrase").sum()),
+        "wg": int((structure["otype"] == "wg").sum()),
+    }
+
+
+def verify_loaded_dataset(tf_dir: Path, expected_counts: dict) -> bool:
+    from tf.fabric import Fabric
+
     logger = get_logger(__name__)
-
-    all_ok = True
-
-    # Check otext.tf format
-    otext_path = tf_dir / "otext.tf"
-    if otext_path.exists():
-        with open(otext_path, "r", encoding="utf-8") as f:
-            first_line = f.readline().strip()
-            if first_line == "@config":
-                logger.info("otext.tf: valid config format")
-            else:
-                logger.error(f"otext.tf: invalid format (expected @config, got {first_line})")
-                all_ok = False
-
-    # Check otype.tf format
-    otype_path = tf_dir / "otype.tf"
-    if otype_path.exists():
-        with open(otype_path, "r", encoding="utf-8") as f:
-            first_line = f.readline().strip()
-            if first_line == "@node":
-                logger.info("otype.tf: valid node format")
-            else:
-                logger.error(f"otype.tf: invalid format (expected @node, got {first_line})")
-                all_ok = False
-
-    # Check oslots.tf format
-    oslots_path = tf_dir / "oslots.tf"
-    if oslots_path.exists():
-        with open(oslots_path, "r", encoding="utf-8") as f:
-            first_line = f.readline().strip()
-            if first_line == "@edge":
-                logger.info("oslots.tf: valid edge format")
-            else:
-                logger.error(f"oslots.tf: invalid format (expected @edge, got {first_line})")
-                all_ok = False
-
-    return all_ok
-
-
-def count_nodes(tf_dir: Path) -> dict:
-    """Count nodes by type from otype.tf."""
-    logger = get_logger(__name__)
-
-    otype_path = tf_dir / "otype.tf"
-    if not otype_path.exists():
-        return {}
-
-    counts = {}
-    with open(otype_path, "r", encoding="utf-8") as f:
-        for line in f:
-            line = line.strip()
-            if not line or line.startswith("@"):
-                continue
-
-            parts = line.split("\t")
-            if len(parts) == 2:
-                node_type = parts[1]
-                counts[node_type] = counts.get(node_type, 0) + 1
-
-    return counts
-
-
-def sample_data(tf_dir: Path, n: int = 5) -> bool:
-    """Sample some data from unicode.tf (word text feature)."""
-    logger = get_logger(__name__)
-
-    unicode_path = tf_dir / "unicode.tf"
-    if not unicode_path.exists():
-        logger.error("Cannot sample: unicode.tf not found")
+    TF = Fabric(locations=str(tf_dir), silent="deep")
+    api = TF.load(
+        "book chapter verse unicode after lemma parent typ function rela clausetype rule "
+        "structure_source structure_confidence",
+        silent="deep",
+    )
+    if not api:
+        logger.error("Failed to load Text-Fabric dataset")
         return False
 
-    logger.info(f"Sample of first {n} words:")
-    with open(unicode_path, "r", encoding="utf-8") as f:
-        count = 0
-        for line in f:
-            line = line.strip()
-            if not line or line.startswith("@"):
-                continue
+    F = api.F
+    T = api.T
+    E = api.E
 
-            parts = line.split("\t")
-            if len(parts) == 2:
-                node_id, word = parts
-                logger.info(f"  Node {node_id}: {word}")
-                count += 1
-                if count >= n:
-                    break
+    checks_ok = True
 
-    return True
+    first_section = T.sectionFromNode(1)
+    logger.info(f"  Slot 1 section: {first_section}")
+    if first_section != ("Matthew", 1, 1):
+        logger.error("Slot 1 is not Matthew 1:1")
+        checks_ok = False
+
+    book_nodes = list(F.otype.s("book"))
+    book_names = [F.book.v(node) for node in book_nodes]
+    expected_book_names = [BOOK_NAME_MAP[book] for book in NT_CANONICAL_BOOKS]
+    logger.info(f"  First 10 books: {book_names[:10]}")
+    if book_names != expected_book_names:
+        logger.error("Book node order does not follow canonical NT order")
+        checks_ok = False
+
+    navigation_targets = [
+        ("Matthew", 1, 1),
+        ("Romans", 1, 1),
+        ("Revelation", 22, 21),
+    ]
+    for target in navigation_targets:
+        node = T.nodeFromSection(target)
+        logger.info(f"  Section {target}: node {node}")
+        if node is None:
+            logger.error(f"Could not resolve section {target}")
+            checks_ok = False
+
+    actual_counts = {otype: len(list(F.otype.s(otype))) for otype in expected_counts}
+    logger.info("  Node counts:")
+    for otype in expected_counts:
+        logger.info(f"    {otype}: {actual_counts[otype]:,}")
+        if actual_counts[otype] != expected_counts[otype]:
+            logger.error(
+                f"Count mismatch for {otype}: expected {expected_counts[otype]:,}, "
+                f"got {actual_counts[otype]:,}"
+            )
+            checks_ok = False
+
+    for feature_name in ("unicode", "book", "chapter", "verse"):
+        if not hasattr(F, feature_name):
+            logger.error(f"Missing required feature: {feature_name}")
+            checks_ok = False
+
+    if hasattr(E, "parent"):
+        slot_max = expected_counts["w"]
+        bad_edges = 0
+        for child in range(1, slot_max + 1):
+            for parent in E.parent.t(child):
+                if not (1 <= parent <= slot_max):
+                    bad_edges += 1
+        logger.info(f"  Parent edges out of range: {bad_edges}")
+        if bad_edges:
+            checks_ok = False
+    else:
+        logger.error("Missing edge feature: parent")
+        checks_ok = False
+
+    verse_samples = [
+        ("Matthew", 1, 1),
+        ("John", 1, 1),
+        ("Acts", 8, 37),
+        ("I_John", 5, 7),
+        ("Revelation", 22, 21),
+    ]
+    for section in verse_samples:
+        node = T.nodeFromSection(section)
+        if node is None:
+            logger.error(f"Missing representative verse {section}")
+            checks_ok = False
+
+    return checks_ok
 
 
 def main(config: dict = None, dry_run: bool = False) -> bool:
-    """Main entry point."""
     if config is None:
         config = load_config()
 
     logger = get_logger(__name__)
-
-    tf_dir = Path(config["paths"]["data"]["output"]) / "tf"
+    tf_dir = get_tf_dataset_dir(config)
 
     if dry_run:
-        logger.info("[DRY RUN] Would verify TF dataset build")
+        logger.info("[DRY RUN] Would verify canonical TF dataset build")
         logger.info(f"[DRY RUN] Location: {tf_dir}")
         return True
 
-    # Check TF directory exists
     if not tf_dir.exists():
         logger.error(f"TF directory not found: {tf_dir}")
         return False
 
     logger.info(f"Verifying TF dataset at: {tf_dir}")
-    logger.info("=" * 50)
+    files_ok = verify_required_files(tf_dir)
+    expected_counts = load_expected_counts(config)
+    dataset_ok = verify_loaded_dataset(tf_dir, expected_counts)
 
-    # 1. Verify file structure
-    logger.info("\n1. File Structure Check")
-    logger.info("-" * 40)
-    files_ok = verify_file_structure(tf_dir)
-
-    # 2. Verify file format
-    logger.info("\n2. File Format Check")
-    logger.info("-" * 40)
-    format_ok = verify_file_format(tf_dir)
-
-    # 3. Count nodes
-    logger.info("\n3. Node Counts")
-    logger.info("-" * 40)
-    counts = count_nodes(tf_dir)
-    total = 0
-    for node_type, count in sorted(counts.items()):
-        logger.info(f"  {node_type}: {count:,}")
-        total += count
-    logger.info(f"  TOTAL: {total:,}")
-
-    # 4. Sample data
-    logger.info("\n4. Data Sample")
-    logger.info("-" * 40)
-    sample_data(tf_dir)
-
-    # Summary
-    logger.info("\n" + "=" * 50)
-    if files_ok and format_ok:
+    if files_ok and dataset_ok:
         logger.info("VERIFICATION PASSED")
-        logger.info("TF dataset appears to be valid")
         return True
-    else:
-        logger.error("VERIFICATION FAILED")
-        if not files_ok:
-            logger.error("  - Missing required files")
-        if not format_ok:
-            logger.error("  - Invalid file formats")
-        return False
+
+    logger.error("VERIFICATION FAILED")
+    return False
 
 
 if __name__ == "__main__":

@@ -23,6 +23,11 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from scripts.utils.config import load_config
 from scripts.utils.logging import ScriptLogger, get_logger
+from scripts.utils.canonical import (
+    canonical_book_names,
+    sort_canonically,
+    validate_word_id_canonical_order,
+)
 
 
 def generate_section_containers(complete_df):
@@ -40,13 +45,15 @@ def generate_section_containers(complete_df):
     logger = get_logger(__name__)
 
     containers = []
+    complete_df = sort_canonically(complete_df)
+    validate_word_id_canonical_order(complete_df)
 
     # Get max word_id to start container IDs after words
     max_word_id = complete_df["word_id"].max()
     next_id = max_word_id + 1
 
     # Group by book
-    for book in complete_df["book"].unique():
+    for book in canonical_book_names(complete_df["book"].unique()):
         book_df = complete_df[complete_df["book"] == book]
         book_slots = book_df["word_id"].tolist()
 

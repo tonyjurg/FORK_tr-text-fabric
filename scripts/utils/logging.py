@@ -63,6 +63,11 @@ def setup_logging(
 
     # Console handler
     if log_config.get("console", True):
+        if hasattr(sys.stdout, "reconfigure"):
+            try:
+                sys.stdout.reconfigure(errors="backslashreplace")
+            except Exception:
+                pass
         console_handler = logging.StreamHandler(sys.stdout)
         console_handler.setLevel(level)
         console_handler.setFormatter(formatter)
@@ -123,6 +128,15 @@ class ScriptLogger:
         self.start_time = None
         self.logger = None
 
+    @staticmethod
+    def _is_successful_system_exit(exc_type, exc_val) -> bool:
+        """Treat sys.exit(0) as a successful script completion."""
+        if exc_type is not SystemExit:
+            return False
+
+        code = getattr(exc_val, "code", None)
+        return code in (None, 0)
+
     def __enter__(self) -> logging.Logger:
         self.logger = setup_logging(self.script_name, self.config)
         self.start_time = datetime.now()
@@ -133,7 +147,7 @@ class ScriptLogger:
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         elapsed = datetime.now() - self.start_time
-        if exc_type is None:
+        if exc_type is None or self._is_successful_system_exit(exc_type, exc_val):
             self.logger.info(f"{'='*60}")
             self.logger.info(f"Completed: {self.script_name}")
             self.logger.info(f"Duration: {elapsed}")

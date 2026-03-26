@@ -1,4 +1,7 @@
-# Plan: Generate Clauses and Word Groups for All Verses
+# Historical Plan: Generate Clauses and Word Groups for All Verses
+
+> Historical note
+> This document captures an earlier planning snapshot. The active structure implementation and current counts are documented in [README.md](D:/Onedrive/GitHub/FORK_tr-text-fabric/README.md) and [docs/TF_BUILD.md](D:/Onedrive/GitHub/FORK_tr-text-fabric/docs/TF_BUILD.md).
 
 ## Current State
 

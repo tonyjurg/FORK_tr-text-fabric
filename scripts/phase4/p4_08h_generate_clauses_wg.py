@@ -19,6 +19,7 @@ from collections import defaultdict
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 from scripts.utils.logging import ScriptLogger
 from scripts.utils.config import load_config
+from scripts.utils.canonical import sort_canonically, validate_word_id_canonical_order
 
 
 # Subordinating conjunctions that start subordinate clauses
@@ -36,6 +37,13 @@ RELATIVES = {'ὅς', 'ἥ', 'ὅ', 'ὅστις', 'ἥτις', 'ὅ,τι', 'ὃ
 
 # Coordinating conjunctions (can start new main clause after a complete clause)
 COORDINATORS = {'καί', 'δέ', 'ἀλλά', 'γάρ', 'οὖν', 'μέν', 'τε', 'οὐδέ', 'μηδέ', 'ἤ'}
+
+
+def _text_or_empty(value) -> str:
+    """Normalize nullable dataframe scalars to strings."""
+    if pd.isna(value):
+        return ''
+    return str(value)
 
 
 def detect_clause_boundaries(verse_words: pd.DataFrame) -> list:
@@ -58,10 +66,11 @@ def detect_clause_boundaries(verse_words: pd.DataFrame) -> list:
     clause_type = 'main'
 
     for idx, row in verse_words.iterrows():
-        lemma = row.get('lemma', '')
-        sp = row.get('sp', '')
+        lemma = _text_or_empty(row.get('lemma', ''))
+        sp = _text_or_empty(row.get('sp', ''))
         word_id = row.get('word_id')
-        after = row.get('after', '')  # Trailing punctuation
+        after = _text_or_empty(row.get('after', ''))  # Trailing punctuation
+        morph = _text_or_empty(row.get('morph', ''))
 
         # Check for clause boundary signals
         is_boundary = False
@@ -89,7 +98,7 @@ def detect_clause_boundaries(verse_words: pd.DataFrame) -> list:
             new_clause_type = 'conditional'
 
         # Relative pronoun starts relative clause
-        elif lemma in RELATIVES or (sp == 'pron' and row.get('morph', '').startswith('R')):
+        elif lemma in RELATIVES or (sp == 'pron' and morph.startswith('R')):
             is_boundary = True
             new_clause_type = 'relative'
 
@@ -330,20 +339,19 @@ def generate_clauses_and_wgs(nodes_df: pd.DataFrame, complete_df: pd.DataFrame,
         Updated nodes DataFrame with new clause and wg nodes
     """
     # Build word_id to slot mapping
-    complete_df = complete_df.sort_values(
-        ['book', 'chapter', 'verse', 'word_rank']
-    ).reset_index(drop=True)
+    complete_df = sort_canonically(complete_df)
+    validate_word_id_canonical_order(complete_df)
     word_to_slot = {row['word_id']: idx + 1 for idx, row in complete_df.iterrows()}
 
     # Build word data lookup
     word_data_lookup = {}
     for _, row in complete_df.iterrows():
         word_data_lookup[row['word_id']] = {
-            'sp': row.get('sp', ''),
-            'lemma': row.get('lemma', ''),
-            'case': row.get('case', ''),
-            'morph': row.get('morph', ''),
-            'after': row.get('after', '')
+            'sp': _text_or_empty(row.get('sp', '')),
+            'lemma': _text_or_empty(row.get('lemma', '')),
+            'case': _text_or_empty(row.get('case', '')),
+            'morph': _text_or_empty(row.get('morph', '')),
+            'after': _text_or_empty(row.get('after', ''))
         }
 
     # Find verses that need clauses/wgs generated

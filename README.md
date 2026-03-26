@@ -1,125 +1,72 @@
-# Textus Receptus Text-Fabric Dataset
+﻿# Textus Receptus Text-Fabric Dataset
 
-A Text-Fabric dataset for the Stephanus 1550 Textus Receptus Greek New Testament with linguistic annotations.
+A Text-Fabric dataset for the Stephanus 1550 Textus Receptus Greek New Testament with canonical slot order and reusable linguistic annotations.
 
 ## Why This Dataset?
 
-This dataset combines the TR text with annotations (morphology, semantic domains, glosses) derived from N1904, filling a gap for TR users who want similar tooling to what exists for critical text editions.
+This project combines:
 
-| Resource | Text | Morphology | Semantic Domains | Glosses | Syntax Trees |
-|----------|------|------------|------------------|---------|--------------|
-| MACULA Greek | Nestle 1904 | ✅ | ✅ | ✅ | ✅ |
-| Robinson-Pierpont | Byzantine | ✅ | ❌ | ❌ | ❌ |
-| **This Dataset** | **TR 1550** | **✅** | **✅** | **✅** | **✅** |
+- a public-domain Stephens 1550 base text from `byztxt/greektext-stephens`
+- an optional PDF witness overlay for accents and punctuation
+- lexical and syntactic annotations derived from the N1904 Text-Fabric corpus
+- a canonical TF export so the corpus starts at Matthew 1:1 and runs through Revelation 22:21
 
-### Hierarchical Structure
-
-This dataset includes clause, phrase, and word group nodes for all verses. Structure is derived from N1904 where possible, with automatic inference for remaining verses:
-
-| Structure Source | Verses | Coverage |
-|-----------------|--------|----------|
-| Direct transplant (100% word alignment) | 1,812 | 22.8% |
-| Inferred (known words, different positions) | 3,214 | 40.4% |
-| Generated from word assignments | 2,931 | 36.8% |
-
-**Totals**: 18,850 clauses, 67,357 phrases, 37,354 word groups
-
-#### Confidence Scores
-
-Each structure node has a confidence score (0-1) indicating reliability:
-
-![Confidence Distribution](docs/confidence_distribution.png)
-
-| Confidence Level | Nodes | Percentage |
-|-----------------|-------|------------|
-| 100% (direct transplant) | 40,912 | 43.1% |
-| 95-100% | 7,034 | 7.4% |
-| 90-95% | 4,494 | 4.7% |
-| 80-90% | 41,758 | 44.0% |
-| 60-80% | 643 | 0.7% |
-| <60% | 0 | 0.0% |
-
-**How confidence is calculated:**
-
-| Source | Method | Confidence |
-|--------|--------|------------|
-| Direct | 100% word alignment with N1904 | 100% |
-| Inferred | Word appears in N1904 with known function | 85% |
-| Unknown | Elision mapping (ἀλλ᾽ → ἀλλά) | 95% |
-| Unknown | Strong's number lookup | 85-90% |
-| Unknown | Capitalized proper name | 85% |
-| Unknown | Morphology inference (N-* → NP) | 75-90% |
-
-Phrase type accuracy: 84.8% consistent (phrase type matches POS of contained words).
-
-## Disclaimer
-
-This dataset is a derivative work, not original academic scholarship. The annotations are transplanted from the [N1904 dataset](https://github.com/CenterBLC/N1904), which was created by biblical scholars at the Center for Biblical Languages and Computing. The author of this repository is not a biblical scholar. This dataset is provided for convenience and experimentation; please use it with discretion and verify findings against authoritative sources when accuracy matters.
-
-### Limitations Compared to N1904
-
-| Feature | Direct Transplant (23%) | Inferred/Generated (77%) |
-|---------|------------------------|--------------------------|
-| Word annotations (lemma, morph, gloss) | ✅ Full N1904 quality | ✅ NLP + lexicon |
-| Phrase boundaries | ✅ From N1904 | ✅ Generated from POS |
-| Phrase types (NP, VP, PP) | ✅ From N1904 | ✅ Inferred from POS |
-| Phrase functions (Subj, Pred, Objc) | ✅ From N1904 | ⚠️ Partial |
-| Clause boundaries | ✅ From N1904 | ✅ Generated from conjunctions |
-| Clause types (content, purpose, conditional) | ✅ From N1904 | ⚠️ Basic types only |
-| Phrase relations (rela) | ✅ From N1904 | ❌ Not generated |
-| Word groups | ✅ From N1904 | ✅ DetNP, PrepNp, NPofNP patterns |
-| Nested hierarchy | ✅ From N1904 | ❌ Flat structure |
-
-**Bottom line**: For the 23% of verses with direct transplant, you get full N1904-equivalent structure. For the remaining 77%, you get word-level annotations, phrase groupings, clause boundaries, and word group patterns - sufficient for most text analysis but without the deep hierarchical nesting that N1904 provides.
-
-#### Generated Structure Accuracy
-
-The generated structure (for the 77% non-direct verses) is **simpler but not incorrect**. Comparison with N1904:
-
-| Pattern | Coverage | Notes |
-|---------|----------|-------|
-| PrepNp | 78.6% | Preposition + NP groups |
-| DetNP | 49.7% | Article + noun groups |
-| AdjpNp/NpAdjp | ~33% | Adjective-noun patterns |
-| Clauses | ~44% | Fewer divisions (2.4 vs 5.4 per verse) |
-
-The generated structures are valid - N1904 simply provides finer granularity:
-- **TR generated clauses**: Split at conjunctions and subordinators
-- **N1904 clauses**: Also split at every finite verb
-- **TR generated word groups**: Flat patterns (DetNP, PrepNp)
-- **N1904 word groups**: Hierarchical nesting (3-5 levels deep)
-
-For syntactic analysis requiring N1904-level detail, filter to `structure_source=direct`.
-
-## Overview
-
-This project creates an annotated Text-Fabric dataset for the TR using a "Graft and Patch" strategy:
-
-- **~89% of words**: Annotations transplanted from the aligned N1904 dataset
-- **~11% of words**: Annotations generated via NLP + lexicon lookup (for TR-only variants)
-
-### Dataset Statistics
+## Current Build Snapshot
 
 | Metric | Value |
 |--------|-------|
-| Total words | 140,726 |
+| Total words | 140,764 |
 | Total verses | 7,957 |
-| Books | 27 (complete NT) |
-| Clauses | 18,850 |
-| Phrases | 67,357 |
-| Word groups | 37,354 |
-| **Total nodes** | **272,531** |
-| Unique lemmas | 7,943 |
-| Word annotations from N1904 | 88.8% |
-| Word annotations from NLP | 11.2% |
+| Chapters | 260 |
+| Books | 27 |
+| Clauses | 19,256 |
+| Phrases | 68,249 |
+| Word groups | 31,966 |
+| Total nodes | 268,479 |
+| Directly aligned N1904 words | 121,768 |
+| NLP gap words | 18,996 |
+| Strong/morph from direct N1904 alignment | 121,768 |
+| Strong/morph additionally projected by `word+lemma+sp` | 3,583 |
+| Strong/morph still unresolved | 15,413 |
 
-### High-Profile TR Variants Included
+## Structure Quality
 
-- Comma Johanneum (1 John 5:7-8)
-- Eunuch's Confession (Acts 8:37)
-- Pericope Adulterae (John 7:53-8:11)
-- Longer Ending of Mark (Mark 16:9-20)
-- Lord's Prayer Doxology (Matthew 6:13)
+This dataset includes clause, phrase, and word-group nodes for all verses. Structure provenance is mixed:
+
+| Structure Source | Verses | Coverage |
+|-----------------|--------|----------|
+| Direct transplant | 1,529 | 19.2% |
+| Inferred | 1,411 | 17.7% |
+| Unknown-only / generated fallback | 5,017 | 63.1% |
+
+This means the dataset is complete and navigable, but much more of the corpus depends on inferred/generated structure than the earlier pre-rebase experiments did. For analyses that need the strongest alignment to N1904 syntax, filter to `structure_source=direct`.
+
+## Source And Annotation Model
+
+The current pipeline uses these layers:
+
+- **Base text**: public-domain Stephens 1550 from [byztxt/greektext-stephens](https://github.com/byztxt/greektext-stephens)
+- **Punctuation/accent witness**: a configured PDF witness used only as an overlay on the plain-text base
+- **Syntax and lexical reference**: [CenterBLC/N1904](https://github.com/CenterBLC/N1904) Text-Fabric dataset
+
+Important distinctions:
+
+- The Stephens plain text is the authoritative token sequence.
+- The PDF witness can improve `after` and accented surface forms, but it does not replace the base token order.
+- `strong` and `morph` now come from the original N1904 TF source where possible.
+- For NLP-only words, `strong` and `morph` may also be projected conservatively when N1904 has a unique `word+lemma+sp` match.
+
+High-profile TR variants remain present in the base text, including:
+
+- Comma Johanneum (`1 John 5:7-8`)
+- Eunuch's Confession (`Acts 8:37`)
+- Pericope Adulterae (`John 7:53-8:11`)
+- Longer Ending of Mark (`Mark 16:9-20`)
+- Lord's Prayer Doxology (`Matthew 6:13`)
+
+## Disclaimer
+
+This dataset is a derivative work, not original academic scholarship. The annotations are transplanted or projected from the [N1904 dataset](https://github.com/CenterBLC/N1904), which was created by biblical scholars at the Center for Biblical Languages and Computing. The author of this repository is not a biblical scholar. Please verify important findings against authoritative sources.
 
 ## Requirements
 
@@ -128,220 +75,218 @@ pip install -r requirements.txt
 ```
 
 Key dependencies:
+
 - Python 3.9+
 - pandas
 - text-fabric
-- stanza (for NLP parsing)
-- requests, beautifulsoup4 (for BLB download)
+- stanza
+- git
 
-## Project Structure
+The rebuild path also expects a local N1904 TF checkout under `data/source/N1904/`.
 
-```
+## Project Layout
+
+```text
 tr/
-├── config.yaml           # Pipeline configuration
-├── run_pipeline.py       # Main pipeline runner
-├── requirements.txt      # Python dependencies
-├── scripts/
-│   ├── download_blb_tr.py    # Download TR from Blue Letter Bible
-│   ├── compare_tr_n1904.py   # Validation script
-│   ├── phase1/               # Data acquisition
-│   ├── phase2/               # Alignment & syntax transplant
-│   ├── phase3/               # NLP for gaps
-│   ├── phase4/               # Text-Fabric generation
-│   ├── phase5/               # Quality assurance
-│   └── utils/                # Shared utilities
-├── data/
-│   ├── source/               # Raw input data
-│   ├── intermediate/         # Pipeline working files
-│   └── output/               # Final TF dataset & reports
-└── logs/                     # Pipeline execution logs
+|-- config.yaml
+|-- run_pipeline.py
+|-- scripts/
+|   |-- download_stephens_tr.py
+|   |-- phase1/
+|   |-- phase2/
+|   |-- phase3/
+|   |-- phase4/
+|   `-- utils/
+|-- data/
+|   |-- source/
+|   `-- intermediate/
+|-- tf/
+|   `-- 1.0/
+|-- reports/
+`-- logs/
 ```
 
 ## Usage
 
-### Running the Full Pipeline
+### Full Pipeline
 
 ```bash
 python run_pipeline.py
 ```
 
-Or run specific phases:
+### Run Specific Parts
 
 ```bash
-python run_pipeline.py --phase 2    # Run only Phase 2
-python run_pipeline.py --from 3     # Run from Phase 3 onwards
-python run_pipeline.py --dry-run    # Preview without executing
+python run_pipeline.py --phase 2
+python run_pipeline.py --phase 4 --step 4
+python run_pipeline.py --dry-run
 ```
 
-### Downloading Fresh TR Data
-
-To download the TR from Blue Letter Bible (with caching):
+### Acquire Fresh Stephens Source
 
 ```bash
-python scripts/download_blb_tr.py          # Uses cache if available
-python scripts/download_blb_tr.py --fresh  # Ignore cache, re-download everything
-python scripts/download_blb_tr.py --clear-cache  # Delete cached HTML files
+python scripts/download_stephens_tr.py
+python scripts/download_stephens_tr.py --fresh
 ```
 
-HTML pages are cached in `data/source/blb_cache/` to avoid re-scraping on subsequent runs.
+This updates `data/source/tr_source.csv`.
 
-### Validating Against N1904
+### Apply The PDF Witness Overlay
 
 ```bash
-python scripts/compare_tr_n1904.py
+python -m scripts.phase1.p1_04b_apply_punctuation_witness
+python -m scripts.phase1.p1_05_build_tr_dataframe
+```
+
+When present, `data/source/tr_source_prepared.csv` becomes the preferred phase-1 input.
+
+### No-Claude Rebuild Path
+
+The current rebuild path does not require the optional `p3_06_review_variants` step.
+
+```bash
+python run_pipeline.py --phase 2
+python run_pipeline.py --phase 3 --step 1
+python run_pipeline.py --phase 4 --step 1
+```
+
+Or explicitly from phase 4:
+
+```bash
+python -m scripts.phase4.p4_01_merge_data
+python -m scripts.phase4.p4_01b_fill_glosses
+python -m scripts.phase4.p4_01c_fix_nlp_errors
+python -m scripts.phase4.p4_01d_project_strong_morph
+python -m scripts.phase4.p4_02_generate_containers
+python -m scripts.phase4.p4_08a_prepare_structure_data
+python -m scripts.phase4.p4_08b_transplant_structure
+python -m scripts.phase4.p4_08c_infer_structure
+python -m scripts.phase4.p4_08d_handle_unknowns
+python -m scripts.phase4.p4_08e_generate_structure_tf
+python -m scripts.phase4.p4_08h_generate_clauses_wg
+python -m scripts.phase4.p4_04_generate_features
+python -m scripts.phase4.p4_07_verify_build
 ```
 
 ## Pipeline Phases
 
 ### Phase 1: Data Acquisition
-- Download/load TR source text
-- Download/load N1904 Text-Fabric dataset
-- Validate source data
 
-### Phase 2: Alignment & Syntax Transplant
-- Align TR verses with N1904 verses
-- Match words between aligned verses
-- Transplant syntactic annotations from N1904 to TR
+- acquire the public-domain Stephens source
+- optionally overlay punctuation and accents from the configured PDF witness
+- build `tr_words.parquet`
+
+### Phase 2: Alignment
+
+- extract N1904 word data from the original TF source
+- align Stephens verses and words to N1904
+- transplant aligned lexical and syntactic features
 
 ### Phase 3: NLP Gap Filling
-- Identify words without transplanted syntax (TR-only variants)
-- Parse with Stanza NLP
-- Map Universal Dependencies labels to N1904 format
+
+- identify unaligned words
+- parse them locally with Stanza
+- convert UD-style output into the project's N1904-like feature surface
 
 ### Phase 4: Text-Fabric Generation
-- Merge aligned and NLP-parsed data
-- Fill glosses to achieve 100% coverage
-- Fix systematic NLP errors (lemma/POS corrections using N1904 reference)
-- Generate TF node features (word, lemma, pos, case, etc.)
-- Generate TF edge features (parent relationships)
-- Build container nodes (book, chapter, verse)
-- **Structure transplant**: Classify verses, transplant clause/phrase/wg nodes from N1904
-- **Structure inference**: Resolve unknown word forms, integrate structure into TF
 
-### Phase 5: Quality Assurance
-- Check for cycles in syntax trees
-- Verify orphan nodes
-- Validate feature completeness
-- Spot-check high-profile variants
-- Generate QA report
+- merge aligned and NLP-generated annotations
+- fill glosses to 100%
+- fix systematic NLP lemma/POS errors
+- project `strong` and `morph` by unique `word+lemma+sp` matches
+- regenerate canonical containers and structure nodes
+- export `tf/<version>/` through `tf.convert.walker.CV.walk()`
 
-## Configuration
+### Phase 5: QA
 
-Edit `config.yaml` to customize:
+- verify build integrity
+- run cycle/orphan/feature checks
+- generate QA reports
 
-- Data paths
-- Alignment thresholds
-- NLP settings
-- Output features
-- QA thresholds
+## How The `.tf` Files Are Created
 
-## Data Sources
+The final `.tf` files are produced by [p4_04_generate_features.py](D:/Onedrive/GitHub/FORK_tr-text-fabric/scripts/phase4/p4_04_generate_features.py) with Text-Fabric's `tf.convert.walker.CV.walk()`.
 
-- **TR Text**: Stephanus 1550 from [Blue Letter Bible](https://www.blueletterbible.org/)
-- **N1904 Syntax**: [CenterBLC/N1904](https://github.com/CenterBLC/N1904) Text-Fabric dataset
+The build process is:
 
-## Output
+1. Load `tr_complete.parquet`, `tr_containers.parquet`, and `tr_structure_nodes.parquet`.
+2. Sort the word table in canonical NT order.
+3. Emit slots in canonical order so slot `1` is Matthew 1:1.
+4. Emit `book`, `chapter`, and `verse` section nodes while slots are created.
+5. Emit explicit `clause`, `phrase`, and `wg` nodes from `tr_structure_nodes.parquet`.
+6. Write scalar node features and the `parent` edge.
+7. Let Text-Fabric serialize the final feature files in `tf/<version>/`.
 
-The final Text-Fabric dataset is generated in `data/output/tf/` with features including:
+See [docs/TF_BUILD.md](D:/Onedrive/GitHub/FORK_tr-text-fabric/docs/TF_BUILD.md) for the fuller build walkthrough and metadata reference.
 
-**Word Features:**
+## Feature Highlights
 
-| Feature | Description | Coverage |
-|---------|-------------|----------|
-| unicode | Surface form (Greek) | 100% |
-| text | Surface form (alias) | 100% |
-| normalized | Unicode NFC normalized | 100% |
-| lemma | Dictionary form | 100% |
-| sp | Part of speech | 100% |
-| cls | Word class (noun/verb/adj) | 100% |
-| strong | Strong's number | 100% |
-| morph | Morphology code | 100% |
-| function | Syntactic function | 41% |
-| role | Syntactic role (s/o/v/etc) | 76% |
-| case | Grammatical case | 57% |
-| gloss | English gloss | 100% |
-| translit | Latin transliteration | 100% |
-| lemmatranslit | Lemma transliteration | 100% |
-| unaccent | Greek without diacritics | 100% |
-| after | Trailing punctuation/space | 100% |
-| trailer | Trailing material (alias) | 100% |
-| ln | Louw-Nida semantic domains | 97% |
-| bookshort | Book abbreviation (MAT) | 100% |
-| num | Word position in verse | 100% |
-| ref | Reference string (MAT 1:1!1) | 100% |
-| id | Unique word ID | 100% |
-| trans | Contextual translation | 97% |
-| domain | Semantic domain codes | 90% |
-| typems | Morphological subtype | 32% |
+Common exported features include:
 
-**Structure Features (clause/phrase/wg nodes):**
+- word features: `unicode`, `lemma`, `strong`, `morph`, `sp`, `gloss`, `after`, `translit`, `unaccent`, `normalized`
+- section features: `book`, `chapter`, `verse`
+- syntax features: `function`, `role`, `parent`
+- structure features: `typ`, `rela`, `rule`, `clausetype`, `structure_source`, `structure_confidence`
+- lexical provenance features: `strong_source`, `morph_source`, `strong_confidence`, `morph_confidence`
 
-| Feature | Description |
-|---------|-------------|
-| typ | Phrase/clause type (NP, PP, VP) |
-| function | Syntactic function (Subj, Pred, Objc, Cmpl) |
-| rela | Relation to context |
-| rule | Word group syntactic rule |
-| clausetype | Clause type |
-| structure_source | Origin: direct/inferred |
-| structure_confidence | Confidence score (0-1) |
+Lexical provenance values currently include:
 
-### Gloss Coverage
+- `n1904_aligned`
+- `n1904_projected_word_lemma_sp`
 
-100% gloss coverage is achieved automatically as part of Phase 4:
+## Manual Metadata In `.tf` Headers
 
-```bash
-# Just run the pipeline - glosses are filled automatically
-python run_pipeline.py
+Header metadata is configurable in `config.yaml` under `tf_output`.
+
+Three metadata layers are supported:
+
+- dataset-level metadata from `project.*`, `tf_output.dataset_name`, `tf_output.version`, and `tf_output.language`
+- shared feature metadata from `tf_output.global_feature_metadata`
+- per-feature overrides from `tf_output.feature_metadata`
+
+Example:
+
+```yaml
+tf_output:
+  global_feature_metadata:
+    corpus: "Textus Receptus"
+    editor: "Your Name"
+    license: "MIT"
+
+  feature_metadata:
+    unicode:
+      description: "Greek surface form"
+    strong_source:
+      description: "Provenance of the Strong number"
+    morph_confidence:
+      description: "Confidence score for projected morphology"
 ```
 
-| Source | Coverage |
-|--------|----------|
-| N1904 aligned | 88.8% |
-| N1904 + lexicon lookup | 97.9% |
-| Manual glosses + fallbacks | 100% |
+This changes TF headers such as `@description`, but it does not create new data-bearing features by itself.
 
-See [docs/GLOSS_COVERAGE.md](docs/GLOSS_COVERAGE.md) for details.
-
-## Using the Dataset
-
-Load the dataset with Text-Fabric:
+## Using The Dataset
 
 ```python
 from tf.fabric import Fabric
 
-TF = Fabric(locations='data/output/tf')
-api = TF.load('unicode lemma sp function typ')
+TF = Fabric(locations="tf/1.0")
+api = TF.load("unicode lemma sp strong morph strong_source")
 F, T, L = api.F, api.T, api.L
 
-# Navigate to a verse
-verse = T.nodeFromSection(('I_Corinthians', 1, 5))
-words = L.d(verse, otype='w')
-print(f"Verse has {len(words)} words")
+print(T.sectionFromNode(1))
 
-# Get word annotations
+verse = T.nodeFromSection(("I_Corinthians", 1, 5))
+words = L.d(verse, otype="w")
+
 for w in words[:5]:
-    print(f"{F.unicode.v(w)} - {F.lemma.v(w)} ({F.sp.v(w)})")
-
-# Navigate structure (for verses with transplanted structure)
-for w in words:
-    phrases = L.u(w, otype='phrase')
-    if phrases:
-        p = phrases[0]
-        print(f"Word '{F.unicode.v(w)}' in phrase with function: {F.function.v(p)}")
+    print(
+        F.unicode.v(w),
+        F.lemma.v(w),
+        F.sp.v(w),
+        F.strong.v(w),
+        F.strong_source.v(w),
+    )
 ```
-
-### Node Types
-
-| Type | Count | Description |
-|------|-------|-------------|
-| w | 140,726 | Word (slot) nodes |
-| verse | 7,957 | Verse containers |
-| chapter | 260 | Chapter containers |
-| book | 27 | Book containers |
-| clause | 18,850 | Clause structure |
-| phrase | 67,357 | Phrase structure |
-| wg | 37,354 | Word group structure |
 
 ## License
 

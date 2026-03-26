@@ -2,10 +2,14 @@
 """
 Script: p4_04_generate_features.py
 Phase: 4 - Compilation
-Purpose: Generate Text-Fabric dataset using TF's API
+Purpose: Build the canonical Text-Fabric dataset with Text-Fabric's converter
 
-Input:  data/intermediate/tr_complete.parquet, data/intermediate/tr_containers.parquet
-Output: data/output/tf/ directory with .tf files
+Input:
+    - data/intermediate/tr_complete.parquet
+    - data/intermediate/tr_containers.parquet
+    - data/intermediate/tr_structure_nodes.parquet
+Output:
+    - tf/<version>/ directory with canonical .tf files
 
 Usage:
     python -m scripts.phase4.p4_04_generate_features
@@ -13,282 +17,360 @@ Usage:
 """
 
 import argparse
+import math
+import shutil
 import sys
 from pathlib import Path
-from collections import OrderedDict
 
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from scripts.utils.config import load_config
 from scripts.utils.logging import ScriptLogger, get_logger
+from scripts.utils.canonical import (
+    full_book_name,
+    get_tf_dataset_dir,
+    sort_canonically,
+    validate_word_id_canonical_order,
+)
 
 
-def build_tf_data(complete_df, containers_df, config: dict) -> tuple:
-    """
-    Build data structures for Text-Fabric dataset creation.
+WORD_FEATURE_MAP = (
+    ("unicode", "word", "surface word form"),
+    ("lemma", "lemma", "dictionary lemma"),
+    ("strong", "strong", "Strong number"),
+    ("morph", "morph", "morphology code"),
+    ("strong_source", "strong_source", "provenance of the Strong number"),
+    ("morph_source", "morph_source", "provenance of the morphology code"),
+    ("strong_confidence", "strong_confidence", "confidence score for projected Strong number"),
+    ("morph_confidence", "morph_confidence", "confidence score for projected morphology code"),
+    ("sp", "sp", "part of speech"),
+    ("function", "function", "syntactic function"),
+    ("role", "role", "syntactic role"),
+    ("case", "case", "grammatical case"),
+    ("gender", "gn", "grammatical gender"),
+    ("number", "nu", "grammatical number"),
+    ("person", "ps", "grammatical person"),
+    ("tense", "tense", "grammatical tense"),
+    ("voice", "voice", "grammatical voice"),
+    ("mood", "mood", "grammatical mood"),
+    ("gloss", "gloss", "English gloss"),
+    ("source", "source", "word annotation source"),
+    ("translit", "translit", "word transliteration"),
+    ("lemmatranslit", "lemmatranslit", "lemma transliteration"),
+    ("unaccent", "unaccent", "word without accents"),
+    ("after", "after", "trailing punctuation or spacing"),
+    ("ln", "ln", "Louw-Nida domain"),
+    ("bookshort", "bookshort", "book abbreviation"),
+    ("text", "text", "surface text alias"),
+    ("normalized", "normalized", "normalized Unicode form"),
+    ("num", "num", "word position in verse"),
+    ("ref", "ref", "reference string"),
+    ("id", "id", "word identifier"),
+    ("cls", "cls", "word class"),
+    ("trans", "trans", "contextual translation"),
+    ("domain", "domain", "semantic domain"),
+    ("typems", "typems", "morphological subtype"),
+)
 
-    Returns:
-        Tuple of (node_features, edge_features, otext_config)
-    """
+WORD_INT_FEATURES = {"num", "person"}
+
+STRUCTURE_FEATURE_MAP = (
+    ("typ", "typ", "syntactic type"),
+    ("function", "function", "syntactic function"),
+    ("rela", "rela", "relation to context"),
+    ("clausetype", "clausetype", "clause type"),
+    ("rule", "rule", "word-group rule"),
+    ("structure_source", "source", "structure provenance"),
+    ("structure_confidence", "confidence", "structure confidence score"),
+)
+
+STRING_FEATURES = {"book", "unicode", "after", "id", "ref", "text", "source", "structure_source"}
+INT_FEATURES = {"chapter", "verse", "num", "person"}
+
+
+def _is_missing(value) -> bool:
+    if value is None:
+        return True
+    if isinstance(value, float) and math.isnan(value):
+        return True
+    return False
+
+
+def _normalize_feature_value(feature_name: str, value):
+    if _is_missing(value):
+        return None
+    if isinstance(value, str):
+        return value
+    if feature_name in INT_FEATURES:
+        return int(value)
+    if feature_name == "structure_confidence":
+        # Text-Fabric stores scalar node features as ints or strings.
+        return f"{float(value):.2f}"
+    return str(value)
+
+
+def _read_metadata_dict(config: dict, key: str) -> dict:
+    """Read a metadata dictionary from tf_output config."""
+    value = config.get("tf_output", {}).get(key, {})
+    if value is None:
+        return {}
+    if not isinstance(value, dict):
+        raise ValueError(f"tf_output.{key} must be a dictionary")
+    return value
+
+
+def _normalize_metadata_items(metadata: dict, context: str) -> dict:
+    """Normalize metadata keys and values to strings, skipping null values."""
+    normalized = {}
+    for key, value in metadata.items():
+        if value is None:
+            continue
+        normalized[str(key)] = str(value)
+    return normalized
+
+
+def _sort_non_slots(df):
+    if df.empty:
+        return df
+    return df.sort_values(["first_slot", "last_slot", "node_id"], kind="mergesort").reset_index(drop=True)
+
+
+def load_build_inputs(config: dict):
     import pandas as pd
 
-    logger = get_logger(__name__)
+    intermediate_dir = Path(config["paths"]["data"]["intermediate"])
+    complete_path = intermediate_dir / "tr_complete.parquet"
+    containers_path = intermediate_dir / "tr_containers.parquet"
+    structure_path = intermediate_dir / "tr_structure_nodes.parquet"
 
-    # Sort words by position to ensure sequential slot assignment
-    complete_df = complete_df.sort_values(
-        ["book", "chapter", "verse", "word_rank"]
-    ).reset_index(drop=True)
+    for path in (complete_path, containers_path, structure_path):
+        if not path.exists():
+            raise FileNotFoundError(f"Required input not found: {path}")
 
-    # Create slot mapping: original word_id -> sequential slot number
-    slot_map = {row["word_id"]: idx + 1 for idx, row in complete_df.iterrows()}
+    complete_df = pd.read_parquet(complete_path)
+    containers_df = pd.read_parquet(containers_path)
+    structure_df = pd.read_parquet(structure_path)
 
-    # Node features dictionary: feature_name -> {node_id: value}
-    node_features = {}
+    complete_df = sort_canonically(complete_df)
+    validate_word_id_canonical_order(complete_df)
+    containers_df = _sort_non_slots(containers_df)
+    structure_df = _sort_non_slots(structure_df)
 
-    # Word features - map internal names to N1904-compatible output names
-    # Format: (output_name, input_column_name)
-    word_feature_map = [
-        ("unicode", "word"),      # N1904 uses 'unicode' for word text
-        ("lemma", "lemma"),
-        ("strong", "strong"),
-        ("morph", "morph"),
-        ("sp", "sp"),
-        ("function", "function"),
-        ("role", "role"),         # N1904-compatible syntactic role (s/o/io/v/adv)
-        ("case", "case"),
-        ("gender", "gn"),         # N1904 uses 'gender' not 'gn'
-        ("number", "nu"),         # N1904 uses 'number' not 'nu'
-        ("person", "ps"),         # N1904 uses 'person' not 'ps'
-        ("tense", "tense"),
-        ("voice", "voice"),
-        ("mood", "mood"),
-        ("gloss", "gloss"),
-        ("source", "source"),
-        # Text features (added for N1904 compatibility)
-        ("translit", "translit"),         # Transliteration of word
-        ("lemmatranslit", "lemmatranslit"), # Transliteration of lemma
-        ("unaccent", "unaccent"),         # Word without diacritics
-        ("after", "after"),               # Trailing punctuation/space
-        ("ln", "ln"),                     # Louw-Nida semantic domains
-        # Additional N1904-compatible features
-        ("bookshort", "bookshort"),       # Abbreviated book name
-        ("text", "text"),                 # Surface form (alias for unicode)
-        ("normalized", "normalized"),     # Unicode NFC normalized
-        ("trailer", "trailer"),           # Trailing material (alias for after)
-        ("num", "num"),                   # Word position in verse
-        ("ref", "ref"),                   # Reference string (MAT 1:1!1)
-        ("id", "id"),                     # Unique word ID
-        ("cls", "cls"),                   # Word class (noun/verb/etc)
-        # Lookup-based features from N1904
-        ("trans", "trans"),               # Contextual English translation
-        ("domain", "domain"),             # Semantic domain codes
-        ("typems", "typems"),             # Morphological subtype
-    ]
+    return complete_df, containers_df, structure_df
 
-    for output_name, input_col in word_feature_map:
-        if input_col in complete_df.columns:
-            node_features[output_name] = {}
-            for _, row in complete_df.iterrows():
-                slot = slot_map[row["word_id"]]
-                val = row.get(input_col)
-                if val is not None and str(val) != "nan" and val != "":
-                    node_features[output_name][slot] = str(val)
 
-    logger.info(f"Built {len(node_features)} word features")
-
-    # Build oslots: container_node -> set of slots
-    oslots = {}
-    max_slot = len(complete_df)
-
-    # Renumber container nodes starting after slots
-    container_node_map = {}  # old node_id -> new node_id
-    next_node = max_slot + 1
-
-    # Process containers by type (verse, chapter, book) for proper ordering
-    for otype in ["verse", "chapter", "book"]:
-        type_containers = containers_df[containers_df["otype"] == otype]
-        for _, container in type_containers.iterrows():
-            old_id = container["node_id"]
-            new_id = next_node
-            container_node_map[old_id] = new_id
-            next_node += 1
-
-            # Map slot range
-            first_slot = slot_map.get(container["first_slot"], container["first_slot"])
-            last_slot = slot_map.get(container["last_slot"], container["last_slot"])
-            oslots[new_id] = set(range(first_slot, last_slot + 1))
-
-    # Book name mapping: abbreviated -> full name (matching N1904)
-    book_name_map = {
-        "MAT": "Matthew", "MAR": "Mark", "LUK": "Luke", "JHN": "John",
-        "ACT": "Acts", "ROM": "Romans", "1CO": "I_Corinthians", "2CO": "II_Corinthians",
-        "GAL": "Galatians", "EPH": "Ephesians", "PHP": "Philippians", "COL": "Colossians",
-        "1TH": "I_Thessalonians", "2TH": "II_Thessalonians", "1TI": "I_Timothy",
-        "2TI": "II_Timothy", "TIT": "Titus", "PHM": "Philemon", "HEB": "Hebrews",
-        "JAS": "James", "1PE": "I_Peter", "2PE": "II_Peter", "1JN": "I_John",
-        "2JN": "II_John", "3JN": "III_John", "JUD": "Jude", "REV": "Revelation",
+def build_feature_metadata(complete_df, structure_df, config: dict) -> tuple[dict, set[str]]:
+    feature_meta = {
+        "book": {"description": "book name (full)"},
+        "chapter": {"description": "chapter number"},
+        "verse": {"description": "verse number"},
+        "parent": {"description": "parent (head) word in dependency tree"},
     }
+    int_features = {"chapter", "verse"}
 
-    # Add section features for BOTH word nodes AND container nodes
-    # This is required for TF's section navigation (T.nodeFromSection) to work
-    node_features["book"] = {}
-    node_features["chapter"] = {}
-    node_features["verse"] = {}
+    for output_name, input_name, description in WORD_FEATURE_MAP:
+        if input_name not in complete_df.columns:
+            continue
+        if complete_df[input_name].notna().sum() == 0:
+            continue
+        feature_meta[output_name] = {"description": description}
+        if output_name in WORD_INT_FEATURES:
+            int_features.add(output_name)
 
-    # Add section features to word nodes
-    for _, row in complete_df.iterrows():
-        slot = slot_map[row["word_id"]]
-        book_abbrev = str(row["book"])
-        book_full = book_name_map.get(book_abbrev, book_abbrev)
-        node_features["book"][slot] = book_full
-        node_features["chapter"][slot] = int(row["chapter"])
-        node_features["verse"][slot] = int(row["verse"])
+    for output_name, input_name, description in STRUCTURE_FEATURE_MAP:
+        if input_name not in structure_df.columns:
+            continue
+        if structure_df[input_name].notna().sum() == 0:
+            continue
+        feature_meta[output_name] = {"description": description}
 
-    # Add section features to container nodes
-    for _, container in containers_df.iterrows():
-        new_id = container_node_map[container["node_id"]]
-        otype = container["otype"]
+    configured_feature_meta = _read_metadata_dict(config, "feature_metadata")
+    for feature_name, overrides in configured_feature_meta.items():
+        if not isinstance(overrides, dict):
+            raise ValueError(
+                f"tf_output.feature_metadata.{feature_name} must be a dictionary"
+            )
+        feature_name = str(feature_name)
+        if feature_name in feature_meta:
+            feature_meta[feature_name].update(
+                _normalize_metadata_items(overrides, f"feature_metadata.{feature_name}")
+            )
 
-        if otype == "verse":
-            node_features["verse"][new_id] = int(container["verse"])
-        elif otype == "chapter":
-            node_features["chapter"][new_id] = int(container["chapter"])
-        elif otype == "book":
-            book_abbrev = str(container["name"])
-            book_full = book_name_map.get(book_abbrev, book_abbrev)
-            node_features["book"][new_id] = book_full
-
-    logger.info(f"Built oslots for {len(oslots)} containers")
-
-    # Build otext configuration (matching N1904 structure)
-    otext = {
-        "fmt:text-orig-full": "{unicode} ",
-        "sectionTypes": "book,chapter,verse",
-        "sectionFeatures": "book,chapter,verse",
-    }
-
-    return node_features, oslots, otext, max_slot
+    return feature_meta, int_features
 
 
-def write_tf_dataset(node_features, oslots, otext, max_slot, output_dir: Path, config: dict):
-    """Write Text-Fabric dataset files."""
+def prepare_output_dir(output_dir: Path):
+    output_dir.mkdir(parents=True, exist_ok=True)
+    trailer_path = output_dir / "trailer.tf"
+    if trailer_path.exists():
+        trailer_path.unlink()
+    cache_dir = output_dir / ".tf"
+    if cache_dir.exists():
+        shutil.rmtree(cache_dir, ignore_errors=True)
+
+
+def build_dataset(complete_df, containers_df, structure_df, output_dir: Path, config: dict) -> bool:
     from tf.fabric import Fabric
     from tf.convert.walker import CV
 
     logger = get_logger(__name__)
 
-    output_dir.mkdir(parents=True, exist_ok=True)
-
-    # Build metadata
-    metadata = {
-        "": {
-            "name": config["tf_output"]["dataset_name"],
-            "version": config["tf_output"]["version"],
-            "language": config["tf_output"]["language"],
-            "description": config["project"]["description"],
-            "source": "TR via graft-and-patch from N1904",
-        },
-        "otext": otext,
+    feature_meta, int_features = build_feature_metadata(complete_df, structure_df, config)
+    generic_metadata = {
+        "name": config["tf_output"]["dataset_name"],
+        "version": str(config["tf_output"]["version"]),
+        "language": config["tf_output"]["language"],
+        "description": config["project"]["description"],
+        "source": "TR via graft-and-patch from N1904",
+    }
+    generic_metadata.update(
+        _normalize_metadata_items(
+            _read_metadata_dict(config, "global_feature_metadata"),
+            "global_feature_metadata",
+        )
+    )
+    otext = {
+        "fmt:text-orig-full": "{unicode}{after}",
+        "sectionTypes": "book,chapter,verse",
+        "sectionFeatures": "book,chapter,verse",
     }
 
-    # Add feature metadata with valueType
-    # Section features (on all nodes for navigation)
-    section_features = {
-        "book": ("str", "book name (full)"),
-        "chapter": ("int", "chapter number"),
-        "verse": ("int", "verse number"),
+    slot_rows = list(complete_df.to_dict("records"))
+    structure_rows = {
+        otype: list(_sort_non_slots(structure_df[structure_df["otype"] == otype]).to_dict("records"))
+        for otype in ("clause", "phrase", "wg")
     }
 
-    for feat in node_features:
-        if feat in section_features:
-            value_type, desc = section_features[feat]
-            metadata[feat] = {
-                "description": desc,
-                "valueType": value_type
-            }
-        else:
-            metadata[feat] = {
-                "description": f"{feat} word feature",
-                "valueType": "str"
-            }
+    def director(cv):
+        slot_handles_by_word_id = {}
+        current_book = None
+        current_chapter = None
+        current_verse = None
+        current_book_key = None
+        current_chapter_key = None
+        current_verse_key = None
 
-    # Use TF's walker to create the dataset
+        for slot_number, row in enumerate(slot_rows, start=1):
+            book_key = row["book"]
+            chapter_key = int(row["chapter"])
+            verse_key = int(row["verse"])
+
+            if current_book_key != book_key:
+                if current_verse is not None:
+                    cv.terminate(current_verse)
+                    current_verse = None
+                if current_chapter is not None:
+                    cv.terminate(current_chapter)
+                    current_chapter = None
+                if current_book is not None:
+                    cv.terminate(current_book)
+                current_book = cv.node("book")
+                cv.feature(current_book, book=full_book_name(book_key))
+                current_book_key = book_key
+                current_chapter_key = None
+                current_verse_key = None
+
+            if current_chapter_key != chapter_key:
+                if current_verse is not None:
+                    cv.terminate(current_verse)
+                    current_verse = None
+                if current_chapter is not None:
+                    cv.terminate(current_chapter)
+                current_chapter = cv.node("chapter")
+                cv.feature(
+                    current_chapter,
+                    book=full_book_name(book_key),
+                    chapter=chapter_key,
+                )
+                current_chapter_key = chapter_key
+                current_verse_key = None
+
+            if current_verse_key != verse_key:
+                if current_verse is not None:
+                    cv.terminate(current_verse)
+                current_verse = cv.node("verse")
+                cv.feature(
+                    current_verse,
+                    book=full_book_name(book_key),
+                    chapter=chapter_key,
+                    verse=verse_key,
+                )
+                current_verse_key = verse_key
+
+            handle = cv.slot()
+            slot_handles_by_word_id[row["word_id"]] = handle
+
+            cv.feature(
+                handle,
+                book=full_book_name(book_key),
+                chapter=chapter_key,
+                verse=verse_key,
+            )
+
+            for output_name, input_name, _description in WORD_FEATURE_MAP:
+                if input_name not in row:
+                    continue
+                value = _normalize_feature_value(output_name, row.get(input_name))
+                if value is not None:
+                    cv.feature(handle, **{output_name: value})
+
+        for row in slot_rows:
+            parent_id = row.get("parent")
+            if _is_missing(parent_id):
+                continue
+            try:
+                parent_word_id = int(float(parent_id))
+            except (TypeError, ValueError):
+                continue
+
+            child_handle = slot_handles_by_word_id.get(row["word_id"])
+            parent_handle = slot_handles_by_word_id.get(parent_word_id)
+            if child_handle is not None and parent_handle is not None:
+                cv.edge(child_handle, parent_handle, parent=None)
+
+        if current_verse is not None:
+            cv.terminate(current_verse)
+        if current_chapter is not None:
+            cv.terminate(current_chapter)
+        if current_book is not None:
+            cv.terminate(current_book)
+
+        def make_explicit_node(row, otype: str):
+            slots = list(range(int(row["first_slot"]), int(row["last_slot"]) + 1))
+            handle = cv.node(otype, slots=slots)
+
+            if "book" in row and not _is_missing(row.get("book")):
+                cv.feature(handle, book=full_book_name(row["book"]))
+            if "chapter" in row and not _is_missing(row.get("chapter")):
+                cv.feature(handle, chapter=int(row["chapter"]))
+            if "verse" in row and not _is_missing(row.get("verse")):
+                cv.feature(handle, verse=int(row["verse"]))
+
+            if otype in {"clause", "phrase", "wg"}:
+                for output_name, input_name, _description in STRUCTURE_FEATURE_MAP:
+                    value = _normalize_feature_value(output_name, row.get(input_name))
+                    if value is not None:
+                        cv.feature(handle, **{output_name: value})
+
+            return handle
+
+        for otype in ("clause", "phrase", "wg"):
+            for row in structure_rows[otype]:
+                make_explicit_node(row, otype)
+
+    logger.info("Building TF dataset with tf.convert.walker.CV.walk()")
     TF = Fabric(locations=str(output_dir), silent="deep")
-
-    # Prepare node feature data in TF format
-    # TF expects: {node: value} for each feature
-    feature_data = node_features
-
-    # Add otype feature
-    otype_data = {}
-    for slot in range(1, max_slot + 1):
-        otype_data[slot] = "w"  # N1904-compatible
-    for node, slots in oslots.items():
-        # Determine otype based on slot count and position
-        if node <= max_slot + len([n for n in oslots if len(oslots[n]) < 100]):
-            # This is simplified - in reality we track otype separately
-            pass
-
-    logger.info(f"Writing TF dataset to: {output_dir}")
-
-    # Write features using TF API
-    # First, let's write a simple version using direct file writing
-
-    # Write otext.tf
-    otext_path = output_dir / "otext.tf"
-    with open(otext_path, "w", encoding="utf-8") as f:
-        f.write("@config\n")
-        for key, value in otext.items():
-            f.write(f"@{key}={value}\n")
-
-    # Write each node feature
-    for feat_name, feat_data in node_features.items():
-        if not feat_data:
-            continue
-
-        # Feature name is now the filename directly
-        file_name = feat_name + ".tf"
-        feat_path = output_dir / file_name
-
-        with open(feat_path, "w", encoding="utf-8") as f:
-            # Write metadata
-            f.write(f"@node\n")
-            if feat_name in metadata:
-                for key, value in metadata[feat_name].items():
-                    f.write(f"@{key}={value}\n")
-            f.write("\n")
-
-            # Write data - sorted by node ID
-            for node in sorted(feat_data.keys()):
-                value = feat_data[node]
-                # Escape special characters
-                if isinstance(value, str):
-                    value = value.replace("\\", "\\\\").replace("\n", "\\n").replace("\t", "\\t")
-                f.write(f"{node}\t{value}\n")
-
-        logger.info(f"  Wrote {feat_name}: {len(feat_data)} values")
-
-    # Write oslots.tf (slot containment)
-    oslots_path = output_dir / "oslots.tf"
-    with open(oslots_path, "w", encoding="utf-8") as f:
-        f.write("@edge\n")
-        f.write("@description=slot containment for non-slot nodes\n")
-        f.write("@valueType=str\n")
-        f.write("\n")
-
-        for node in sorted(oslots.keys()):
-            slots = sorted(oslots[node])
-            # Write as ranges for efficiency
-            slot_str = ",".join(str(s) for s in slots)
-            if len(slots) > 2:
-                # Use range notation if contiguous
-                if slots == list(range(slots[0], slots[-1] + 1)):
-                    slot_str = f"{slots[0]}-{slots[-1]}"
-            f.write(f"{node}\t{slot_str}\n")
-
-    logger.info(f"  Wrote oslots: {len(oslots)} containers")
-
-    return True
+    cv = CV(TF, silent="deep")
+    return cv.walk(
+        director,
+        slotType="w",
+        otext=otext,
+        generic=generic_metadata,
+        intFeatures=int_features,
+        featureMeta=feature_meta,
+        warn=True,
+        force=False,
+    )
 
 
 def main(config: dict = None, dry_run: bool = False) -> bool:
@@ -297,46 +379,31 @@ def main(config: dict = None, dry_run: bool = False) -> bool:
         config = load_config()
 
     logger = get_logger(__name__)
-
-    complete_path = Path(config["paths"]["data"]["intermediate"]) / "tr_complete.parquet"
-    containers_path = Path(config["paths"]["data"]["intermediate"]) / "tr_containers.parquet"
-    output_dir = Path(config["paths"]["data"]["output"]) / "tf"
+    output_dir = get_tf_dataset_dir(config)
 
     if dry_run:
-        logger.info("[DRY RUN] Would generate TF feature files")
+        logger.info("[DRY RUN] Would build canonical TF dataset")
         logger.info(f"[DRY RUN] Output: {output_dir}")
         return True
 
-    import pandas as pd
-
-    # Check inputs
-    if not complete_path.exists():
-        logger.error(f"Input not found: {complete_path}")
-        return False
-    if not containers_path.exists():
-        logger.error(f"Input not found: {containers_path}")
+    try:
+        complete_df, containers_df, structure_df = load_build_inputs(config)
+    except FileNotFoundError as exc:
+        logger.error(str(exc))
         return False
 
-    # Load data
-    logger.info("Loading data...")
-    complete_df = pd.read_parquet(complete_path)
-    containers_df = pd.read_parquet(containers_path)
+    logger.info("Loaded canonical build inputs")
+    logger.info(f"  Words: {len(complete_df):,}")
+    logger.info(f"  Section containers: {len(containers_df):,}")
+    logger.info(f"  Structure nodes: {len(structure_df):,}")
 
-    logger.info(f"Words: {len(complete_df)}")
-    logger.info(f"Containers: {len(containers_df)}")
-
-    # Build TF data structures
-    logger.info("Building TF data structures...")
-    node_features, oslots, otext, max_slot = build_tf_data(
-        complete_df, containers_df, config
-    )
-
-    # Write TF dataset
-    logger.info("Writing TF dataset...")
-    success = write_tf_dataset(node_features, oslots, otext, max_slot, output_dir, config)
+    prepare_output_dir(output_dir)
+    success = build_dataset(complete_df, containers_df, structure_df, output_dir, config)
 
     if success:
         logger.info(f"\nTF dataset written to: {output_dir}")
+    else:
+        logger.error("TF dataset build failed")
 
     return success
 

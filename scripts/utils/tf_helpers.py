@@ -6,9 +6,23 @@ Provides common operations for loading and working with Text-Fabric datasets.
 
 import logging
 from pathlib import Path
+from types import SimpleNamespace
 from typing import Any, Dict, List, Optional, Set, Tuple
 
 logger = logging.getLogger(__name__)
+
+
+def _find_local_tf_version_dir(local_root: Path) -> Path:
+    """Find the highest TF version directory beneath a local dataset root."""
+    tf_root = local_root / "tf"
+    if not tf_root.exists():
+        raise FileNotFoundError(f"Local N1904 copy has no tf directory: {tf_root}")
+
+    version_dirs = sorted(path for path in tf_root.iterdir() if path.is_dir())
+    if not version_dirs:
+        raise FileNotFoundError(f"No TF version directories found under: {tf_root}")
+
+    return version_dirs[-1]
 
 
 def load_n1904(config: dict) -> Any:
@@ -27,6 +41,7 @@ def load_n1904(config: dict) -> Any:
     """
     try:
         from tf.app import use
+        from tf.fabric import Fabric
     except ImportError:
         raise ImportError(
             "text-fabric is not installed. Run: pip install text-fabric"
@@ -38,7 +53,10 @@ def load_n1904(config: dict) -> Any:
     local_path = n1904_config.get("local_path")
     if local_path and Path(local_path).exists():
         logger.info(f"Loading N1904 from local path: {local_path}")
-        TF = use(local_path, silent="deep")
+        version_dir = _find_local_tf_version_dir(Path(local_path))
+        TF = Fabric(locations=str(version_dir), silent="deep")
+        api = TF.loadAll(silent="deep")
+        return SimpleNamespace(api=api, TF=TF, source=str(version_dir))
     else:
         # Load from Text-Fabric data repository
         dataset = n1904_config["tf_dataset"]

@@ -1,4 +1,7 @@
-# Hierarchical Structure Implementation Plan
+# Historical Hierarchical Structure Implementation Plan
+
+> Historical note
+> This document reflects a pre-rebase planning snapshot and its counts are no longer current. The active implementation is described in [README.md](D:/Onedrive/GitHub/FORK_tr-text-fabric/README.md), [docs/TF_BUILD.md](D:/Onedrive/GitHub/FORK_tr-text-fabric/docs/TF_BUILD.md), and `.planning/SCRIPTS_ARCHITECTURE.md`.
 
 This document outlines the practical approach to adding clause, phrase, and sentence structure to the TR dataset.
 

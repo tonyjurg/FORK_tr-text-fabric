@@ -20,6 +20,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from scripts.utils.config import load_config
 from scripts.utils.logging import ScriptLogger, get_logger
+from scripts.utils.canonical import get_tf_dataset_dir
 
 
 def load_otype(tf_dir: Path) -> dict:
@@ -34,9 +35,14 @@ def load_otype(tf_dir: Path) -> dict:
                 continue
             parts = line.split("\t")
             if len(parts) == 2:
-                node = int(parts[0])
+                node_spec = parts[0]
                 otype = parts[1]
-                otypes[node] = otype
+                if "-" in node_spec:
+                    start, end = node_spec.split("-")
+                    for node in range(int(start), int(end) + 1):
+                        otypes[node] = otype
+                else:
+                    otypes[int(node_spec)] = otype
 
     return otypes
 
@@ -45,27 +51,35 @@ def load_oslots(tf_dir: Path) -> dict:
     """Load slot containment from oslots.tf."""
     oslots = {}
     oslots_path = tf_dir / "oslots.tf"
+    current_container = None
 
     with open(oslots_path, "r", encoding="utf-8") as f:
         for line in f:
             line = line.strip()
             if not line or line.startswith("@"):
                 continue
-            parts = line.split("\t")
+            parts = line.split("\t", maxsplit=1)
             if len(parts) == 2:
                 container = int(parts[0])
                 slots_str = parts[1]
+                current_container = container
+            else:
+                if current_container is None:
+                    continue
+                current_container += 1
+                container = current_container
+                slots_str = parts[0]
 
-                # Parse slot ranges (e.g., "1-100" or "1,2,3")
-                slots = set()
-                for part in slots_str.split(","):
-                    if "-" in part:
-                        start, end = part.split("-")
-                        slots.update(range(int(start), int(end) + 1))
-                    else:
-                        slots.add(int(part))
+            # Parse slot ranges (e.g., "1-100" or "1,2,3")
+            slots = set()
+            for part in slots_str.split(","):
+                if "-" in part:
+                    start, end = part.split("-")
+                    slots.update(range(int(start), int(end) + 1))
+                else:
+                    slots.add(int(part))
 
-                oslots[container] = slots
+            oslots[container] = slots
 
     return oslots
 
@@ -77,7 +91,7 @@ def main(config: dict = None, dry_run: bool = False) -> bool:
 
     logger = get_logger(__name__)
 
-    tf_dir = Path(config["paths"]["data"]["output"]) / "tf"
+    tf_dir = get_tf_dataset_dir(config)
 
     if dry_run:
         logger.info("[DRY RUN] Would check for orphan nodes")
@@ -91,7 +105,7 @@ def main(config: dict = None, dry_run: bool = False) -> bool:
     oslots = load_oslots(tf_dir)
 
     # Get all word slots
-    word_slots = {n for n, t in otypes.items() if t == "word"}
+    word_slots = {n for n, t in otypes.items() if t == "w"}
     logger.info(f"Total word slots: {len(word_slots)}")
 
     # Get all slots contained in containers

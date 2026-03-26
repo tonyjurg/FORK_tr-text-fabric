@@ -15,14 +15,15 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 from scripts.utils.logging import ScriptLogger
 from scripts.utils.config import load_config
+from scripts.utils.canonical import get_tf_dataset_dir
 
 
-def verify_tf_load():
+def verify_tf_load(tf_dir):
     """Verify TF dataset loads correctly."""
     from tf.fabric import Fabric
 
     print("Loading TR Text-Fabric dataset...")
-    TF = Fabric(locations='data/output/tf', silent='deep')
+    TF = Fabric(locations=str(tf_dir), silent='deep')
     # Load core features plus structure features
     features = 'unicode book chapter verse typ function rela clausetype rule structure_source structure_confidence'
     api = TF.load(features)
@@ -123,6 +124,9 @@ def verify_navigation(TF) -> bool:
     T = api.T
     L = api.L
 
+    def safe_text(value):
+        return (value or "").encode("ascii", "backslashreplace").decode("ascii")
+
     print("\nSample navigation:")
 
     # Test with a direct transplant verse (1 Corinthians 1:5)
@@ -133,7 +137,7 @@ def verify_navigation(TF) -> bool:
 
         # Find structure for each word
         for w in words[:5]:
-            word_text = F.unicode.v(w) or ''
+            word_text = safe_text(F.unicode.v(w))
             clauses = L.u(w, otype='clause')
             phrases = L.u(w, otype='phrase')
             wgs = L.u(w, otype='wg')
@@ -160,7 +164,7 @@ def verify_navigation(TF) -> bool:
         print(f"    Verse contains {len(all_phrases)} distinct phrases")
         for p in sorted(all_phrases)[:3]:
             phrase_words = L.d(p, otype='w')
-            phrase_text = ' '.join(F.unicode.v(w) or '' for w in phrase_words)
+            phrase_text = safe_text(' '.join(F.unicode.v(w) or '' for w in phrase_words))
             func = F.function.v(p) or 'N/A'
             print(f"    phrase {p} ({func}): {phrase_text[:40]}")
 
@@ -170,12 +174,16 @@ def verify_navigation(TF) -> bool:
 def main(config=None):
     """Main entry point."""
     with ScriptLogger('p4_08g_verify_structure') as logger:
+        if config is None:
+            config = load_config()
+
+        tf_dir = get_tf_dataset_dir(config)
         logger.info("Verifying TR structure integrity...")
 
         # Load TF
         logger.info("\n1. Loading Text-Fabric dataset...")
         try:
-            TF = verify_tf_load()
+            TF = verify_tf_load(tf_dir)
             logger.info("   SUCCESS: Dataset loaded")
         except Exception as e:
             logger.error(f"   FAILED: {e}")

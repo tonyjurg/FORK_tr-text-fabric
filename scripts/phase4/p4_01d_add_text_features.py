@@ -181,9 +181,31 @@ def add_text_features(df, ln_lookup: dict, logger):
     df['unaccent'] = df['word'].apply(strip_accents)
 
     logger.info("Adding after feature...")
-    # For now, use simple space - we don't have raw punctuation data
-    # TODO: Parse from source if we have access to raw verse text
-    df['after'] = ' '
+
+    clean_words = []
+    derived_after = []
+    for word in df['word']:
+        clean_word, extracted_after = extract_punctuation(word)
+        clean_words.append(clean_word)
+        derived_after.append(extracted_after)
+
+    # Normalize words in case punctuation is still attached.
+    df['word'] = clean_words
+
+    if 'after' in df.columns:
+        existing_after = df['after'].fillna('')
+        effective_after = []
+        for current_after, fallback_after in zip(existing_after, derived_after):
+            current_after = str(current_after)
+            if current_after and current_after != ' ':
+                effective_after.append(current_after)
+            elif fallback_after != ' ':
+                effective_after.append(fallback_after)
+            else:
+                effective_after.append(' ')
+        df['after'] = effective_after
+    else:
+        df['after'] = derived_after
 
     logger.info("Adding ln feature...")
 

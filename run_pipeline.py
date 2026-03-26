@@ -15,8 +15,8 @@ Usage:
 """
 
 import argparse
-import importlib
 import json
+import subprocess
 import sys
 from dataclasses import dataclass
 from datetime import datetime
@@ -73,16 +73,16 @@ PIPELINE_SCRIPTS: List[ScriptInfo] = [
         phase=1, step=4,
         module="scripts.phase1.p1_04_acquire_tr",
         name="Acquire TR Data",
-        description="Download Stephanus 1550 TR from Blue Letter Bible",
+        description="Acquire Stephens 1550 TR from the public-domain greektext-stephens repo",
         inputs=[],
-        outputs=["data/source/tr_blb.csv"]
+        outputs=["data/source/tr_source.csv"]
     ),
     ScriptInfo(
         phase=1, step=5,
         module="scripts.phase1.p1_05_build_tr_dataframe",
         name="Build TR DataFrame",
         description="Create standardized TR word DataFrame",
-        inputs=["data/source/tr_blb.csv"],
+        inputs=["data/source/tr_source.csv"],
         outputs=["data/intermediate/tr_words.parquet"]
     ),
 
@@ -213,14 +213,22 @@ PIPELINE_SCRIPTS: List[ScriptInfo] = [
     ),
     ScriptInfo(
         phase=4, step=4,
+        module="scripts.phase4.p4_01d_project_strong_morph",
+        name="Project Strong & Morph",
+        description="Project Strong's numbers and morphology onto NLP-only words via unique word+lemma+sp matches",
+        inputs=["data/intermediate/tr_complete.parquet", "data/intermediate/n1904_words.parquet"],
+        outputs=["data/intermediate/tr_complete.parquet"]
+    ),
+    ScriptInfo(
+        phase=4, step=5,
         module="scripts.phase4.p4_02_generate_containers",
         name="Generate Containers",
-        description="Create clause/phrase/sentence nodes",
+        description="Create book/chapter/verse container nodes in canonical order",
         inputs=["data/intermediate/tr_complete.parquet"],
         outputs=["data/intermediate/tr_containers.parquet"]
     ),
     ScriptInfo(
-        phase=4, step=5,
+        phase=4, step=6,
         module="scripts.phase4.p4_03_configure_otypes",
         name="Configure OTypes",
         description="Set up node type hierarchy",
@@ -228,39 +236,7 @@ PIPELINE_SCRIPTS: List[ScriptInfo] = [
         outputs=[]
     ),
     ScriptInfo(
-        phase=4, step=6,
-        module="scripts.phase4.p4_04_generate_features",
-        name="Generate Features",
-        description="Write node feature .tf files",
-        inputs=["data/intermediate/tr_complete.parquet", "data/intermediate/tr_containers.parquet"],
-        outputs=["data/output/tf/"]
-    ),
-    ScriptInfo(
         phase=4, step=7,
-        module="scripts.phase4.p4_05_generate_edges",
-        name="Generate Edges",
-        description="Write edge feature .tf files",
-        inputs=["data/intermediate/tr_complete.parquet"],
-        outputs=["data/output/tf/parent.tf"]
-    ),
-    ScriptInfo(
-        phase=4, step=8,
-        module="scripts.phase4.p4_06_generate_metadata",
-        name="Generate Metadata",
-        description="Write TF metadata files",
-        inputs=[],
-        outputs=["data/output/tf/otext.tf", "data/output/tf/__desc__.tf"]
-    ),
-    ScriptInfo(
-        phase=4, step=9,
-        module="scripts.phase4.p4_07_verify_build",
-        name="Verify Build",
-        description="Test that TF dataset loads correctly",
-        inputs=["data/output/tf/"],
-        outputs=[]
-    ),
-    ScriptInfo(
-        phase=4, step=10,
         module="scripts.phase4.p4_08a_prepare_structure_data",
         name="Prepare Structure Data",
         description="Classify words for structure transplant",
@@ -268,7 +244,7 @@ PIPELINE_SCRIPTS: List[ScriptInfo] = [
         outputs=["data/intermediate/tr_structure_classified.parquet", "data/intermediate/verse_structure_stats.parquet"]
     ),
     ScriptInfo(
-        phase=4, step=11,
+        phase=4, step=8,
         module="scripts.phase4.p4_08b_transplant_structure",
         name="Transplant Structure",
         description="Direct structure transplant for 100% aligned verses",
@@ -276,7 +252,7 @@ PIPELINE_SCRIPTS: List[ScriptInfo] = [
         outputs=["data/intermediate/tr_structure_direct.json"]
     ),
     ScriptInfo(
-        phase=4, step=12,
+        phase=4, step=9,
         module="scripts.phase4.p4_08c_infer_structure",
         name="Infer Structure",
         description="Infer structure for known words with different positions",
@@ -284,7 +260,7 @@ PIPELINE_SCRIPTS: List[ScriptInfo] = [
         outputs=["data/intermediate/tr_structure_inferred.json"]
     ),
     ScriptInfo(
-        phase=4, step=13,
+        phase=4, step=10,
         module="scripts.phase4.p4_08d_handle_unknowns",
         name="Handle Unknowns",
         description="Resolve unknown word forms for structure",
@@ -292,15 +268,15 @@ PIPELINE_SCRIPTS: List[ScriptInfo] = [
         outputs=["data/intermediate/unknown_word_resolutions.json"]
     ),
     ScriptInfo(
-        phase=4, step=14,
+        phase=4, step=11,
         module="scripts.phase4.p4_08e_generate_structure_tf",
         name="Generate Structure TF",
-        description="Generate clause/phrase/wg nodes in TF format",
+        description="Generate clause/phrase/wg nodes in canonical slot order",
         inputs=["data/intermediate/tr_structure_direct.json", "data/intermediate/tr_structure_inferred.json"],
         outputs=["data/intermediate/tr_structure_nodes.parquet"]
     ),
     ScriptInfo(
-        phase=4, step=15,
+        phase=4, step=12,
         module="scripts.phase4.p4_08h_generate_clauses_wg",
         name="Generate Clauses & WG",
         description="Generate clause and word group nodes for non-direct verses",
@@ -308,19 +284,31 @@ PIPELINE_SCRIPTS: List[ScriptInfo] = [
         outputs=["data/intermediate/tr_structure_nodes.parquet"]
     ),
     ScriptInfo(
-        phase=4, step=16,
-        module="scripts.phase4.p4_08f_integrate_structure",
-        name="Integrate Structure",
-        description="Integrate structure nodes into TF dataset",
-        inputs=["data/intermediate/tr_structure_nodes.parquet"],
-        outputs=["data/output/tf/otype.tf", "data/output/tf/oslots.tf"]
+        phase=4, step=13,
+        module="scripts.phase4.p4_04_generate_features",
+        name="Build Canonical TF Dataset",
+        description="Build the canonical TF dataset with Text-Fabric conversion tools",
+        inputs=[
+            "data/intermediate/tr_complete.parquet",
+            "data/intermediate/tr_containers.parquet",
+            "data/intermediate/tr_structure_nodes.parquet",
+        ],
+        outputs=["tf/1.0/"]
     ),
     ScriptInfo(
-        phase=4, step=17,
+        phase=4, step=14,
+        module="scripts.phase4.p4_07_verify_build",
+        name="Verify Build",
+        description="Test that the canonical TF dataset loads and navigates correctly",
+        inputs=["tf/1.0/"],
+        outputs=[]
+    ),
+    ScriptInfo(
+        phase=4, step=15,
         module="scripts.phase4.p4_08g_verify_structure",
         name="Verify Structure",
         description="Verify structure integrity in TF dataset",
-        inputs=["data/output/tf/"],
+        inputs=["tf/1.0/"],
         outputs=[]
     ),
 
@@ -330,7 +318,7 @@ PIPELINE_SCRIPTS: List[ScriptInfo] = [
         module="scripts.phase5.p5_01_check_cycles",
         name="Check Cycles",
         description="Detect circular dependencies in syntax trees",
-        inputs=["data/output/tf/"],
+        inputs=["tf/1.0/"],
         outputs=["qa_results/qa_cycle_check.log"]
     ),
     ScriptInfo(
@@ -338,7 +326,7 @@ PIPELINE_SCRIPTS: List[ScriptInfo] = [
         module="scripts.phase5.p5_02_check_orphans",
         name="Check Orphans",
         description="Detect orphan and dangling nodes",
-        inputs=["data/output/tf/"],
+        inputs=["tf/1.0/"],
         outputs=["qa_results/qa_orphan_check.log"]
     ),
     ScriptInfo(
@@ -346,7 +334,7 @@ PIPELINE_SCRIPTS: List[ScriptInfo] = [
         module="scripts.phase5.p5_03_check_features",
         name="Check Features",
         description="Verify all required features present",
-        inputs=["data/output/tf/", "data/intermediate/schema_map.json"],
+        inputs=["tf/1.0/", "data/intermediate/schema_map.json"],
         outputs=["qa_results/qa_feature_check.log"]
     ),
     ScriptInfo(
@@ -354,7 +342,7 @@ PIPELINE_SCRIPTS: List[ScriptInfo] = [
         module="scripts.phase5.p5_04_compare_stats",
         name="Compare Stats",
         description="Statistical comparison with N1904",
-        inputs=["data/output/tf/"],
+        inputs=["tf/1.0/"],
         outputs=["qa_results/qa_stats_comparison.md"]
     ),
     ScriptInfo(
@@ -362,7 +350,7 @@ PIPELINE_SCRIPTS: List[ScriptInfo] = [
         module="scripts.phase5.p5_05_spot_check_variants",
         name="Spot Check Variants",
         description="Manual verification of high-profile variants",
-        inputs=["data/output/tf/"],
+        inputs=["tf/1.0/"],
         outputs=["qa_results/qa_variant_reviews/"]
     ),
     ScriptInfo(
@@ -370,7 +358,7 @@ PIPELINE_SCRIPTS: List[ScriptInfo] = [
         module="scripts.phase5.p5_06_test_queries",
         name="Test Queries",
         description="Verify TF queries work correctly",
-        inputs=["data/output/tf/"],
+        inputs=["tf/1.0/"],
         outputs=["qa_results/qa_query_tests.log"]
     ),
     ScriptInfo(
@@ -378,7 +366,7 @@ PIPELINE_SCRIPTS: List[ScriptInfo] = [
         module="scripts.phase5.p5_07_test_edge_cases",
         name="Test Edge Cases",
         description="Test unusual grammatical constructions",
-        inputs=["data/output/tf/"],
+        inputs=["tf/1.0/"],
         outputs=["qa_results/qa_edge_cases.log"]
     ),
     ScriptInfo(
@@ -394,7 +382,6 @@ PIPELINE_SCRIPTS: List[ScriptInfo] = [
 
 # Status file location
 STATUS_FILE = Path(__file__).parent / "data" / "pipeline_status.json"
-
 
 def load_status() -> Dict:
     """Load pipeline execution status."""
@@ -440,29 +427,13 @@ def run_script(script: ScriptInfo, config: dict, dry_run: bool = False) -> bool:
         logger.info("[DRY RUN] Would run: %s", script.module)
         return True
 
-    try:
-        # Dynamically import the module
-        module = importlib.import_module(script.module)
+    cmd = [sys.executable, "-B", "-m", script.module]
+    if dry_run:
+        cmd.append("--dry-run")
 
-        # Call the main function
-        if hasattr(module, "main"):
-            success = module.main(config)
-            return success if isinstance(success, bool) else True
-        else:
-            logger.warning(f"Module {script.module} has no main() function")
-            return False
-
-    except ModuleNotFoundError as e:
-        logger.error(f"Module not found: {script.module}")
-        logger.error(f"Error: {e}")
-        logger.info("(This is expected if the script hasn't been implemented yet)")
-        return False
-
-    except Exception as e:
-        logger.error(f"Script failed: {e}")
-        import traceback
-        logger.error(traceback.format_exc())
-        return False
+    logger.info("Running in subprocess: %s", " ".join(cmd))
+    result = subprocess.run(cmd, cwd=Path(config["paths"]["root"]))
+    return result.returncode == 0
 
 
 def list_scripts() -> None:

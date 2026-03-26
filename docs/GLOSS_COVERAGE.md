@@ -1,5 +1,8 @@
 # Gloss Coverage
 
+> Note
+> This page predates the Stephens-source rebase. The glossary pipeline still fills glosses to 100%, but the intermediate percentages in older examples are historical. For the current build path, see [README.md](D:/Onedrive/GitHub/FORK_tr-text-fabric/README.md).
+
 The TR dataset achieves 100% gloss coverage through an integrated pipeline step.
 
 ## How It Works
@@ -32,11 +35,9 @@ python run_pipeline.py --phase 4
 
 | Source | Coverage | Method |
 |--------|----------|--------|
-| N1904 transplant | 88.8% | Direct inheritance from aligned words |
-| N1904 lemma lookup | +2.5% | Lookup glosses by lemma |
-| Strong's lexicon | +6.6% | Lookup in greek_lexicon.db |
-| Manual glosses | +2.0% | 50+ common word definitions |
-| Fallbacks | +0.1% | "(name)" for proper nouns, "(rare)" for hapax |
+| Direct N1904-aligned glosses | 86.5% | Direct inheritance from aligned words |
+| Lemma / lexicon / manual fill | +13.5% | Phase 4 gloss fill over NLP and unmatched rows |
+| Fallbacks | Included in the fill step | Proper names and rare-word safeguards |
 | **Total** | **100%** | |
 
 ## Error Corrections

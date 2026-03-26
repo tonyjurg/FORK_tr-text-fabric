@@ -22,6 +22,37 @@ from scripts.utils.config import load_config
 from scripts.utils.logging import ScriptLogger, get_logger
 
 
+SOURCE_CARRY_COLUMNS = (
+    "book",
+    "chapter",
+    "verse",
+    "word_rank",
+    "word",
+    "strong",
+    "morph",
+    "after",
+)
+
+PRESERVE_EXISTING_COMPLETE_COLUMNS = (
+    "translit",
+    "lemmatranslit",
+    "unaccent",
+    "after",
+    "ln",
+    "bookshort",
+    "text",
+    "normalized",
+    "trailer",
+    "num",
+    "ref",
+    "id",
+    "cls",
+    "trans",
+    "domain",
+    "typems",
+)
+
+
 def normalize_books(df):
     """
     Normalize book names to standard 27 NT books.
@@ -48,6 +79,87 @@ def normalize_books(df):
         logger.info(f"Normalized PA → JOH: {pa_count} words")
 
     return df
+
+
+def carry_source_columns(complete_df, tr_words_df):
+    """
+    Carry lexical/source columns from tr_words into the merged dataframe.
+
+    This keeps Phase 4 rebuilds lightweight: if a source-only feature such as
+    `after` is refreshed in `tr_words.parquet`, we can rebuild `tr_complete`
+    without rerunning alignment or NLP inference.
+    """
+    logger = get_logger(__name__)
+
+    source_lookup = tr_words_df.set_index("word_id")
+
+    carried = []
+    for column in SOURCE_CARRY_COLUMNS:
+        if column not in source_lookup.columns:
+            continue
+
+        source_values = complete_df["word_id"].map(source_lookup[column])
+
+        if column not in complete_df.columns:
+            complete_df[column] = source_values
+            carried.append(column)
+            continue
+
+        needs_update = complete_df[column].isna()
+        if column == "after":
+            needs_update = needs_update | complete_df[column].eq(" ")
+
+        if needs_update.any():
+            complete_df.loc[needs_update, column] = source_values.loc[needs_update]
+            carried.append(column)
+
+    if carried:
+        logger.info(f"Carried source columns from tr_words: {sorted(set(carried))}")
+
+    return complete_df
+
+
+def preserve_existing_complete_columns(complete_df, existing_complete_df):
+    """
+    Preserve derived columns from the previous tr_complete checkpoint.
+
+    This makes targeted source refreshes safer: we can regenerate the merged
+    syntax layer while keeping previously computed compatibility/text features
+    until they are intentionally rebuilt.
+    """
+    logger = get_logger(__name__)
+
+    if existing_complete_df is None or existing_complete_df.empty:
+        return complete_df
+
+    existing_lookup = existing_complete_df.set_index("word_id")
+    preserved = []
+
+    for column in PRESERVE_EXISTING_COMPLETE_COLUMNS:
+        if column not in existing_lookup.columns:
+            continue
+
+        existing_values = complete_df["word_id"].map(existing_lookup[column])
+
+        if column not in complete_df.columns:
+            complete_df[column] = existing_values
+            preserved.append(column)
+            continue
+
+        needs_update = complete_df[column].isna()
+        if column == "after":
+            needs_update = needs_update | complete_df[column].eq(" ")
+
+        if needs_update.any():
+            complete_df.loc[needs_update, column] = existing_values.loc[needs_update]
+            preserved.append(column)
+
+    if preserved:
+        logger.info(
+            f"Preserved existing tr_complete columns: {sorted(set(preserved))}"
+        )
+
+    return complete_df
 
 
 def merge_syntax_data(transplanted_df, gap_syntax_df, tr_words_df):
@@ -108,6 +220,8 @@ def merge_syntax_data(transplanted_df, gap_syntax_df, tr_words_df):
     complete_df = complete_df.sort_values(
         ["book", "chapter", "verse", "word_rank"]
     ).reset_index(drop=True)
+
+    complete_df = carry_source_columns(complete_df, tr_words_df)
 
     return complete_df
 
@@ -172,6 +286,7 @@ def main(config: dict = None, dry_run: bool = False) -> bool:
     transplanted_df = pd.read_parquet(transplanted_path)
     gap_syntax_df = pd.read_parquet(gap_syntax_path)
     tr_words_df = pd.read_parquet(tr_words_path)
+    existing_complete_df = pd.read_parquet(output_path) if output_path.exists() else None
 
     logger.info(f"Transplanted: {len(transplanted_df)} words")
     logger.info(f"Gap syntax: {len(gap_syntax_df)} words")
@@ -191,6 +306,8 @@ def main(config: dict = None, dry_run: bool = False) -> bool:
     # Validate
     if not validate_merge(complete_df, tr_words_df):
         return False
+
+    complete_df = preserve_existing_complete_columns(complete_df, existing_complete_df)
 
     # Save
     output_path.parent.mkdir(parents=True, exist_ok=True)

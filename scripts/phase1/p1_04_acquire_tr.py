@@ -2,13 +2,13 @@
 """
 Script: p1_04_acquire_tr.py
 Phase: 1 - Reconnaissance
-Purpose: Download Stephanus 1550 TR from Blue Letter Bible
+Purpose: Acquire the public-domain Stephens 1550 TR source text
 
-Input:  None (downloads from BLB, uses cache if available)
-Output: data/source/tr_blb.csv
+Input:  None (clones or refreshes the public-domain upstream repo)
+Output: data/source/tr_source.csv
 
-The BLB scraper caches HTML pages in data/source/blb_cache/ so subsequent
-runs are fast. Use --fresh to bypass cache and re-download.
+The source text is acquired from the public-domain repository configured at
+`sources.tr.repo_url` and converted into a normalized word-level CSV.
 
 Usage:
     python -m scripts.phase1.p1_04_acquire_tr
@@ -32,7 +32,7 @@ def main(config: dict = None, dry_run: bool = False, fresh: bool = False) -> boo
     Args:
         config: Pipeline configuration dict
         dry_run: If True, don't actually download
-        fresh: If True, bypass cache and re-download from BLB
+        fresh: If True, refresh the local source checkout from upstream
     """
     if config is None:
         config = load_config()
@@ -40,27 +40,25 @@ def main(config: dict = None, dry_run: bool = False, fresh: bool = False) -> boo
     logger = get_logger(__name__)
 
     source_dir = Path(config["paths"]["data"]["source"])
-    output_path = source_dir / "tr_blb.csv"
+    output_path = source_dir / "tr_source.csv"
 
-    # Check if already exists (and not forcing fresh download)
+    # Check if already exists (and not forcing refresh)
     if output_path.exists() and not fresh:
         logger.info(f"TR data already exists: {output_path}")
-        logger.info("Use --fresh to re-download from BLB")
+        logger.info("Use --fresh to refresh from the upstream public-domain repo")
         return True
 
     if dry_run:
-        logger.info(f"[DRY RUN] Would download TR from Blue Letter Bible")
+        logger.info("[DRY RUN] Would acquire Stephens 1550 from the configured public-domain repo")
         logger.info(f"[DRY RUN] Would save to: {output_path}")
         return True
 
-    # Import and run the BLB downloader
-    logger.info("Downloading Stephanus 1550 TR from Blue Letter Bible...")
-    logger.info("(HTML pages are cached in data/source/blb_cache/)")
+    logger.info("Acquiring Stephens 1550 TR from the configured public-domain repository...")
+    logger.info(f"Repository: {config['sources']['tr']['repo_url']}")
 
-    from scripts.download_blb_tr import download_all
+    from scripts.download_stephens_tr import download_all
 
-    use_cache = not fresh
-    result_path = download_all(use_cache=use_cache)
+    result_path = download_all(fresh=fresh)
 
     if result_path and Path(result_path).exists():
         logger.info(f"TR data saved to: {result_path}")
@@ -76,9 +74,9 @@ if __name__ == "__main__":
         formatter_class=argparse.RawDescriptionHelpFormatter
     )
     parser.add_argument("--dry-run", action="store_true",
-                        help="Preview without downloading")
+                        help="Preview without acquiring source data")
     parser.add_argument("--fresh", action="store_true",
-                        help="Bypass cache and re-download from BLB")
+                        help="Refresh the local source checkout from upstream")
     parser.add_argument("--verbose", "-v", action="store_true")
     args = parser.parse_args()
 

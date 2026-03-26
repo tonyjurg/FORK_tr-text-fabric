@@ -1,4 +1,10 @@
-# Plan: ML-Based Hierarchical Structure Generation
+# Historical Plan: ML-Based Hierarchical Structure Generation
+
+> Historical note: this document predates the current Stephens-based rebuild and
+> records an exploratory future direction, not the active production pipeline.
+> For the current implementation and verified build outputs, see
+> [README.md](D:/Onedrive/GitHub/FORK_tr-text-fabric/README.md) and
+> [docs/TF_BUILD.md](D:/Onedrive/GitHub/FORK_tr-text-fabric/docs/TF_BUILD.md).
 
 ## Goal
 

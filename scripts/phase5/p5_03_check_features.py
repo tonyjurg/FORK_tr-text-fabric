@@ -20,6 +20,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from scripts.utils.config import load_config
 from scripts.utils.logging import ScriptLogger, get_logger
+from scripts.utils.canonical import get_tf_dataset_dir
 
 
 def count_feature_values(tf_dir: Path, feature_name: str) -> int:
@@ -51,7 +52,7 @@ def main(config: dict = None, dry_run: bool = False) -> bool:
 
     logger = get_logger(__name__)
 
-    tf_dir = Path(config["paths"]["data"]["output"]) / "tf"
+    tf_dir = get_tf_dataset_dir(config)
 
     if dry_run:
         logger.info("[DRY RUN] Would verify feature completeness")
@@ -59,11 +60,11 @@ def main(config: dict = None, dry_run: bool = False) -> bool:
 
     # Define required features per node type
     required_features = {
-        "word": ["word", "lemma", "sp"],  # Core required features
+        "w": ["unicode", "lemma", "sp"],  # Core required features
     }
 
     optional_features = {
-        "word": ["function", "case", "gn", "nu", "ps", "tense", "voice", "mood", "gloss", "source"],
+        "w": ["function", "case", "gender", "number", "person", "tense", "voice", "mood", "gloss", "source"],
     }
 
     # Load otype to count nodes
@@ -77,7 +78,12 @@ def main(config: dict = None, dry_run: bool = False) -> bool:
             parts = line.split("\t")
             if len(parts) == 2:
                 otype = parts[1]
-                otypes[otype] = otypes.get(otype, 0) + 1
+                node_spec = parts[0]
+                if "-" in node_spec:
+                    start, end = node_spec.split("-")
+                    otypes[otype] = otypes.get(otype, 0) + (int(end) - int(start) + 1)
+                else:
+                    otypes[otype] = otypes.get(otype, 0) + 1
 
     logger.info("Node counts by type:")
     for otype, count in sorted(otypes.items()):

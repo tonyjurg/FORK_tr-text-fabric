@@ -20,6 +20,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from scripts.utils.config import load_config
 from scripts.utils.logging import ScriptLogger, get_logger
+from scripts.utils.canonical import get_tf_dataset_dir
 
 
 def load_parent_edges(tf_dir: Path) -> dict:
@@ -85,7 +86,7 @@ def main(config: dict = None, dry_run: bool = False) -> bool:
 
     logger = get_logger(__name__)
 
-    tf_dir = Path(config["paths"]["data"]["output"]) / "tf"
+    tf_dir = get_tf_dataset_dir(config)
 
     if dry_run:
         logger.info("[DRY RUN] Would check for cycles in syntax trees")

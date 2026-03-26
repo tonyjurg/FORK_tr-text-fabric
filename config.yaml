@@ -34,16 +34,31 @@ sources:
     # Text-Fabric dataset identifier (loaded via tf.app.use)
     # Moved from ETCBC/N1904 to CenterBLC/N1904 in 2024
     tf_dataset: "CenterBLC/N1904"
-    # Alternative: local path if you have a local copy
-    # local_path: "/path/to/n1904/tf"
+    # Preferred local workspace copy to keep TF cache writes inside the repo.
+    local_path: "${paths.data.source}/N1904"
 
   # Textus Receptus source
   tr:
-    # Stephanus 1550 Textus Receptus from Blue Letter Bible
+    # Public-domain Stephens 1550 text source
     edition: "stephanus-1550"
-    source: "blueletterbible.org"
-    # HTML pages are cached in data/source/blb_cache/
-    # Use --fresh flag to bypass cache and re-download
+    source: "github.com/byztxt/greektext-stephens"
+    repo_url: "https://github.com/byztxt/greektext-stephens.git"
+    repo_branch: "master"
+    local_checkout: "${paths.data.source}/greektext-stephens"
+    # p1_04 clones or refreshes the public-domain repo and exports
+    # data/source/tr_source.csv for the rest of the pipeline.
+    punctuation_witness:
+      # Optional local witness used only to overlay punctuation/spacing onto
+      # the public-domain base token sequence.
+      #
+      # Supported formats:
+      #   csv       -> one file with columns: book, chapter, verse, text
+      #   directory -> one text file per book, lines like: 1:1 ...
+      #   pdf       -> Iglesia Reformada Stephanus_1550.pdf witness
+      #
+      # Leave path empty to skip the overlay step.
+      path: "${paths.data.source}/Stephanus_1550.pdf"
+      format: "pdf"
 
 # -----------------------------------------------------------------------------
 # Alignment Settings
@@ -160,10 +175,39 @@ tf_output:
   # Language code
   language: "grc"
 
+  # Extra metadata written to every generated TF feature file.
+  # These keys become @key=value headers on node, edge, and config features.
+  # This affects TF headers only, not the actual annotation values in the feature body.
+  global_feature_metadata:
+    corpus: "Stephanus 1550 Textus Receptus Greek New Testament"
+    editor: "Michael J. Redmond"
+    convertor: "T. Jurg"
+    license: "MIT"
+    repository: "https://github.com/mjredmond/tr-text-fabric"
+
+  # Per-feature metadata overrides/additions keyed by TF feature name.
+  # Use this to override @description or add feature-specific headers.
+  # Supported targets include generated word features, section features
+  # (book/chapter/verse), and the parent edge feature.
+  # Entries here do not create a new feature file by themselves; the feature
+  # must already be emitted by the builder.
+  feature_metadata: {}
+  # Example:
+  # feature_metadata:
+  #   unicode:
+  #     description: "Greek surface form"
+  #     uiName: "Unicode Text"
+  #   parent:
+  #     description: "Dependency head slot"
+  #   structure_confidence:
+  #     description: "Confidence score stored as a stringified decimal"
+
   # Features to generate (must match N1904 for compatibility)
   word_features:
     - "word"      # Surface form
     - "lemma"     # Dictionary form
+    - "strong"    # Strong's number from source TF
+    - "morph"     # Morphology code from source TF
     - "sp"        # Part of speech
     - "gn"        # Gender
     - "nu"        # Number

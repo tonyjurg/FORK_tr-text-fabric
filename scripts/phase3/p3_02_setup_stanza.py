@@ -22,15 +22,35 @@ from scripts.utils.config import load_config
 from scripts.utils.logging import ScriptLogger, get_logger
 
 
-def download_stanza_model() -> bool:
+def get_stanza_model_dir(config: dict) -> Path:
+    """Return the repo-local Stanza model directory."""
+    return Path(config["paths"]["data"]["source"]) / "stanza_resources"
+
+
+def download_stanza_model(config: dict) -> bool:
     """Download Stanza Ancient Greek model."""
     import stanza
 
     logger = get_logger(__name__)
+    model_dir = get_stanza_model_dir(config)
+    model_dir.mkdir(parents=True, exist_ok=True)
+    resources_path = model_dir / "resources.json"
+    model_paths = [
+        model_dir / "grc" / "tokenize" / "perseus.pt",
+        model_dir / "grc" / "pos" / "perseus_nocharlm.pt",
+        model_dir / "grc" / "lemma" / "perseus_nocharlm.pt",
+        model_dir / "grc" / "depparse" / "perseus_nocharlm.pt",
+    ]
+
+    if resources_path.exists() and all(path.exists() for path in model_paths):
+        logger.info("Using existing local Stanza Ancient Greek model files")
+        logger.info(f"Model directory: {model_dir}")
+        return True
 
     logger.info("Downloading Stanza Ancient Greek model...")
+    logger.info(f"Model directory: {model_dir}")
     try:
-        stanza.download("grc", verbose=True)
+        stanza.download("grc", model_dir=str(model_dir), verbose=True)
         logger.info("Model downloaded successfully")
         return True
     except Exception as e:
@@ -38,11 +58,12 @@ def download_stanza_model() -> bool:
         return False
 
 
-def test_stanza_pipeline() -> bool:
+def test_stanza_pipeline(config: dict) -> bool:
     """Test Stanza pipeline on sample Greek text."""
     import stanza
 
     logger = get_logger(__name__)
+    model_dir = get_stanza_model_dir(config)
 
     logger.info("Testing Stanza pipeline...")
 
@@ -51,7 +72,9 @@ def test_stanza_pipeline() -> bool:
         nlp = stanza.Pipeline(
             "grc",
             processors="tokenize,pos,lemma,depparse",
-            verbose=False
+            verbose=False,
+            dir=str(model_dir),
+            download_method=stanza.DownloadMethod.REUSE_RESOURCES,
         )
 
         # Test on famous Greek text (John 1:1)
@@ -100,8 +123,15 @@ def document_stanza_output(config: dict) -> None:
     logger = get_logger(__name__)
 
     output_path = Path(config["paths"]["data"]["intermediate"]) / "stanza_info.json"
+    model_dir = get_stanza_model_dir(config)
 
-    nlp = stanza.Pipeline("grc", processors="tokenize,pos,lemma,depparse", verbose=False)
+    nlp = stanza.Pipeline(
+        "grc",
+        processors="tokenize,pos,lemma,depparse",
+        verbose=False,
+        dir=str(model_dir),
+        download_method=stanza.DownloadMethod.REUSE_RESOURCES,
+    )
 
     # Get sample parse
     doc = nlp("καὶ ὁ λόγος ἦν πρὸς τὸν θεόν")
@@ -159,11 +189,11 @@ def main(config: dict = None, dry_run: bool = False) -> bool:
         return False
 
     # Download model
-    if not download_stanza_model():
+    if not download_stanza_model(config):
         return False
 
     # Test pipeline
-    if not test_stanza_pipeline():
+    if not test_stanza_pipeline(config):
         return False
 
     # Document output format

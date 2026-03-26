@@ -41,9 +41,25 @@ def transplant_syntax(tr_df, n1904_df, alignment_df, id_translation_df, config: 
 
     logger = get_logger(__name__)
 
-    # Features to transplant from N1904
-    syntax_features = ["lemma", "sp", "case", "tense", "voice", "mood",
-                       "function", "role", "parent", "clause_id", "phrase_id", "gloss"]
+    # Features to transplant from N1904.
+    # This includes lexical annotations that are sourced from the original
+    # Text-Fabric dataset, not from the rebased TR plain-text source.
+    syntax_features = [
+        "lemma",
+        "strong",
+        "morph",
+        "sp",
+        "case",
+        "tense",
+        "voice",
+        "mood",
+        "function",
+        "role",
+        "parent",
+        "clause_id",
+        "phrase_id",
+        "gloss",
+    ]
 
     # Start with TR words
     result = tr_df.copy()

@@ -39,9 +39,14 @@ def normalize_unicode(text: str) -> str:
         NFC-normalized string
     """
     import unicodedata
+
     if not text:
         return ""
-    return unicodedata.normalize("NFC", str(text))
+
+    text = unicodedata.normalize("NFC", str(text))
+    text = unicodedata.normalize("NFD", text)
+    text = "".join(c for c in text if unicodedata.category(c) != "Mn")
+    return unicodedata.normalize("NFC", text).lower()
 
 
 def create_word_key(row: Dict[str, Any], match_criteria: List[str]) -> str:

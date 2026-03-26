@@ -27,7 +27,7 @@ from scripts.phase2.p2_02_align_verses import align_verse_words
 # Book name mapping between TR and N1904
 # N1904 uses underscores and Roman numerals for numbered books
 BOOK_NAME_MAP = {
-    # TR name (BLB format) -> N1904 name
+    # TR book code -> N1904 name
     "MAT": "Matthew", "MAR": "Mark", "LUK": "Luke", "JHN": "John",
     "ACT": "Acts", "ROM": "Romans",
     "1CO": "I_Corinthians", "2CO": "II_Corinthians",

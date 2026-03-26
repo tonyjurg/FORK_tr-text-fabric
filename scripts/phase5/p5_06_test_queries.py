@@ -62,7 +62,7 @@ def test_basic_queries(complete_df, logger):
     # Test 4: Find words in John 3:16
     logger.info("\nTest 4: Find John 3:16")
     john316 = complete_df[
-        (complete_df["book"] == "JHN") &  # BLB format
+        (complete_df["book"] == "JHN") &  # TR book code
         (complete_df["chapter"] == 3) &
         (complete_df["verse"] == 16)
     ]

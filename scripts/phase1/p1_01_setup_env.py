@@ -13,6 +13,7 @@ Usage:
 """
 
 import argparse
+import subprocess
 import sys
 from pathlib import Path
 
@@ -44,6 +45,43 @@ def check_import(module_name: str, package_name: str = None) -> bool:
     except ImportError as e:
         logger.error(f"  [FAIL] {display_name}: {e}")
         return False
+    except Exception as e:
+        # Some heavy packages, notably stanza/torch on Windows, can fail during
+        # in-process import while still loading successfully in a clean child
+        # interpreter. Fall back to a subprocess check before marking them bad.
+        probe = subprocess.run(
+            [sys.executable, "-c", f"import {module_name}"],
+            capture_output=True,
+            text=True,
+            timeout=60,
+        )
+        if probe.returncode == 0:
+            logger.info(f"  [OK] {display_name} (subprocess import)")
+            return True
+
+        detail = probe.stderr.strip() or str(e)
+        logger.error(f"  [FAIL] {display_name}: {detail}")
+        return False
+
+
+def check_subprocess_import(module_name: str, package_name: str = None) -> bool:
+    """Check a module import in a clean child interpreter."""
+    logger = get_logger(__name__)
+    display_name = package_name or module_name
+
+    probe = subprocess.run(
+        [sys.executable, "-c", f"import {module_name}"],
+        capture_output=True,
+        text=True,
+        timeout=60,
+    )
+    if probe.returncode == 0:
+        logger.info(f"  [OK] {display_name} available")
+        return True
+
+    detail = probe.stderr.strip() or probe.stdout.strip() or "unknown error"
+    logger.error(f"  [FAIL] {display_name}: {detail}")
+    return False
 
 
 def main(config: dict = None, dry_run: bool = False) -> bool:
@@ -90,15 +128,7 @@ def main(config: dict = None, dry_run: bool = False) -> bool:
     # NLP
     logger.info("\nNLP Libraries:")
     all_ok &= check_import("stanza")
-
-    # Check Stanza Ancient Greek model
-    try:
-        import stanza
-        # Just check if we can create the pipeline class
-        logger.info("  [OK] Stanza available (grc model may need download)")
-    except Exception as e:
-        logger.error(f"  [FAIL] Stanza: {e}")
-        all_ok = False
+    all_ok &= check_subprocess_import("stanza", "Stanza")
 
     # Optional dependencies
     logger.info("\nOptional Libraries:")

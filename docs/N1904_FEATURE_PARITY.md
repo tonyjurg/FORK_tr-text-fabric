@@ -1,4 +1,10 @@
-# N1904 Feature Parity Plan
+# Historical N1904 Feature Parity Plan
+
+> Historical note: this document predates the current Stephens-based TF build
+> and should be read as planning/history rather than the current implementation
+> contract. For the current exported feature surface and build behavior, see
+> [README.md](D:/Onedrive/GitHub/FORK_tr-text-fabric/README.md) and
+> [docs/TF_BUILD.md](D:/Onedrive/GitHub/FORK_tr-text-fabric/docs/TF_BUILD.md).
 
 This document tracks progress toward feature parity between the TR Text-Fabric dataset and the N1904 dataset.
 
@@ -31,7 +37,7 @@ This document tracks progress toward feature parity between the TR Text-Fabric d
 | bookshort | ✓ | ✓ | Complete |
 | text | ✓ | ✓ | Complete |
 | normalized | ✓ | ✓ | Complete |
-| trailer | ✓ | ✓ | Complete |
+| trailer | ✓ | ✗ | Intentionally omitted from TF export |
 | num | ✓ | ✓ | Complete |
 | ref | ✓ | ✓ | Complete |
 | id | ✓ | ✓ | Complete |
@@ -75,23 +81,19 @@ This document tracks progress toward feature parity between the TR Text-Fabric d
    - Source: `unicode` feature
    - Transform: Apply NFC normalization
 
-4. **trailer** - Material after word
-   - Source: `after` feature
-   - Transform: Direct copy (alias for compatibility)
-
-5. **num** - Word position in verse
+4. **num** - Word position in verse
    - Source: `word_rank` column
    - Transform: Direct copy
 
-6. **ref** - Reference string
+5. **ref** - Reference string
    - Format: `{bookshort} {chapter}:{verse}!{num}`
    - Example: `MAT 1:1!1`
 
-7. **id** - Unique word identifier
+6. **id** - Unique word identifier
    - Format: `n{book_num:02d}{chapter:03d}{verse:03d}{num:03d}`
    - Example: `n40001001001` (Matthew 1:1 word 1)
 
-8. **cls** - Word class
+7. **cls** - Word class
    - Source: `sp` feature
    - Transform: Map sp values to cls values (noun, verb, adj, etc.)
 
@@ -204,7 +206,8 @@ For clause/phrase/wg nodes:
 ## Implementation Order
 
 1. ✅ Phase 1a: translit, lemmatranslit, unaccent, after, ln (DONE)
-2. ✅ Phase 1b: bookshort, text, normalized, trailer, num, ref, id, cls (DONE)
+2. ✅ Phase 1b: bookshort, text, normalized, num, ref, id, cls (DONE)
+   `trailer` was later removed from the TF export because it is specific to the N1904 critical apparatus and not part of the supported TR feature surface.
 3. ✅ Phase 2: trans, domain, typems (DONE - lookup-based)
 4. ⬜ Phase 3: Hierarchical structure (Option B or C)
 
@@ -220,7 +223,7 @@ For clause/phrase/wg nodes:
 - [x] bookshort - 100%
 - [x] text - 100%
 - [x] normalized - 100%
-- [x] trailer - 100%
+- [x] trailer - intentionally omitted from TF export
 - [x] num - 100%
 - [x] ref - 100%
 - [x] id - 100%

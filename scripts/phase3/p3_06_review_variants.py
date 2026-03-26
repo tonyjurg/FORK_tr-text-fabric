@@ -203,7 +203,7 @@ def generate_variant_review(variant_spans: List[Dict], syntax_df, spans_df, outp
             "",
         ])
 
-        filepath.write_text("\n".join(lines))
+        filepath.write_text("\n".join(lines), encoding="utf-8")
         logger.info(f"Generated review: {filepath}")
 
 

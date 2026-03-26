@@ -75,11 +75,12 @@ def parse_all_spans(spans_df, config: dict) -> "pd.DataFrame":
     Returns:
         DataFrame of parse results
     """
-    import pandas as pd
     import stanza
+    import pandas as pd
     from tqdm import tqdm
 
     logger = get_logger(__name__)
+    model_dir = Path(config["paths"]["data"]["source"]) / "stanza_resources"
 
     # Initialize Stanza pipeline
     logger.info("Initializing Stanza pipeline...")
@@ -87,7 +88,9 @@ def parse_all_spans(spans_df, config: dict) -> "pd.DataFrame":
         "grc",
         processors="tokenize,pos,lemma,depparse",
         verbose=False,
+        dir=str(model_dir),
         tokenize_pretokenized=False,  # Let Stanza tokenize
+        download_method=stanza.DownloadMethod.REUSE_RESOURCES,
     )
 
     all_parses = []
@@ -133,14 +136,14 @@ def main(config: dict = None, dry_run: bool = False) -> bool:
         logger.info(f"[DRY RUN] Output: {output_path}")
         return True
 
-    import pandas as pd
-
     # Check dependencies
     try:
         import stanza
     except ImportError:
         logger.error("Stanza not installed. Run: pip install stanza")
         return False
+
+    import pandas as pd
 
     # Check input
     if not spans_path.exists():
